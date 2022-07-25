@@ -1,0 +1,38 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AssesmentModule } from 'src/assesment/assesment.module';
+import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
+import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
+import { Institution } from 'src/institution/institution.entity';
+import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { ParameterHistoryModule } from 'src/parameter-history/parameter-history.module';
+import { TokenDetails } from 'src/utills/token_details';
+import { VerificationDetail } from './entity/verification-detail.entity';
+import { VerificationController } from './verification.controller';
+import { VerificationService } from './verification.service';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      ParameterRequest,
+      AssessmentYear,
+      VerificationDetail,
+      ParameterRequest,
+      Institution,
+    ]),
+    ParameterHistoryModule,
+    AssesmentModule,
+  ],
+  controllers: [VerificationController],
+  providers: [
+    VerificationService,
+    AssessmentYear,
+    VerificationDetail,
+    ParameterRequest,
+    TokenDetails,
+    EmailNotificationService,
+    Institution,
+  ],
+  exports: [VerificationService],
+})
+export class VerificationModule {}
