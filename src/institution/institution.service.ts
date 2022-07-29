@@ -133,6 +133,15 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       }
     }
 
+    if (userTypeFromTocken === "Data Collection Team"){
+      console.log("Data Collection Team")
+      if (filter) {
+        filter = `${filter} and user.userTypeId = 9 or user.userTypeId = 8`
+      } else {
+        filter = `user.userTypeId = 9 or user.userTypeId = 8`
+      }
+    }
+
     // if(filter){
     //   filter = `${filter}  and  (user.institutionId is null OR ins.typeId in (1,2,3)
     //   and case ins.typeId WHEN 1 THEN user.userTypeId = 1
