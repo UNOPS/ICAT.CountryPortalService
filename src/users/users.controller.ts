@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -89,10 +90,23 @@ export class UsersController implements CrudController<User> {
   //   return this.service.findAll();
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string): Promise<User> {
-  //   return this.service.findOne(id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<User> {
+    return this.service.findOne(id);
+  }
+
+  @Override()
+  @Patch(':id')
+  async update(@Param('id') id: number, @Body() newUser: User ): Promise<User | null> {
+    const user = await this.userRepository.findOneOrFail(id);
+    if (!user.id) {
+      console.error("User doesn't exist");
+    }
+    Object.assign(user, newUser)
+    this.userRepository.save(user)
+    return await this.userRepository.findOne(id);
+  }
+ 
 
   @Get('isUserAvailable/:userName')
   async isUserAvailable(@Param('userName') userName: string): Promise<boolean> {
@@ -119,7 +133,6 @@ export class UsersController implements CrudController<User> {
 
   @Patch('changeStatus')
   changeStatus( @Query('id') id:number, @Query('status') status:number): Promise<User> {
-   console.log('status',status)
    
     return this.service.chnageStatus(id,status);
   }
