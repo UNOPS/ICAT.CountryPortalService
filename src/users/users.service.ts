@@ -363,6 +363,8 @@ if(institutionIdFromTocken != 0){
 }
 
 }
+
+
 // if (role == "Country Admin") {
    
 // }
@@ -398,14 +400,14 @@ if(institutionIdFromTocken != 0){
 //     filter = `user.userTypeId = 3 `; 
 //   }
 // }
-// else if (role == "Data Collection Team" ) {
-//   console.log("Technical Team")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId = 3 `;
-//   } else {
-//     filter = `user.userTypeId = 3 `; 
-//   }
-// }
+// else 
+    if (role == "Data Collection Team") {
+      if (filter) {
+        filter = `${filter}  and user.userTypeId = 8 or user.userTypeId = 9 `;
+      } else {
+        filter = `user.userTypeId = 8 or user.userTypeId = 9 `;
+      }
+    }
 
 // else {
 
