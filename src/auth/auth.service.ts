@@ -34,27 +34,33 @@ export class AuthService {
       console.log("selectedUser",selectedUser)
       if (selectedUser.status === 0){
         if (selectedUser.institution.status === 0){
-          const payload = {
-            usr: (await selectedUser).username,
-            fname: selectedUser.firstName,
-            lname: selectedUser.lastName,
-            countryId: selectedUser.country.id,
-            instName: selectedUser.institution.name,
-            moduleLevels: [selectedUser.country.climateActionModule ? 1 : 0, selectedUser.country.ghgModule ? 1 : 0, selectedUser.country.macModule ? 1 : 0, selectedUser.country.dataCollectionModule ? 1 : 0],
-            ...!([UserTypeNames.CountryAdmin, UserTypeNames.Verifier, UserTypeNames.InstitutionAdmin, UserTypeNames.DataEntryOperator].includes(selectedUser.userType.id)) && { sectorId: selectedUser.institution.sectorId },
-            // ...!([1,2,8,9].includes(selectedUser.userType.id)) &&{ sectorId:selectedUser.institution.sectorId},
-            ...([UserTypeNames.InstitutionAdmin, UserTypeNames.DataEntryOperator].includes(selectedUser.userType.id)) && { institutionId: selectedUser.institution.id },
-            // ...([8,9].includes(selectedUser.userType.id)) &&{ institutionId:selectedUser.institution.id},
-            roles: [selectedUser.userType.name],
-          };
-  
-  
-          // console.log('jwt payload ', payload);
-  
-          const expiresIn = '240h';
-          let token = this.jwtService.sign(payload, { expiresIn });
-          console.log('token', token);
-          return { access_token: token };
+          if(selectedUser.institution.country.countryStatus !="Deactivated"){
+            const payload = {
+              usr: (await selectedUser).username,
+              fname: selectedUser.firstName,
+              lname: selectedUser.lastName,
+              countryId: selectedUser.country.id,
+              instName: selectedUser.institution.name,
+              moduleLevels: [selectedUser.country.climateActionModule ? 1 : 0, selectedUser.country.ghgModule ? 1 : 0, selectedUser.country.macModule ? 1 : 0, selectedUser.country.dataCollectionModule ? 1 : 0],
+              ...!([UserTypeNames.CountryAdmin, UserTypeNames.Verifier, UserTypeNames.InstitutionAdmin, UserTypeNames.DataEntryOperator].includes(selectedUser.userType.id)) && { sectorId: selectedUser.institution.sectorId },
+              // ...!([1,2,8,9].includes(selectedUser.userType.id)) &&{ sectorId:selectedUser.institution.sectorId},
+              ...([UserTypeNames.InstitutionAdmin, UserTypeNames.DataEntryOperator].includes(selectedUser.userType.id)) && { institutionId: selectedUser.institution.id },
+              // ...([8,9].includes(selectedUser.userType.id)) &&{ institutionId:selectedUser.institution.id},
+              roles: [selectedUser.userType.name],
+            };
+    
+    
+            // console.log('jwt payload ', payload);
+    
+            const expiresIn = '240h';
+            let token = this.jwtService.sign(payload, { expiresIn });
+            console.log('token', token);
+            return { access_token: token };
+          }
+          else{
+            return {error: "Country is deactivated"};
+          }
+          
         } else {
           return {error: "Institution is deactivated"};
         }

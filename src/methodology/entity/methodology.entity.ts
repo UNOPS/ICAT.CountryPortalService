@@ -18,6 +18,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MethodologyData } from 'src/master-data/methodology-data/methodology-data.entity';
 
 @Entity({ name: 'methodology' })
 export class Methodology extends BaseTrackingEntity {
@@ -128,5 +129,10 @@ export class Methodology extends BaseTrackingEntity {
     (methodologySubsection) => methodologySubsection.methodology,
   )
   methodologySubsection: SubsectionEntity[];
+
+  
+  @ManyToOne((type) => MethodologyData, { cascade: false })
+  @JoinColumn({ name: 'methodId' })
+  method?: MethodologyData;
 
 }

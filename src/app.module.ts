@@ -89,6 +89,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { CaActionHistoryController } from './ca-action-history/ca-action-history.controller';
 import { CaActionHistoryService } from './ca-action-history/ca-action-history.service';
 import { CaActionHistoryModule } from './ca-action-history/ca-action-history.module';
+import { MethodologyData } from './master-data/methodology-data/methodology-data.entity';
+import { MethodologyDataController } from './master-data/methodology-data/methodology-data.controller';
+import { MethodologyDataService } from './master-data/methodology-data/methodology-data.service';
 
 @Module({
   imports: [
@@ -173,6 +176,7 @@ import { CaActionHistoryModule } from './ca-action-history/ca-action-history.mod
     ProjectionYearModule,
     DefaultValueModule,
     ApplicabilityModule,
+    MethodologyData,
     QualityCheckModule,
     ParameterHistoryModule,
     ReportModule,
@@ -200,6 +204,8 @@ import { CaActionHistoryModule } from './ca-action-history/ca-action-history.mod
 
     ApplicabilityController,
 
+    // MethodologyDataController,
+
     SubsectionController,
 
     ReportController,
@@ -213,6 +219,6 @@ import { CaActionHistoryModule } from './ca-action-history/ca-action-history.mod
     // UserController,
   ],
 
-  providers: [AppService, SubsectionService,TokenDetails],
+  providers: [AppService, SubsectionService,TokenDetails,],
 })
 export class AppModule {}

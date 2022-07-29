@@ -37,6 +37,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
       sector: {
         eager: true,
       },
+      method: {
+        eager: true,
+      },
     },
   },
 })
