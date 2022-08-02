@@ -947,6 +947,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       format: 'A4',
       margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
       path: './public/' + fileName,
+      printBackground: true
     };
 
 
@@ -1069,7 +1070,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
 
             let yearsActivity: number[] = []
-            let groupedActivity = assesActivity.parameters.reduce((r, v, i, a) => {
+            let groupedActivity = assesActivity?.parameters.reduce((r, v, i, a) => {
 
 
               let foundyears = yearsActivity.find((element) => {
@@ -1118,8 +1119,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   <div>
                     <table style="border:1px solid black;width:100%;">
                               <thead >
-                              <tr style="height:40px; width:450px; margin:0;background-color: red !important">
-                                <th style="border:1px solid black;text-align: center;width:300px;font-size: 17px;background: red !important;" scope="col">Parameter</th>
+                              <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
+                                <th style="border:1px solid black;text-align: center;width:300px;font-size: 17px" scope="col">Parameter</th>
                                 <th style="border:1px solid black;text-align: center;width:75px;font-size: 17px;" scope="col">Unit</th>
                                 ${map.call(yearsActivity, (e: any) =>
                     `
@@ -1161,9 +1162,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
 
 
-    //console.log("===== main Report =====", mainReport);
-    //console.log("=====+++++ assesment +++++======", reportData.yearIds);
+    // main report start
     let tableReportContent: string = '';
+    // selected ndc list itterate
     for (let i = 0; i < reportData.ndcIdList.length; i++) {
       this.ndcItemList = reportData.ndcIdList[i];
       var ndcItem = await this.ndc.findOne({
@@ -1176,9 +1177,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
         `
           <h3 style="font-weight: 700;color: #15246e;font-family: Calibri, san-serif;font-size: 32px;">${ndcItem.name}</h3>
           `;
+
+      // selected projects itterated
       for (let i = 0; i < reportData.projIds.length; i++) {
-        // console.log("====== reportData.projIds[i] +++++", reportData.projIds[i]);
-        // console.log("====== reportData.ndcIdList[i] +++++", this.ndcItemList);
         let climateData = await this.proRepo
           .createQueryBuilder('climate')
           .innerJoinAndSelect('climate.ndc', 'ndc')
@@ -1189,11 +1190,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
           .andWhere('climate.ndcId = :ndcId', { ndcId: this.ndcItemList })
           .getOne();
 
-        // console.log("climateData=====", climateData.length);
-
-        // for (let index = 0; index < climateData.length; index++) {
+        
         if (climateData) {
-          // const element = climateData[index];
           const element = climateData;
 
           tableReportContent =
@@ -1206,10 +1204,10 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
               </div>`;
 
+              // itterate assesment according to a selected projec assesment id
           for (let index = 0; index < element.assessments.length; index++) {
             const assesment = element.assessments[index];
 
-            //console.log("++++++++++ assesment +++++++", assesment);
             var asses = await this.assesment
               .createQueryBuilder('assesment')
 
@@ -1263,16 +1261,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 'proRslt.assementId = assesment.id',
               )
 
-              // .innerJoinAndSelect("assesment.assessmentYear", "assessmentYear")
-
-              // .innerJoinAndSelect("assesment.methodology", "methodology")
-
-              // .innerJoinAndSelect("assesment.assessmentResult", "assessmentResult")
-
-              // .innerJoinAndSelect("assesment.parameters", "parameters")
-
-              // .leftJoinAndSelect("assesment.projectionResult", "projectionResult")
-
+        
               .where('assesment.id = :id and assYr.id IN(:...ids)', {
                 id: assesment.id,
                 ids: reportData.yearIds,
@@ -1281,7 +1270,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
               .getOne();
 
             if (assesment.assessmentType == 'Ex-ante') {
-              //console.log(" +++++ assesment.id 222222 ========", assesment.id);
+            
               await this.generateProjectionEmmisionGrpah(
                 assesment.id,
                 element.id,
@@ -1292,31 +1281,18 @@ export class ReportService extends TypeOrmCrudService<Report> {
               assesment.assessmentType == 'Ex-ante' ||
               assesment.assessmentType == 'Ex-post'
             ) {
-              //console.log("======== asses  ===++++", asses);
-              // let asesmentYears = asses.forEach(element => {
+              
               let emmisionReduction: string = '';
               let projectionEmission: string = '';
               if (asses) {
                 this.assesmentMetholodgy = asses;
-                //console.log("123", this.assesmentMetholodgy);
-
-                // });
-
-                //console.log(" +++++ assesment.id 11111 ========", assesment.id);
-
-                // for (let index = 0; index < asses.length; index++) {
+               
 
                 this.commenAssestment = asses;
-                //console.log("=====+++++ commenAssestment +++++======",this.commenAssestment);
+                
 
                 for (let assesmentYer of this.commenAssestment.assessmentYear) {
-                  //let assesmentYer = this.commenAssestment?.assessmentYear[x]
-                  // console.log("===== 767657 ======");
-                  // var assesmentYrResult = await this.assesmentYearResults.createQueryBuilder('assesmentyear')
-                  //   .innerJoinAndSelect("assesmentyear.assessmentResault", "assessmentResault")
-                  //   .where("assesmentyear.id = :id", { id: assesmentYer.id })
-                  //   .getOne()
-
+                
                   let maxYear = 0;
 
                   this.commenAssestment.projectionResult.map((e: { projectionYear: number; }) => {
@@ -1330,25 +1306,14 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
 
                   this.commenAssestment?.parameters?.map((e: any) => {
-                    //console.log("==== is lekage====",e.isLekage);
                     
+
                     this.isCheckLekage = e.isLekage
                   })
-                  // this.temporalBoundaryear  = assesmentYer.assessmentYear
-                  // for (let a = 0; a < this.commenAssestment.projectionResult.length; a++) {
-                  //   let projectionData = this.commenAssestment?.projectionResult[a];
-                  //   console.log("projectionData ========", projectionData);
-
-                  //   this.temporalBoundaryear = projectionData.projectionYear ? maxYear : assesmentYer.assessmentYear;
-                  //   //console.log("this.temporalBoundaryear ========", this.temporalBoundaryear);
-                  // }
-
-                  // console.log("====== assesmentYrResult =====",assesmentYrResult);
-                  // for (let z = 0; z < assesmentYrResult.length; z++) {
+                 
                   if (assesmentYer.assessmentResult) {
                     let emisiionResult = assesmentYer.assessmentResult;
-                    // console.log("=== emision ====", emisiionResult);
-
+                  
                     emmisionReduction =
                       emmisionReduction +
                       `<div style="margin-top:25px;margin-bottom:15px">
@@ -1356,7 +1321,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                         <p style="font-size:15px">Table Emissions reduction due to ${element.climateActionName}</p>
                         <table style="border:1px solid black;width:100%;">
                               <thead > 
-                                <tr style="height:40px; width:450px; margin:0;">
+                                <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">Scenario</th>
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">${assesmentYer?.assessmentYear} Emissions (MtCO2)</th>     
                                 </tr>
@@ -1401,8 +1366,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   }
                 }
 
-                //console.log("======== this.commenAssestment inner forloop ===++++", this.commenAssestment);
-
+               
                 tableReportContent =
                   tableReportContent +
                   `
@@ -1410,12 +1374,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
                           <div>
                             <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 23px">GHG impact assessment</h4>
                             <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">System boundary</h4>
-                            <p style="font-size:15px">Table System boundary of the GHG impact assessment of ${element.climateActionName
-                  }</p>
-                            <table style="border:1px solid black;width:100%;">
+                            <p style="font-size:15px">Table System boundary of the GHG impact assessment of ${element.climateActionName}</p>
+                            <table style="border:1px solid black;width:100%">
                             <thead >
-                            <tr style="height:40px; width:450px; margin:0;">
-                              <th style="border:1px solid black;text-align: center;width:150px;font-size: 17px;" scope="col">Boundary elements</th>
+                            <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
+                              <th style="border:1px solid black;text-align: center;width:150px;font-size: 17px;" scope="col"}>Boundary elements</th>
                               <th style="border:1px solid black;text-align: center;width:300px;font-size: 17px;" scope="col">Description</th>
                             </tr>
                             </thead>
@@ -1455,7 +1418,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                           </div>
                         </div>
                         `;
-                //console.log("++++++++++ assesmentValue +++++++", assesmentValue);
+                
 
                 tableReportContent =
                   tableReportContent +
@@ -1479,7 +1442,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                       <td style="border:1px solid black;width:300px">
                                       &nbsp&nbsp&nbsp&nbsp${this.commenAssestment?.assessmentYear?.map(
                     (e: { assessmentYear: any; }) => {
-                      //console.log("======= e assesmentYear ===",e.assessmentYear);
+                      
                       return e.assessmentYear;
                     }
                   )}
@@ -1508,7 +1471,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                              
                             <table style="border:1px solid black;width:100%;">
                             <thead >
-                            <tr style="height:40px; width:450px; margin:0;">
+                            <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
                               <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Key indicators</th>
                               <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Unit</th>
                             </tr>
@@ -1536,7 +1499,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   }</p>
                             <table style="border:1px solid black;width:100%;">
                             <thead >
-                            <tr style="height:30px; width:450px; margin:0;">
+                            <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                               <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
                               <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
                             </tr>
@@ -1546,7 +1509,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                 
                                   ${this.commenAssestment?.assessmentYear?.map(
                     (e: { assessmentYear: any; assessmentResult: { baselineResult: any; }; }) => {
-                      //console.log("======= e assesmentYear ===",e.assessmentYear);
                       return `<tr style="height:30px; width:450px; margin:0;">
                       <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear
                         }</td>
@@ -1579,7 +1541,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
              
                          <table style="border:1px solid black;width:100%;">
                          <thead >
-                         <tr style="height:30px; width:450px; margin:0;">
+                         <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                            <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Key indicators</th>
                            <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Unit</th>
                          </tr>
@@ -1610,7 +1572,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   }</p>
                             <table style="border:1px solid black;width:100%;">
                             <thead >
-                            <tr style="height:30px; width:450px; margin:0;">
+                            <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                               <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
                               <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
                             </tr>
@@ -1619,7 +1581,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
                              
                                   ${this.commenAssestment?.assessmentYear?.map(
                     (e: { assessmentYear: any; assessmentResult: { projectResult: any; }; }) => {
-                      //console.log("======= e assesmentYear ===",e.assessmentYear);
                       return `<tr style="height:30px; width:450px; margin:0;">
                       <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear}</td>
                         <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
@@ -1637,9 +1598,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
                         </div>
                        `;
 
-                  if(this.isCheckLekage == true)
-                  {
-                    tableReportContent =
+                if (this.isCheckLekage == true) {
+                  tableReportContent =
                     tableReportContent +
                     `
                           <div style="margin-top:25px;margin-bottom:15px">
@@ -1648,7 +1608,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                           <p style="font-size:15px">Table Data required to assess leakage emissions of ${element.climateActionName}</p>
                           <table style="border:1px solid black;width:100%;">
                              <thead >
-                               <tr style="height:30px; width:450px; margin:0;">
+                               <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                 <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Key indicators</th>
                                 <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Unit</th>
                               </tr>
@@ -1666,47 +1626,45 @@ export class ReportService extends TypeOrmCrudService<Report> {
                            </table>
                         </div>
                           `
-                  }
-                
+                }
 
-                  if(this.isCheckLekage == true)
-                  {
-                    tableReportContent =
+
+                if (this.isCheckLekage == true) {
+                  tableReportContent =
                     tableReportContent +
                     `
                           <div style="margin-top:25px;margin-bottom:15px">
                           <p style="font-size:15px">Indirect project emissions attributed to the ${element.climateActionName
-                        } are given in Table 8</p>
+                    } are given in Table 8</p>
                           <p style="font-size:15px">Table Leakage emissions of ${element.climateActionName
-                        }</p>
+                    }</p>
                           <table style="border:1px solid black;width:100%;">
                           <thead >
-                          <tr style="height:30px; width:450px; margin:0;">
+                          <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                             <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Year</th>
                             <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
                           </tr>
                           </thead>
                           <tbody>
                               ${this.commenAssestment?.assessmentYear?.map(
-                          (e: { assessmentYear: any; assessmentResult: { lekageResult: any; }; }) => {
-                            //console.log("======= e assesmentYear ===",e.assessmentYear);
-                            return `<tr style="height:30px; width:450px; margin:0;">
+                      (e: { assessmentYear: any; assessmentResult: { lekageResult: any; }; }) => {
+                        return `<tr style="height:30px; width:450px; margin:0;">
                             <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear
-                              }</td><td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
-                                ? e.assessmentResult.lekageResult
-                                  ? e.assessmentResult.lekageResult
-                                  : '&nbsp&nbsp&nbsp&nbsp-'
-                                : '&nbsp&nbsp&nbsp&nbsp-'
-                              }</td></tr>`;
-                          }
-                        )}
+                          }</td><td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
+                            ? e.assessmentResult.lekageResult
+                              ? e.assessmentResult.lekageResult
+                              : '&nbsp&nbsp&nbsp&nbsp-'
+                            : '&nbsp&nbsp&nbsp&nbsp-'
+                          }</td></tr>`;
+                      }
+                    )}
                       
                           </tbody>
                           </table>
                           </div>
                           `
-                  }
-                
+                }
+
 
                 tableReportContent =
                   tableReportContent +
@@ -1714,10 +1672,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   ${emmisionReduction}
                         
                     `;
-                // if(assesment.assessmentType === "Ex-ante")
-                // {
-                //   console.log(" +++++ assesment.id 222222 ========", assesment.id);
-                // }
+                
                 tableReportContent =
                   tableReportContent +
                   `
@@ -1726,7 +1681,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 `;
               }
             } else if (assesment.assessmentType == 'MAC') {
-              // console.log("======== asses ===++++",asses);
               if (asses) {
                 tableReportContent =
                   tableReportContent +
@@ -1739,7 +1693,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   }</p>
                 <table style="border:1px solid black;width:100%;">
                   <thead >
-                  <tr style="height:30px; width:450px; margin:0;">
+                  <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                     <th style="border:1px solid black;text-align: center;width:200px;font-size: 17px;" scope="col">Year</th>
                     <th style="border:1px solid black;text-align: center;width:250px;font-size: 17px;" scope="col">MAC (USD/tCO2e)</th>
                   </tr>
@@ -1762,11 +1716,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
               }
             }
 
-            //console.log("++++++++++ assesment +++++++", assesment);
+            
           }
         }
 
-        //console.log("====== climateData +++++", climateData);
+       
       }
     }
 
@@ -1892,17 +1846,17 @@ export class ReportService extends TypeOrmCrudService<Report> {
     var year = d.getUTCFullYear();
 
     let coverPage = `
-    <div style="display:flex;flex-direction:column;height:1500px;justify-content: space-around;align-items: center">
+    <div style="display:flex;flex-direction:column;height:1500px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h1 style="font-size: 50px">${reportData.reportName}</h1>
+              <h1 style="font-size: 50px;color: white">${reportData.reportName}</h1>
             </div>
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h1>${month} ${year}</h1>
-              <h3>${selectedUser.institution.name}</h3>
+              <h1 style="color: white">${month} ${year}</h1>
+              <h3 style="color: white">${selectedUser.institution.name}</h3>
             </div>
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h4>Prepared By</h4>
-              <h4>${selectedUser.firstName} ${selectedUser.lastName}</h4>
+              <h4 style="color: white">Prepared By</h4>
+              <h4 style="color: white">${selectedUser.firstName} ${selectedUser.lastName}</h4>
             </div>
     </div>
     `
@@ -1926,7 +1880,10 @@ export class ReportService extends TypeOrmCrudService<Report> {
         </head>
         <body>` +
         `
-        ${coverPage}
+        <div class="container">
+          ${coverPage}
+        </div>
+        
         <div class="container-fluid mb-5">
         <h1>Executive Summary</h1>
         </div>
