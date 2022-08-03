@@ -52,8 +52,9 @@ export class LearningMaterialController implements CrudController<LearningMateri
         let countryIdFromTocken:number ;
         let sectorIdFromTocken:number;
         let institutionIdFromTocken:number ;
+        let userRole:string ;
     
-       [countryIdFromTocken,sectorIdFromTocken,institutionIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId,TokenReqestType.InstitutionId])
+       [countryIdFromTocken,sectorIdFromTocken,institutionIdFromTocken,userRole]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId,TokenReqestType.InstitutionId,TokenReqestType.role])
         
         return await this.service.getlearningmaterialdetails(
           {
@@ -68,6 +69,7 @@ export class LearningMaterialController implements CrudController<LearningMateri
           countryIdFromTocken,
           sectorIdFromTocken,
           institutionIdFromTocken,
+          userRole,
         );
       }
 }
