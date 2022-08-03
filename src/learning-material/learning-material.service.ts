@@ -24,38 +24,106 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
         sortType: number,
         countryIdFromTocken: number,
         sectorIdFromTocken: number,
-        institutionIdFromTocken: number
+        institutionIdFromTocken: number,
+        userRole:string,
     ): Promise<Pagination<LearningMaterial>>{
         let filter: string = '';
-
+console.log("+++++++++++++++++++",userRole,institutionIdFromTocken)
       if(filterText != null && filterText != undefined && filterText != ''){
             filter = 
             '(lm.documentType LIKE :filterText OR lm.documentName LIKE :filterText OR lm.editedOn LIKE :filterText)';
         }
 
-       if (institutionIdFromTocken != 0) {
-        console.log('institution')
-            if (filter) {
-              filter = `${filter}  and lmu.userTypeId = 8   `;
-            } else {
-              filter = `lmu.userTypeId = 8   ` ;
-            }
-          }else if (sectorIdFromTocken != 0) {
-            console.log('sector')
-            if (filter) {
-              filter = `${filter}  and lmu.userTypeId = 3 `;
-            } else {
-              filter = `lmu.userTypeId = 3  `;
-            }
-          }else{
-            console.log('country')
-            if (filter) {
-              filter = `${filter}  and lmu.userTypeId = 1 `;
-            } else {
-              filter = `lmu.userTypeId = 1`;
-            }
-
+        if(userRole=="MRV Admin"){
+          console.log('institution')
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 4   `;
+          } else {
+            filter = `lmu.userTypeId = 4   ` ;
           }
+        }
+        else if(userRole=="Country Admin"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 1   `;
+          } else {
+            filter = `lmu.userTypeId = 1   ` ;
+          }
+        }
+        else if(userRole=="Verifier"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 2   `;
+          } else {
+            filter = `lmu.userTypeId = 2   ` ;
+          }
+        }
+        else if(userRole=="Sector Admin"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 3   `;
+          } else {
+            filter = `lmu.userTypeId = 3   ` ;
+          }
+        }
+        else if(userRole=="Technical Team"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 5   `;
+          } else {
+            filter = `lmu.userTypeId = 5   ` ;
+          }
+        }
+        else if(userRole=="Data Collection Team"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 6   `;
+          } else {
+            filter = `lmu.userTypeId = 6   ` ;
+          }
+        }
+        else if(userRole=="QC Team"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 7   `;
+          } else {
+            filter = `lmu.userTypeId = 7   ` ;
+          }
+        }
+        else if(userRole=="Institution Admin"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 8   `;
+          } else {
+            filter = `lmu.userTypeId = 8   ` ;
+          }
+        }
+        else if(userRole=="Data Entry Operator"){
+          if (filter) {
+            filter = `${filter}  and lmu.userTypeId = 9   `;
+          } else {
+            filter = `lmu.userTypeId = 9   ` ;
+          }
+        }
+
+
+      //  if (institutionIdFromTocken != 0) {
+      //   console.log('institution')
+      //       if (filter) {
+      //         filter = `${filter}  and lmu.userTypeId = 8   `;
+      //       } else {
+      //         filter = `lmu.userTypeId = 8   ` ;
+      //       }
+      //     }
+          // else if (sectorIdFromTocken != 0) {
+          //   console.log('sector')
+          //   if (filter) {
+          //     filter = `${filter}  and lmu.userTypeId = 3 `;
+          //   } else {
+          //     filter = `lmu.userTypeId = 3  `;
+          //   }
+          // }else{
+          //   console.log('country')
+          //   if (filter) {
+          //     filter = `${filter}  and lmu.userTypeId = 1 `;
+          //   } else {
+          //     filter = `lmu.userTypeId = 1`;
+          //   }
+
+          // }
         
          
         // let ltype = 'ASC';
@@ -116,7 +184,7 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
         // console.log('query',data.getQuery())
 
             let resualt = await paginate(data, options);
-            console.log(resualt)
+            console.log("++++",resualt)
             if(resualt){
                 return resualt;
             }
