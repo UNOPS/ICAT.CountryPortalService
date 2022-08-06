@@ -15,18 +15,15 @@ import { Audit } from 'src/audit/entity/audit.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { TokenDetails } from 'src/utills/token_details';
 import { Institution } from 'src/institution/institution.entity';
-import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
-import { UserTypeService } from 'src/master-data/user-type/user.type.service';
-import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AssessmentYear,User,Audit,Institution]),
+    TypeOrmModule.forFeature([AssessmentYear,User,Audit,Institution,User]),
     ParameterHistoryModule,
     UsersModule,
   ],
   controllers: [AssessmentYearController],
-  providers: [AssessmentYearService, EmailNotificationService,AuditService,TokenDetails,Institution,User],
-  exports: [AssessmentYearService,AuditService],
+  providers: [AssessmentYearService, EmailNotificationService,AuditService,TokenDetails,Institution,],
+  exports: [AssessmentYearService,AuditService,],
 })
 export class AssessmentYearModule {}

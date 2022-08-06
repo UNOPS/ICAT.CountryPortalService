@@ -11,6 +11,7 @@ import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
 import { User } from 'src/users/user.entity';
+import { UsersModule } from 'src/users/users.module';
 import { AssesmentResaultController } from './assesment-resault.controller';
 import { AssesmentResaultService } from './assesment-resault.service';
 import { AssessmentResault } from './entity/assessment-resault.entity';
@@ -28,6 +29,7 @@ import { AssessmentResault } from './entity/assessment-resault.entity';
     ]),
     AssesmentModule,
     HttpModule,
+    UsersModule,
   ],
   controllers: [AssesmentResaultController],
   providers: [AssesmentResaultService, AssessmentYear, ProjectionResault,Assessment,AuditService,EmailNotificationService],

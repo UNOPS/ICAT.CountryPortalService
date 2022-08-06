@@ -22,6 +22,8 @@ import { VerificationStatus } from 'src/verification/entity/verification-status.
 import { url } from 'inspector';
 import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResault> {
@@ -32,6 +34,9 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
+    
+    // @InjectRepository(User)
+    // public userRepo: Repository<User>,
     @InjectRepository(ProjectionResault)
     private readonly projectionResaultRepo: Repository<ProjectionResault>,
     private httpService: HttpService,
@@ -39,6 +44,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     private readonly emaiService: EmailNotificationService,
     @InjectRepository(Assessment)
     public assesmentRepo: Repository<Assessment>,
+    private readonly userService: UsersService,
   ) {
     super(repo);
   }
@@ -217,43 +223,47 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     let sec = re.assement.project.sector;
     let template: any;
     let ins :any;
+    let user:User[];
     if(qcStatus==QuAlityCheckStatus.Pass){
-       ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 4 } });
-
+       ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 2 } });
+       user= await this.userService.find({where:{country:country,userType:5,institution:ins}})
       console.log("=========", ins)
-     
-      if (comment != undefined) {
-        template =
-          'Dear ' +
-          ins.name + ' ' +
-          ' <br/> Data request with following information has shared with you.' +
-          '<br/> parameter name -: ' + re.assement.project.climateActionName ;
-      }
-      else {
-        template =
-          'Dear ' + ins.name + ' ' +
-          ' <br/> Accepted reviw value '
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value;
-      }
-
-      this.emaiService.sendMail(
-        ins.email,
-        'Pass QC',
-        '',
-        template,
-      );
+      user.forEach((ab)=>{
+        if (comment != undefined) {
+          template =
+            'Dear ' +
+            ab.username + ' ' +
+            ' <br/> Data request with following information has shared with you.' +
+            '<br/> parameter name -: ' + re.assement.project.climateActionName ;
+        }
+        else {
+          template =
+            'Dear ' + ab.username + ' ' +
+            ' <br/> Accepted reviw value '
+          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
+          // '<br/> value -:' + dataRequestItem.parameter.value;
+        }
+  
+        this.emaiService.sendMail(
+          ab.email,
+          'Pass QC',
+          '',
+          template,
+        );
+      })
+      
     }
 
     else{
-      ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 5} });
-
-      console.log("=========", ins)
-     
+      ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 2} });
+      user= await this.userService.find({where:{country:country,userType:6,institution:ins}})
+      // console.log("=========", ins)
+      user.forEach((ab)=>{
+        
       if (comment != undefined) {
         template =
           'Dear ' +
-          ins.name + ' ' +
+          ab.username  + ' ' +
           ' <br/> Reject QC' +
           '<br/> parameter name -: ' + re.assement.project.climateActionName +
           // '<br/> value -:' + dataRequestItem.parameter.value +
@@ -261,18 +271,20 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       }
       else {
         template =
-          'Dear ' + ins.name + ' ' +
+          'Dear ' + ab.username  + ' ' +
           ' <br/> Reject QC '
         // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
         // '<br/> value -:' + dataRequestItem.parameter.value;
 
       }
       this.emaiService.sendMail(
-        ins.email,
+        ab.email,
         'Reject QC',
         '',
         template,
       );
+      })
+    
     }
 
     

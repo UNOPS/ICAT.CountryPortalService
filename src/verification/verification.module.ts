@@ -6,6 +6,7 @@ import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { ParameterHistoryModule } from 'src/parameter-history/parameter-history.module';
+import { User } from 'src/users/user.entity';
 import { TokenDetails } from 'src/utills/token_details';
 import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerificationController } from './verification.controller';
@@ -19,6 +20,7 @@ import { VerificationService } from './verification.service';
       VerificationDetail,
       ParameterRequest,
       Institution,
+      User,
     ]),
     ParameterHistoryModule,
     AssesmentModule,
