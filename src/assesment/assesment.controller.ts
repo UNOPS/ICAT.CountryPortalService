@@ -31,6 +31,7 @@ import { EmailNotificationService } from 'src/notifications/email.notification.s
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { ProjectionYear } from 'src/projection-year/entity/projection-year.entity';
+import { User } from 'src/users/user.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { Repository } from 'typeorm-next';
 import { AssesmentService } from './assesment.service';
@@ -95,6 +96,8 @@ export class AssesmentController implements CrudController<Assessment> {
     public parameterRequestRepo: Repository<ParameterRequest>,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
+    @InjectRepository(User)
+    public userRepo: Repository<User>,
     private readonly auditService: AuditService,
     private readonly tokenDetails: TokenDetails,
     private readonly emaiService: EmailNotificationService,
@@ -427,10 +430,10 @@ export class AssesmentController implements CrudController<Assessment> {
           parent.assessment = assesment;
           parent.hasChild = true;
           let paramParent = await this.paramterRepo.save(await parent);
-          console.log('parent paramter created');
+          // console.log('parent paramter created');
           dto.parameters.push(paramParent);
-          console.log('Save Entity');
-          console.log(`${paramParent.name} - ${paramParent.id} - ${paramParent.institution}`);
+          // console.log('Save Entity');
+          // console.log(`${paramParent.name} - ${paramParent.id} - ${paramParent.institution}`);
 
 
 
@@ -594,20 +597,26 @@ export class AssesmentController implements CrudController<Assessment> {
      let pr= await this.projectRepo.findOne({where:{id:pro} ,relations:['country']},)
       let con =pr.country;
       let sec = pr.sector;
-      let ins = await this.institutionRepo.findOne({ where: { country: con, sector: sec, type: 5 } });
-           let template='Dear ' +
-      ins.name + ' ' +
-      ' <br/> New Data request ' +
-      '<br/> Data request with following information has shared with you.'+
-      '<br/> project name -: ' + assesment.project.climateActionName ;
-      // '<br/> value -:' + dataRequestItem.parameter.value +
+      let user:User[];
+      let ins = await this.institutionRepo.findOne({ where: { country: con, sector: sec, type: 2 } });
+       user= await this.userRepo.find({where:{country:con,userType:6,institution:ins}})
 
-      this.emaiService.sendMail(
-        ins.email,
-        'New Data request',
-        '',
-        template,
-      );
+       user.forEach((ab)=>{
+        let template='Dear ' +
+        ab.username + ' ' +
+        ' <br/> New Data request ' +
+        '<br/> Data request with following information has shared with you.'+
+        '<br/> project name -: ' + assesment.project.climateActionName ;
+        // '<br/> value -:' + dataRequestItem.parameter.value +
+  
+        this.emaiService.sendMail(
+          ab.email,
+          'New Data request',
+          '',
+          template,
+        );
+       })
+         
 
       return assesment;
     }
@@ -895,20 +904,25 @@ export class AssesmentController implements CrudController<Assessment> {
       let pr= await this.projectRepo.findOne({where:{id:pro} ,relations:['country']},)
        let con =pr.country;
        let sec = pr.sector;
-      let ins = await this.institutionRepo.findOne({ where: { country: con, sector: sec, type: 5 } });
-
-      let template='Dear ' +
-      ins.name + ' ' +
-      ' <br/> Data request with following information has shared with you.' +
-      '<br/> project name -: ' + assesment.project.climateActionName 
-      ;
-
-      this.emaiService.sendMail(
-        ins.email,
-        'Pass QC',
-        '',
-        template,
-      );
+       let user:User[];
+      // let ins = await this.institutionRepo.findOne({ where: { country: con, sector: sec, type: 5 } });
+      let ins = await this.institutionRepo.findOne({ where: { country: con, sector: sec, type: 2 } });
+       user= await this.userRepo.find({where:{country:con,userType:6,institution:ins}})
+       user.forEach((ab)=>{
+        let template='Dear ' +
+        ab.username + ' ' +
+        ' <br/> Data request with following information has shared with you.' +
+        '<br/> project name -: ' + assesment.project.climateActionName 
+        ;
+  
+        this.emaiService.sendMail(
+          ab.email,
+          'Pass QC',
+          '',
+          template,
+        );
+       })
+     
 
       return assesment;
     }

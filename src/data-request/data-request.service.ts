@@ -745,36 +745,39 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         // console.log("defaultValObject...",defaultValObject)
       }
     }
-
+    let user:User[];
     let ins = await this.institutionRepo.findOne({
-      where: { country: inscon, sector: insSec, type: 5 },
+      where: { country: inscon, sector: insSec, type: 2 },
     });
-
-    console.log('=========', ins);
-    var template: any;
-    if (updateDataRequestDto.comment != undefined) {
-      template =
-        'Dear ' +
-        ins.name +
-        ' ' +
-        '<br/>Data request with following information has shared with you.' +
-        ' <br/> Accepted reviw value' +
+    user= await this.userRepo.find({where:{country:inscon,userType:6,institution:ins}})
+    user.forEach((ab)=>{
+      console.log('=========', ins);
+      var template: any;
+      if (updateDataRequestDto.comment != undefined) {
+        template =
+          'Dear ' +
+          ab.username +
+          ' ' +
+          '<br/>Data request with following information has shared with you.' +
+          ' <br/> Accepted reviw value' +
+          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
+          // '<br/> value -:' + dataRequestItem.parameter.value +
+          '<br> comment -: ' +
+          updateDataRequestDto.comment;
+      } else {
+        template =
+          'Dear ' +
+          ab.username +
+          ' ' +
+          '<br/>Data request with following information has shared with you.' +
+          ' <br/> Accepted reviw value ';
         // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value +
-        '<br> comment -: ' +
-        updateDataRequestDto.comment;
-    } else {
-      template =
-        'Dear ' +
-        ins.name +
-        ' ' +
-        '<br/>Data request with following information has shared with you.' +
-        ' <br/> Accepted reviw value ';
-      // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-      // '<br/> value -:' + dataRequestItem.parameter.value;
-    }
-
-    this.emaiService.sendMail(ins.email, 'Accepted parameter', '', template);
+        // '<br/> value -:' + dataRequestItem.parameter.value;
+      }
+  
+      this.emaiService.sendMail(ab.email, 'Accepted parameter', '', template);
+    })
+    
     // this.repo.save(dataRequestItemList);
 
     return true;

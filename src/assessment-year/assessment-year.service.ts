@@ -64,27 +64,30 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     let inscon = dataRequestItem.assessment.project.country;
     // console.log( "inscon",dataRequestItem.assessment.project.country)
     let  insSec = dataRequestItem.assessment.project.sector;
-    // console.log( "insSec",insSec)
+    let user:User[];
 
-    let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 4 } });
-
-    console.log( "insSec",ins)
+    let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
+    user= await this.userService.find({where:{country:inscon,userType:5,institution:ins}});
+    user.forEach((ab)=>{
       let template =
-        'Dear ' +
-        ins.name + ' ' +
-        ' <br/> Data request with following information has shared with you.' ;
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value +
-        // '<br> comment -: ' + updateDataRequestDto.comment;
-    
+      'Dear ' +
+      ab.username + ' ' +
+      ' <br/> Data request with following information has shared with you.' ;
+      // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
+      // '<br/> value -:' + dataRequestItem.parameter.value +
+      // '<br> comment -: ' + updateDataRequestDto.comment;
+  
 
 
-    this.emaiService.sendMail(
-      ins.email,
-      'Accepted QC',
-      '',
-      template,
-    );
+  this.emaiService.sendMail(
+    ab.email,
+    'Accepted QC',
+    '',
+    template,
+  );
+    })
+    console.log( "insSec",ins)
+     
   }
 
   async getAssessmentByYearId(yearId: number, userName: string): Promise<any> {
@@ -524,16 +527,16 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         // );
       });
     }
-
-   let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 6 } });
-  //  ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 4 } });
-
+    let user:User[];
+   let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
+   user= await this.userService.find({where:{country:inscon,userType:7,institution:ins}})
+   user.forEach((ab)=>{
     console.log("=========", ins)
     var template: any;
     if (updateDataRequestDto.comment != undefined) {
       template =
         'Dear ' +
-        ins.name + ' ' +
+        ab.username + ' ' +
         ' <br/> Data request with following information has shared with you.' +
         // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
         // '<br/> value -:' + dataRequestItem.parameter.value +
@@ -541,7 +544,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     }
     else {
       template =
-        'Dear ' + ins.name + ' ' +
+        'Dear ' + ab.username + ' ' +
         ' <br/>Data request with following information has shared with you.'
       // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
       // '<br/> value -:' + dataRequestItem.parameter.value;
@@ -549,11 +552,13 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
 
     this.emaiService.sendMail(
-      ins.email,
+      ab.email,
       'Please verify',
       '',
       template,
     );
+   })
+    
 
     // this.repo.save(dataRequestItemList);
 

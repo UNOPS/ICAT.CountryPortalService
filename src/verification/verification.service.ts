@@ -17,6 +17,7 @@ import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-h
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
+import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { VerificationDetail } from './entity/verification-detail.entity';
 
@@ -30,6 +31,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     private readonly verificationDetailRepo: Repository<VerificationDetail>,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
+    @InjectRepository(User)
+    public userRepo: Repository<User>,
     @InjectRepository(ParameterRequest)
     private readonly ParameterRequestRepo: Repository<ParameterRequest>,
     private assesmentservice: AssesmentService,
@@ -94,14 +97,16 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
       let ass = verificationDetail[0].assessmentYear.id;
       let asseYa = (await this.assessmentYearRepo.findOne({ where: { id: ass }, relations: ['assessment'] }))
-
+      let user:User[];
       let inscon = asseYa.assessment.project.country;
       let insSec = asseYa.assessment.project.sector
-      let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 4 } });
+      let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
+      user= await this.userRepo.find({where:{country:inscon,userType:5,institution:ins}});
 
-      let template =
+      user.forEach((ab)=>{
+        let template =
         'Dear ' +
-        ins.name + ' ' +
+        ab.username + ' ' +
         '<br/>Data request with following information has shared with you.' +
         ' <br/> Accepted Verifir value' +
         // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
@@ -109,11 +114,13 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         '<br> project -: ' + asseYa.assessment.project.climateActionName;
 
       this.emaiService.sendMail(
-        ins.email,
+        ab.email,
         'Accepted parameter',
         '',
         template,
       );
+      })
+     
 
       verificationDetail.map(async (a) => {
         if (a.parameter) {
