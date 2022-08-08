@@ -128,7 +128,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       },
     });
     console.log(documenst);
-    const base = this.configService.get<string>('baseUrl');
+    const base = this.configService.get<string>('downloadbaseUrl');
     documenst.forEach((a) => {
       // a.url = `${base}${a.relativePath}`;
       a.url = `${base}document/downloadDocument/attachment/${a.id}`;
