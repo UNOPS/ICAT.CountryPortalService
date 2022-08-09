@@ -1074,14 +1074,15 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         countryIdFromTocken,
         sectorIdFromTocken
       })
-      .orderBy('dr.createdOn', 'ASC');
+      .orderBy('dr.createdOn', 'ASC')
+      .groupBy('dr.id');
 
 
 
     console.log(
       '=====================================================================',
     );
-    //console.log(data.getQuery());
+    // console.log(data.getQuery());
 
     let result = await paginate(data, options);
     console.log("results..", result);
