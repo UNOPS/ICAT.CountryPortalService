@@ -16,6 +16,9 @@ import { ProjectionResaultService } from './projection-resault.service';
       assement: {
         eager: true,
       },
+      assementResult:{
+        eager: true,
+      },
     },
   },
 })

@@ -40,6 +40,9 @@ import { AssessmentResultType } from './entity/assessment-result-type.entity';
       assessmentYear: {
         eager: true,
       },
+      projectionResult: {
+        eager: true,
+      },
     },
   },
 })
