@@ -155,7 +155,7 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
         'par.assessment',
         Assessment,
         'asse',
-        'para.assessmentId = asse.id',
+        'par.assessmentId = asse.id',
       )
       .innerJoinAndMapOne(
         'asse.project',

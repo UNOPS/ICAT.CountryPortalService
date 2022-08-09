@@ -58,14 +58,12 @@ export class ParameterController implements CrudController<Parameter> {
     return await this.service.getParameterByAssesment(assesmentId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('parameter/GetParameterHistoryForQA/:name')
   async GetParameterHistoryForQA(@Query('name') name: string) {
     let countryIdFromTocken:number;
     let sectorIdFromTocken:number ;
    
-
-  
-
    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
     
     return await this.service.GetParameterHistoryForQA(name,countryIdFromTocken);
