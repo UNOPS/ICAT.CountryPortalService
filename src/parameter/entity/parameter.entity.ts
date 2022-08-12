@@ -142,7 +142,9 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ nullable: true })
   isAcceptedByVerifier: number;
-
+  
+  @Column({ nullable: true })
+  defaultValueId: number;
   
 
   @ManyToOne((type) => Institution, {
@@ -167,6 +169,8 @@ export class Parameter extends BaseTrackingEntity {
     cascade: false,
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
+    nullable: true,
+    eager: true
   })
   // @JoinColumn({ name: 'AssessmentId' })
   defaultValue?: DefaultValue;

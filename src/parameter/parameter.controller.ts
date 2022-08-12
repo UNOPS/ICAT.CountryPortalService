@@ -39,6 +39,9 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
       verificationDetail: {
         eager: true,
       },
+      defaultValue: {
+        eager: true,
+      },
     },
   },
 })

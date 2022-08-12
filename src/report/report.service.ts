@@ -38,6 +38,8 @@ import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { UsersService } from 'src/users/users.service';
+import { async } from 'rxjs';
+import { DefaultValueService } from 'src/default-value/default-value.service';
 
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
@@ -47,6 +49,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly assessmentYearService: AssessmentYearService,
     private readonly assessmentService: AssesmentService,
     private readonly projectService: ProjectService,
+    private readonly defaultValueService: DefaultValueService,
     private readonly tokenDetails: TokenDetails,
     @InjectRepository(EmissionReductioDraftDataEntity)
     private readonly graphRepository: Repository<EmissionReductioDraftDataEntity>,
@@ -1070,35 +1073,38 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
 
             let yearsActivity: number[] = []
-            let groupedActivity = assesActivity?.parameters.reduce((r, v, i, a) => {
+            let groupedActivity =await assesActivity?.parameters.reduce(async (r, v, i, a) => {
 
-
-              let foundyears = yearsActivity.find((element) => {
-                return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
-              });
-
-
-
-              if (foundyears == undefined) {
-                yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
-              }
-
-              let found = r.find((element) => {
-                return element['name'] == v.name
-              });
-
-
-              if (found == undefined) {
-                r.push({ 'name': v.name, 'unit': v.uomDataRequest, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.conversionValue ? v.conversionValue : "" }] })
-              } else {
-
-
-                found['years'].push({ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.conversionValue ? v.conversionValue : "" })
-                r[r.indexOf(found)] = found
-              }
-
-              return r;
-            }, []);
+              if(v.isDefault==true){
+                v.defaultValue=await this.defaultValueService.findOne(v.defaultValueId)
+               }
+              //  console.log("default",v.defaultValue)
+                let foundyears = yearsActivity.find((element) => {
+                  return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
+                });
+  
+  
+  
+                if (foundyears == undefined) {
+                  yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
+                }
+  
+                let found = (await r).find((element) => {
+                  return element['name'] == v.name
+                });
+  
+  
+                if (found == undefined) {
+                  (await r).push({ 'name': v.name, 'unit': v.uomDataRequest?v.uomDataRequest:v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"":v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" }] })
+                } else {
+  
+  
+                  found['years'].push({ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"": v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" })
+                  r[(await r).indexOf(found)] = found
+                }
+  
+                return r;
+              }, Promise.resolve([]));
 
             //console.log("===== groupe +++++", groupedActivity);
             // groupedActivity.forEach(e => console.log("==== group years", e['years']))

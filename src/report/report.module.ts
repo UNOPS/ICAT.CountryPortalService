@@ -10,6 +10,8 @@ import { AssessmentYearModule } from 'src/assessment-year/assessment-year.module
 import { AssessmentYearService } from 'src/assessment-year/assessment-year.service';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
+import { DefaultValueService } from 'src/default-value/default-value.service';
+import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { EmissionReductionDraftdataModule } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.module';
 import { EmissionReductioDraftDataEntity } from 'src/master-data/emisssion-reduction-draft-data/entity/emission-reductio-draft-data.entity';
@@ -50,7 +52,8 @@ import { ReportService } from './report.service';
       ParameterRequest,
       Ndc,
       ProjectOwner,
-      ReportPdfFileData
+      ReportPdfFileData,
+      DefaultValue
     ]),
     ProjectModule,
     AssesmentModule,
@@ -68,6 +71,7 @@ import { ReportService } from './report.service';
     AssessmentYearService,
     AssesmentResaultService,
     ProjectService,
+    DefaultValueService,
     TokenDetails
   ],
   exports: [
@@ -75,7 +79,8 @@ import { ReportService } from './report.service';
     ParameterService,
     AssessmentYearService,
     AssesmentResaultService,
-    ProjectService
+    ProjectService,
+    DefaultValueService
   ],
 })
 export class ReportModule {}
