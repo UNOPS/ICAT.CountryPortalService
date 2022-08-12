@@ -191,7 +191,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           projectionResult.projectionYear = p.year;
         }
         projectionResult.projectResult = p.projectEmission;
-        projectionResult.baselineResult = p.baseLineEmission;
+        projectionResult.baselineResult = p.baselineEmission;
         projectionResult.leakageResult = p.leakegeEmission;
         projectionResult.emissionReduction = p.emissionReduction;
         projectionResult.projectionResualt = 0;
