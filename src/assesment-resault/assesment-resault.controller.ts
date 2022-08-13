@@ -151,7 +151,15 @@ export class AssesmentResaultController
      
     );
   }
-
+  @Get('checkAllQCApprovmentAssessmentResult')
+  async checkAllQCApprovmentAssessmentResult(
+    @Query('assersltId') assersltId: number,
+    
+  ):Promise<boolean> {
+    return await this.service.checkAllQCApprovmentAssessmentResult(
+      assersltId
+    );
+  }
 
   @Get('macassesment-resault/verificationupdate/:yearId/:VRStatus')
   async UpdateVRStatusForMac(

@@ -206,6 +206,34 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       });
     }
   }
+  async checkAllQCApprovmentAssessmentResult(assRsltId:number):Promise<boolean>{
+    // this.repo.findOne({  where: {
+    //   id: assRsltId,
+    //   qcStatusBaselineResult:4,
+    //   qcStatuProjectResult:4,
+    //   qcStatusLekageResult:4,
+    //   qcStatusTotalEmission:4,
+    //   qcStatusmacResult:4,
+    //   qcStatuscostDifference:4,
+    //   qcStatuspsTotalAnnualCost:4,
+    //   qcStatusbsTotalAnnualCost:4,
+     
+    // }});
+
+    let result =await this.repo
+    .createQueryBuilder('dr')
+  
+    .where('dr.id=:assRsltId and (dr.qcStatusBaselineResult= 4 or dr.qcStatusBaselineResult is null ) and (dr.qcStatuProjectResult= 4 or dr.qcStatuProjectResult is null)and (dr.qcStatusLekageResult= 4 or dr.qcStatusLekageResult is null) and (dr.qcStatusTotalEmission= 4 or dr.qcStatusTotalEmission is null)and (dr.qcStatusmacResult= 4 or dr.qcStatusmacResult is null) and (dr.qcStatuscostDifference= 4 or dr.qcStatuscostDifference is null)and (dr.qcStatuspsTotalAnnualCost= 4 or dr.qcStatuspsTotalAnnualCost is null)and (dr.qcStatusbsTotalAnnualCost= 4 or dr.qcStatusbsTotalAnnualCost is null) ', {
+      assRsltId
+    }).getOne();
+    // console.log('checkAllQCApprovmentAssessmentResult', result)
+    if(result){
+
+      return true
+    }
+
+return false;
+  }
 
   async updateQCStatus(
     id: number,
@@ -314,11 +342,16 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       result.qcStatusbsTotalAnnualCost = qcStatus;
     }
      let resultTo = this.repo.save(result);
+     
+     if(await this.checkAllQCApprovmentAssessmentResult(result.id)){
 
-    var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+      var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    
+      assementYear.qaStatus = qcStatus;
+      this.assessmentYearRepo.save(assementYear);
 
-    assementYear.qaStatus = qcStatus;
-    this.assessmentYearRepo.save(assementYear);
+     }
+    
      return resultTo;
   }
 
