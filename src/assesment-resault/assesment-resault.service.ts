@@ -343,7 +343,7 @@ return false;
     }
      let resultTo = this.repo.save(result);
      
-     if(await this.checkAllQCApprovmentAssessmentResult(result.id)){
+     if(qcStatus==QuAlityCheckStatus.Fail  || await this.checkAllQCApprovmentAssessmentResult(result.id)){
 
       var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
     
