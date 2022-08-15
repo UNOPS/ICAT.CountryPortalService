@@ -223,10 +223,11 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     let result =await this.repo
     .createQueryBuilder('dr')
   
-    .where('dr.id=:assRsltId and (dr.qcStatusBaselineResult= 4 or dr.qcStatusBaselineResult is null ) and (dr.qcStatuProjectResult= 4 or dr.qcStatuProjectResult is null)and (dr.qcStatusLekageResult= 4 or dr.qcStatusLekageResult is null) and (dr.qcStatusTotalEmission= 4 or dr.qcStatusTotalEmission is null)and (dr.qcStatusmacResult= 4 or dr.qcStatusmacResult is null) and (dr.qcStatuscostDifference= 4 or dr.qcStatuscostDifference is null)and (dr.qcStatuspsTotalAnnualCost= 4 or dr.qcStatuspsTotalAnnualCost is null)and (dr.qcStatusbsTotalAnnualCost= 4 or dr.qcStatusbsTotalAnnualCost is null) ', {
+    .where('dr.id=:assRsltId and (dr.qcStatusBaselineResult= 4 or dr.baselineResult is null ) and (dr.qcStatuProjectResult= 4 or dr.projectResult is null)and (dr.qcStatusLekageResult= 4 or dr.lekageResult is null) and (dr.qcStatusTotalEmission= 4 or dr.totalEmission is null)and (dr.qcStatusmacResult= 4 or dr.macResult is null) and (dr.qcStatuscostDifference= 4 or dr.costDifference is null)and (dr.qcStatuspsTotalAnnualCost= 4 or dr.psTotalAnnualCost is null)and (dr.qcStatusbsTotalAnnualCost= 4 or dr.bsTotalAnnualCost is null) ', {
       assRsltId
     }).getOne();
-    // console.log('checkAllQCApprovmentAssessmentResult', result)
+    console.log('checkAllQCApprovmentAssessmentResult', assRsltId)
+    console.log('checkAllQCApprovmentAssessmentResult', result)
     if(result){
 
       return true
