@@ -123,7 +123,7 @@ export class AssesmentController implements CrudController<Assessment> {
     @Query('projectId') projectId: number,
     @Query('ctAction') ctAction: string,
   ): Promise<any> {
-    console.log("hiiiiiii")
+    // console.log("hiiiiiii")
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
