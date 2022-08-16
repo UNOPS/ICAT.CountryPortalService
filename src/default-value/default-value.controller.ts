@@ -41,7 +41,11 @@ export class DefaultValueController implements CrudController<DefaultValue> {
     let def = new DefaultValue();
     def.parameterName = val.parameterName;
     def.administrationLevel =val.administrationLevel;
-    await this.service.createValue(def);
+    let result=await this.service.createValue(def);
+    if (result){
+      return true;
+    }
+    return false
   }
 
   @UseGuards(JwtAuthGuard)
