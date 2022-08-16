@@ -1048,7 +1048,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
                 'para',
 
-                'para.assessmentId = assesment.id',
+                'para.assessmentId = assesment.id and ((para.isEnabledAlternative = true and para.isAlternative=true) or (para.isEnabledAlternative = false and para.isAlternative = false))',
               )
 
               .leftJoinAndMapMany(
