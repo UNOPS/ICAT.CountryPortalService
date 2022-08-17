@@ -77,11 +77,10 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
 
   }
 
-
-async createValue(def:DefaultValue){
-  console.log("++++++++++",def)
-  await this.repo.save(def);
-}
+  async createValue(def:DefaultValue){
+    console.log("++++++++++",def)
+    return await this.repo.save(def);
+  }
 
   async getDefaultvalueInfo(
     options: IPaginationOptions,
