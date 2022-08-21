@@ -369,6 +369,7 @@ export class ProjectController implements CrudController<Project> {
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
+    @Query('projectStatus') projectStatus: number,
     @Query('isProposal') isProposal: number,
     @Query('sectorId') sectorId: number,
     @Query('asseType') asseType: string,
@@ -389,7 +390,7 @@ export class ProjectController implements CrudController<Project> {
         page: page,
       },
       filterText,
-
+      projectStatus,
       projectApprovalStatusId,
       isProposal,
       // countryId,

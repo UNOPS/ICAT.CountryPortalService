@@ -1802,7 +1802,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     let summeryExPostResults = resultArray.forEach((e) => {
       //console.log('=====sumOfExPostResults e======', e);
-      sumOfExPostResults = totalExAnthe += e;
+      sumOfExPostResults = totalExPost += e;
       //console.log('&&&&====sumOfExPostResults', sumOfExPostResults);
       return sumOfExPostResults;
     });
