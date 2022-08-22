@@ -393,7 +393,7 @@ return false;
       console.log("tttttteeee");
 
       let baseurl = this.configService.get<string>('calculationEngineUrl');
-         let fullUrl = 'http://65.2.75.253:3600/methodology/calculation';
+         let fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
     //  let fullUrl =  'http://localhost:3600/methodology/calculation';
 
       const content_ = JSON.stringify(parametrs);
