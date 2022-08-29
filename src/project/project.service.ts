@@ -861,9 +861,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
 
 
     if (filter) {
-      filter = `${filter}  and pas.id !=4 `; // no projects that belong to propose status
+      filter = `${filter}  and (pas.id =1 or pas.id =5)`; 
     } else {
-      filter = `pas.id !=4`;
+      filter = `(pas.id =1 or pas.id =5)`;
     }
 
 
