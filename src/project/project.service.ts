@@ -861,9 +861,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
 
 
     if (filter) {
-      filter = `${filter}  and pas.id !=4 `; // no projects that belong to propose status
+      filter = `${filter}  and (pas.id =1 or pas.id =5)`; 
     } else {
-      filter = `pas.id !=4`;
+      filter = `(pas.id =1 or pas.id =5)`;
     }
 
 
@@ -936,7 +936,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
   async getActCAList(
     options: IPaginationOptions,
     filterText: string,
-
+    projectStatus:number,
     projectApprovalStatusId: number,
     isProposal: number,
     // countryId: number,
@@ -1014,6 +1014,13 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       }
     }
 
+    if (projectStatus != 0) {
+      if (filter) {
+        filter = `${filter}  and dr.projectStatusId = :projectStatus`;
+      } else {
+        filter = `dr.projectStatusId = :projectStatus`;
+      }
+    }
 
 
 
@@ -1068,6 +1075,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         filterText: `%${filterText}%`,
         asseType,
         projectApprovalStatusId,
+        projectStatus,
         isProposal,
         // countryId,
         sectorId,

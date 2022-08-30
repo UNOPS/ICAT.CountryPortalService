@@ -38,10 +38,17 @@ export class DefaultValueController implements CrudController<DefaultValue> {
 
   @Post('update')
   async createValue(@Body() val:DefaultValue):Promise<any>{
+    console.log("++++++++++++",val)
     let def = new DefaultValue();
     def.parameterName = val.parameterName;
+    def.unit= val.unit;
     def.administrationLevel =val.administrationLevel;
-    await this.service.createValue(def);
+    def.country=val.country;
+    let result=await this.service.createValue(def);
+    if (result){
+      return true;
+    }
+    return false
   }
 
   @UseGuards(JwtAuthGuard)

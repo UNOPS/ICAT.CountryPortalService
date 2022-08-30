@@ -52,12 +52,14 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
     
 
     let parameterObject = new Parameter();
-    parameterObject.name = savedDefaultValue.parameterName;
-    parameterObject.originalName = savedDefaultValue.parameterName;
+    let name = savedDefaultValue.parameterName + " - " + savedDefaultValue.administrationLevel 
+    parameterObject.name = name;
+    parameterObject.originalName = name;
     parameterObject.isDefault = true;
     parameterObject.uomDataRequest = savedDefaultValue.unit;
     parameterObject.institution = instituition;
     parameterObject.defaultValue = savedDefaultValue;
+    parameterObject.AssessmentYear=x;
     let savedParaValue = await this.paramterRepo.save(parameterObject);
     
     let datareq = new ParameterRequest();
@@ -77,11 +79,10 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
 
   }
 
-
-async createValue(def:DefaultValue){
-  console.log("++++++++++",def)
-  await this.repo.save(def);
-}
+  async createValue(def:DefaultValue){
+    console.log("++++++++++",def)
+    return await this.repo.save(def);
+  }
 
   async getDefaultvalueInfo(
     options: IPaginationOptions,

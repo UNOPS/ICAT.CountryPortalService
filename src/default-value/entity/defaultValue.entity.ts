@@ -39,7 +39,7 @@ export class DefaultValue extends BaseTrackingEntity {
   uniqueIdentification: string;
 
   @ManyToOne(() => Country, country => country.defaultValue)
-    public country!: Country;
+  country: Country;
 
   @Column({ default: null })
   isMac: Number; //1
