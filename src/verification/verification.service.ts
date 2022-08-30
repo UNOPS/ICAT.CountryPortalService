@@ -96,13 +96,16 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       this.verificationDetailRepo.save(verificationDetail);
 
       let ass = verificationDetail[0].assessmentYear.id;
-      let asseYa = (await this.assessmentYearRepo.findOne({ where: { id: ass }, relations: ['assessment'] }))
+      console.log("asseYa",verificationDetail)
+      let asseYa = await this.assessmentYearRepo.findOne({ where: { id: ass }})
+      let assesment = await this.assesmentservice.findOne({ where: { id: verificationDetail[0].assessmentId }})
+      console.log("asseYa",asseYa)
       let user:User[];
-      let inscon = asseYa.assessment.project.country;
-      let insSec = asseYa.assessment.project.sector
+      let inscon = assesment.project.country;
+      let insSec = assesment.project.sector
       let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
       user= await this.userRepo.find({where:{country:inscon,userType:5,institution:ins}});
-
+ 
       user.forEach((ab)=>{
         let template =
         'Dear ' +

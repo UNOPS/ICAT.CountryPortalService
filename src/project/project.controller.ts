@@ -576,6 +576,7 @@ export class ProjectController implements CrudController<Project> {
         this.auditService.create(audit);
       }
     }
+    return updateData;
   }
 
   @Get('getProjectByIdAnonymous/byprojectId/:id')

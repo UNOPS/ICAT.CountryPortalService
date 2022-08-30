@@ -138,9 +138,9 @@ export class AuditService extends TypeOrmCrudService<Audit> {
 
     if (action != null && action != undefined && action != '') {
       if (filter) {
-        filter = `${filter}  and dr.action = :action`;
+        filter = `${filter}  and dr.actionStatus = :action`;
       } else {
-        filter = `dr.action = :action`;
+        filter = `dr.actionStatus = :action`;
       }
     }
 
