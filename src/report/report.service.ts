@@ -1983,8 +1983,10 @@ let yrList:number[]=[];
       <div><img src="http://localhost:7080/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
       <div><p>Figure 1 Emissions reduction of ${reportData.sectors.toString()} sector of ${reportData.country
         }</p></div>
+        <p><strong>Note:</strong> Only the emission reductions of Climate Actions calculated Ex-post using the tool are reflected in the Actual Emissions curve</p>
+
         <br>
-      <div class="mb-5 mt-5">${tableReportContent}</div>
+      <div class="mb-5 mt-5">${tableReportContent} </div>
       <div class="mb-5 mt-5">${activitiData}</div>
       </body></html>`
     };
