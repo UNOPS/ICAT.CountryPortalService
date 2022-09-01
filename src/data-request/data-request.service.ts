@@ -529,7 +529,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           (type != '' ? `a.assessmentType='${type}' AND ` : '') +
           (year != '' ? `ay.assessmentYear='${year}' AND ` : '') +
           (filterText != ''
-            ? `(p.climateActionName LIKE '%${filterText}%' OR para.name LIKE '%${filterText}%' OR u.username LIKE '%${filterText}%'
+            ? `(p.climateActionName LIKE '%${filterText}%' OR para.name LIKE '%${filterText}%' OR u.username LIKE '%${filterText}%' OR a.assessmentType  LIKE '%${filterText}%'
            )`
             : '')
         ).replace(/AND $/, ''),
