@@ -1,4 +1,4 @@
-import { Controller, Get,Req,Request, UseGuards } from '@nestjs/common';
+import { Controller, Get,Query,Req,Request, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 // import { JwtService } from '@nestjs/jwt';
 import { Crud, CrudController, CrudRequest, Override, ParsedBody, ParsedRequest } from '@nestjsx/crud';
@@ -74,5 +74,25 @@ export class EmissionReductionDraftdataController implements CrudController<Emis
         
         // console.log("rrrrrr",request.headers)
         return await this.service.getEmissionEeductionDraftDataForCountry(countryIdFromTocken,sectorIdFromTocken);
+      }
+
+      @UseGuards(JwtAuthGuard)
+      @Get('/report')
+      async getEmissionReductionDraftDataForReport( 
+         @Req() request: Request,
+         @Query('sectorId') sectorId: number,
+      
+      ): Promise<EmissionReductioDraftDataEntity>{
+
+     
+        let countryIdFromTocken:number;
+        let sectorIdFromTocken:number;
+    
+      
+    
+       [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+        
+        // console.log("rrrrrr",request.headers)
+        return await this.service.getEmissionReductionDraftDataForReport(sectorId,countryIdFromTocken,sectorIdFromTocken);
       }
 }

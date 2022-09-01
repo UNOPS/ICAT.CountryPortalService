@@ -40,6 +40,7 @@ import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { UsersService } from 'src/users/users.service';
 import { async } from 'rxjs';
 import { DefaultValueService } from 'src/default-value/default-value.service';
+import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
@@ -50,6 +51,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly assessmentService: AssesmentService,
     private readonly projectService: ProjectService,
     private readonly defaultValueService: DefaultValueService,
+    private readonly emissionReductionDraftDataService: EmissionReductionDraftdataService,
     private readonly tokenDetails: TokenDetails,
     @InjectRepository(EmissionReductioDraftDataEntity)
     private readonly graphRepository: Repository<EmissionReductioDraftDataEntity>,
@@ -261,9 +263,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
   }
 
   async generateChart(
-    years: number[],
-    projIds: string[],
-    assessType: string[],
+    summryReport:any[],
+    graphData:any,
+    // years: number[],
+    // projIds: string[],
+    // assessType: string[],
   ): Promise<string> {
     // console.log('climateActionIds',projIds)
     let BAUList: Number[] = [];
@@ -272,40 +276,47 @@ export class ReportService extends TypeOrmCrudService<Report> {
     let ActualList: Number[] = [];
     let assessmentListId: Number[] = [];
     let currentYear: number = new Date().getFullYear();
-    let climateAcList: Project[] = await this.proRepo.find({
-      where: { id: In(projIds) },
-      relations: ['assessments'],
-    });
+    // let climateAcList: Project[] = await this.proRepo.find({
+    //   where: { id: In(projIds) },
+    //   relations: ['assessments'],
+    // });
 
     // console.log("projects",climateAcList)
-    for (let a = 0; a < climateAcList.length; a++) {
-      // console.log("assesResult3",climateAcList[a].assessments)
-      if (climateAcList[a].assessments) {
-        // console.log("assesResult2")
-        for (let b = 0; b < climateAcList[a].assessments.length; b++) {
-          assessmentListId.push(climateAcList[a].assessments[b]?.id);
-        }
-      }
-    }
+    // for (let a = 0; a < climateAcList.length; a++) {
+    //   // console.log("assesResult3",climateAcList[a].assessments)
+    //   if (climateAcList[a].assessments) {
+    //     // console.log("assesResult2")
+    //     for (let b = 0; b < climateAcList[a].assessments.length; b++) {
+    //       assessmentListId.push(climateAcList[a].assessments[b]?.id);
+    //     }
+    //   }
+    // }
 
     // console.log("assessmentListId",assessmentListId)
 
     const ChartJSImage = require('chart.js-image');
-    let graphData = await this.graphRepository.findOne({ id: 1 });
+    // let graphData = await this.graphRepository.findOne({ id: 1 });
     // console.log('graphData', graphData);
-    years.push(parseInt(graphData.baseYear));
-    years.push(parseInt(graphData.targetYear));
-    years = years.sort(function (a, b) {
-      return a - b;
-    });
+    // years.push(parseInt(graphData.baseYear));
+    // years.push(parseInt(graphData.targetYear));
+    // years = years.sort(function (a, b) {
+    //   return a - b;
+    // });
 
-    // console.log('years', years);
+    // // console.log('years', years);
 
-    years = years.filter(function (o) {
-      return (
-        o >= parseInt(graphData.baseYear) && o <= parseInt(graphData.targetYear)
-      );
-    });
+    // years = years.filter(function (o) {
+    //   return (
+    //     o >= parseInt(graphData.baseYear) && o <= parseInt(graphData.targetYear)
+    //   );
+    // });
+let yrList:number[]=[];
+    for(let year = parseInt(graphData.baseYear);year<=parseInt(graphData.targetYear);year++ )
+    {
+      yrList.push(year)
+    }
+
+    let yearlstLength = yrList.length;
     // console.log('years', years);
     let unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
@@ -318,50 +329,61 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     //  this.projectService.getProjectsForCountryAndSectorAdmins()
 
-    for (let year of years) {
+    for (let year of yrList) {
       // console.log("work testay",year)
-      let total = 0;
+      
 
       let bauValue: number =
         ((graphData.targetYearEmission - graphData.baseYearEmission) / yrGap) *
         (year - baseYear) +
         graphData.baseYearEmission;
-      ConditionalList.push(!graphData.conditionaltco2 && graphData.conditionaltco2 == 0 ? 0 :
+      ConditionalList.push(graphData.conditionaltco2 && graphData.conditionaltco2 != 0 ? 
         ((conditionalValue - graphData.baseYearEmission) / yrGap) *
         (year - baseYear) +
-        graphData.baseYearEmission,
+        graphData.baseYearEmission : 0
       );
-      UnConditionalList.push(!graphData.unconditionaltco2 && graphData.unconditionaltco2 == 0 ? 0 :
+      UnConditionalList.push(graphData.unconditionaltco2 && graphData.unconditionaltco2 != 0 ? 
         ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
         (year - baseYear) +
-        graphData.baseYearEmission,
+        graphData.baseYearEmission:0
       );
       BAUList.push(bauValue);
-      if (year <= currentYear) {
-        let assesResult = await this.assResRepo.find({
-          where: {
-            assessmentYear: { assessmentYear: year },
-            assement: {
-              assessmentType: In(assessType),
-              id: In(assessmentListId),
-            },
-          },
-          relations: ['assessmentYear', 'assement'],
-        });
-        // console.log("assesResult1")
-        // console.log("assesResult",assesResult)
-        if (assesResult.length > 0) {
-          for (let assement of assesResult) {
-            // console.log("totalemition",assement.totalEmission)
-            total += assement.totalEmission ? assement.totalEmission : 0;
-            // console.log(total)
-          }
 
-          ActualList.push(bauValue - total / 1000000);
-        } else {
-          ActualList.push(bauValue);
+      let total = 0;
+
+      for(let sum of summryReport){
+        if (sum.Type == 'Ex-post' && Number(sum.Year)==year) {
+          // console.log("========this.executiveSummery++++++", Number(sum.Result));
+          total = total + Number(sum.Result);
         }
       }
+      if (year <= currentYear) { ActualList.push(bauValue - total/1000000); }
+
+      // if (year <= currentYear) {
+        // let assesResult = await this.assResRepo.find({
+        //   where: {
+        //     assessmentYear: { assessmentYear: year },
+        //     assement: {
+        //       assessmentType: In(assessType),
+        //       id: In(assessmentListId),
+        //     },
+        //   },
+        //   relations: ['assessmentYear', 'assement'],
+        // });
+        // console.log("assesResult1")
+        // console.log("assesResult",assesResult)
+        // if (assesResult.length > 0) {
+        //   for (let assement of assesResult) {
+        //     // console.log("totalemition",assement.totalEmission)
+        //     total += assement.totalEmission ? assement.totalEmission : 0;
+        //     // console.log(total)
+        //   }
+
+        //   ActualList.push(bauValue - total / 1000000);
+        // } else {
+        //   ActualList.push(bauValue);
+        // }
+      // }
 
       // this.postYrList.push(total);
     }
@@ -371,7 +393,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       .chart({
         type: 'line',
         data: {
-          labels: years, ///['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+          labels: yrList, ///['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
 
           datasets: [
             {
@@ -923,13 +945,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
   //   );
   // }
 
-  async testPDF(reportData: ReportDataPDF): Promise<string> {
+  async testPDF(reportData: ReportDataPDF,countryIdFromTocken:number,sectorIdFromTocken:number): Promise<string> {
     //  await this.getPdfFileData()
-    let datetime = await this.generateChart(
-      reportData.years,
-      reportData.projIds,
-      reportData.assessType,
-    );
+   
 
     // let macHtmlpost = await this.genarateMacGraph(reportData.years, reportData.assessType,
     //   reportData.projIds, 0
@@ -938,20 +956,12 @@ export class ReportService extends TypeOrmCrudService<Report> {
     //   reportData.projIds, 1
     // )
     // console.log('macHtml', macHtml)
-    let graphData = await this.graphRepository.findOne({ id: 1 });
+    
 
     const html_to_pdf = require('html-pdf-node');
 
     //let datetime: string = new Date().getTime().toString();
-
-    let fileName = `reportPDF_${datetime}.pdf`;
-    //let fileName = `reportPDF`;
-    let options = {
-      format: 'A4',
-      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
-      path: './public/' + fileName,
-      printBackground: true
-    };
+ 
 
 
 
@@ -1196,7 +1206,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           .andWhere('climate.ndcId = :ndcId', { ndcId: this.ndcItemList })
           .getOne();
 
-        
+         
         if (climateData) {
           const element = climateData;
 
@@ -1755,7 +1765,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           ? 'MAC ' + element.TypeOfMac
           : 'GHG ' + element.Type
         }</th>
-        <th>${element.Result
+        <th>${element.Type != 'MAC'
           ? element.Result
           : element.EmmisionValue
             ? element.EmmisionValue
@@ -1765,6 +1775,12 @@ export class ReportService extends TypeOrmCrudService<Report> {
         </tr>`;
     }
     //console.log('====== summryReport=====', summryReport);
+    
+    let setSectorId:number=reportData.sectorIds[0];
+    if(reportData.selectAllSectors==true){
+      setSectorId=0;
+    }
+    let graphData = await this.emissionReductionDraftDataService.getEmissionReductionDraftDataForReport(setSectorId,countryIdFromTocken,sectorIdFromTocken);
 
     let unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
@@ -1775,37 +1791,43 @@ export class ReportService extends TypeOrmCrudService<Report> {
     let totalExAnthe = 0;
     let totalExPost = 0;
     let resultArray: number[] = [];
-
-    let totalExAn = summryReport.map((e) => {
-      //console.log('+++e==== eeeeee before', e.Year);
-      if (e.Year >= graphData.baseYear && e.Year <= graphData.targetYear) {
-        //console.log("+++++eeeeee event=====", e);
-        //console.log('+++e==== before', e.Result);
-        if (e.Result !== null) {
-          //console.log('+++e==== after', e.Result);
-          return resultArray.push(e.Result);
-        }
+    for(let sum of summryReport){
+      if (sum.Type == 'Ex-post') {
+        // console.log("========this.executiveSummery++++++", Number(sum.Result));
+        totalExPost = totalExPost + Number(sum.Result);
       }
-    });
+    }
 
-    console.log('+++totalExAn====', totalExAn);
+    // let totalExAn = summryReport.map((e) => {
+    //   //console.log('+++e==== eeeeee before', e.Year);
+    //   if (e.Year >= graphData.baseYear && e.Year <= graphData.targetYear) {
+    //     //console.log("+++++eeeeee event=====", e);
+    //     //console.log('+++e==== before', e.Result);
+    //     if (e.Result !== null) {
+    //       //console.log('+++e==== after', e.Result);
+    //       return resultArray.push(e.Result);
+    //     }
+    //   }
+    // });
 
-    let sumOfExAntheResults: number;
-    let sumOfExPostResults: number;
+    // console.log('+++totalExAn====', totalExAn);
 
-    let summeryExAntheResults = resultArray.forEach((e) => {
-      //console.log('=====summeryExAntheResults e======', e);
-      sumOfExAntheResults = totalExAnthe += e;
-      //console.log('&&&&====sumOfResults', sumOfExAntheResults);
-      return sumOfExAntheResults;
-    });
+    // let sumOfExAntheResults: number;
+    // let sumOfExPostResults: number;
 
-    let summeryExPostResults = resultArray.forEach((e) => {
-      //console.log('=====sumOfExPostResults e======', e);
-      sumOfExPostResults = totalExPost += e;
-      //console.log('&&&&====sumOfExPostResults', sumOfExPostResults);
-      return sumOfExPostResults;
-    });
+    // let summeryExAntheResults = resultArray.forEach((e) => {
+    //   //console.log('=====summeryExAntheResults e======', e);
+    //   sumOfExAntheResults = totalExAnthe += e;
+    //   //console.log('&&&&====sumOfResults', sumOfExAntheResults);
+    //   return sumOfExAntheResults;
+    // });
+
+    // let summeryExPostResults = resultArray.forEach((e) => {
+    //   //console.log('=====sumOfExPostResults e======', e);
+    //   sumOfExPostResults = totalExPost += e;
+    //   //console.log('&&&&====sumOfExPostResults', sumOfExPostResults);
+    //   return sumOfExPostResults;
+    // });
 
     let paragraph = `
       <div style="text-align: justify;text-justify: inter-word;">
@@ -1815,12 +1837,12 @@ export class ReportService extends TypeOrmCrudService<Report> {
         }. The expected emission
       reduction of the ${reportData.sectors} sector by ${graphData.targetYear
         } year is
-      ${conditionalValue} tCO₂e conditionally, and
-      ${unconditionalValue} tCO₂e unconditionally.
+      ${conditionalValue} MtCO₂e conditionally, and
+      ${unconditionalValue} MtCO₂e unconditionally.
       Mitigation actions implemented by year ${graphData.targetYear
         } were able to reduce
       ${reportData.sectors} sector emissions from
-      ${sumOfExAntheResults ? sumOfExAntheResults : 'N/A'} tCO2e.</p>`
+      ${totalExPost} tCO2e.</p>`
         : `
       <p style="font-size:15px">
       Figure 1 illustrates the status of achieving emissions reduction targets
@@ -1828,16 +1850,41 @@ export class ReportService extends TypeOrmCrudService<Report> {
         }. The expected emission
         reduction of the ${reportData.sectors} sector by ${graphData.targetYear
         } year is
-        ${conditionalValue} tCO₂e. Mitigation actions
+        ${conditionalValue} MtCO₂e. Mitigation actions
         implemented by year ${graphData.targetYear} were able to reduce
         ${reportData.sectors} sector emissions from
-        ${sumOfExPostResults ? sumOfExPostResults : 'N/A'} tCO₂e.
+        ${totalExPost} tCO₂e.
       </p>`
       }
         
       </div>
     `;
 
+
+
+
+    let datetime = await this.generateChart(
+      summryReport,
+      graphData,
+      // reportData.years,
+      // reportData.projIds,
+      // reportData.assessType,
+    );
+    let fileName = `reportPDF_${datetime}.pdf`;
+    //let fileName = `reportPDF`;
+    let options = {
+      format: 'A4',
+      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
+      path: './public/' + fileName,
+      printBackground: true
+    };
+
+
+
+
+
+
+    
     let userName: string;
 
     [userName] = this.tokenDetails.getDetails([

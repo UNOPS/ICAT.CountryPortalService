@@ -14,6 +14,7 @@ import { DefaultValueService } from 'src/default-value/default-value.service';
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { EmissionReductionDraftdataModule } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.module';
+import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 import { EmissionReductioDraftDataEntity } from 'src/master-data/emisssion-reduction-draft-data/entity/emission-reductio-draft-data.entity';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
@@ -72,7 +73,8 @@ import { ReportService } from './report.service';
     AssesmentResaultService,
     ProjectService,
     DefaultValueService,
-    TokenDetails
+    TokenDetails,
+
   ],
   exports: [
     ReportService,
@@ -80,7 +82,8 @@ import { ReportService } from './report.service';
     AssessmentYearService,
     AssesmentResaultService,
     ProjectService,
-    DefaultValueService
+    DefaultValueService,
+    
   ],
 })
 export class ReportModule {}

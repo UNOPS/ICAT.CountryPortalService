@@ -122,7 +122,13 @@ export class ReportController implements CrudController<Report> {
     'reportPDF',
   )
   async getReportPDF(@Body() reportData: ReportDataPDF): Promise<any> {
-    const res = await this.service.testPDF(reportData);
+
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+
+
+    [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    const res = await this.service.testPDF(reportData,countryIdFromTocken,sectorIdFromTocken);
     return { fileName: res };
   }
 

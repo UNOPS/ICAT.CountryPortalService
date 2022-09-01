@@ -82,7 +82,76 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
         }
       }
 
+      async getEmissionReductionDraftDataForReport(
+         sectorId:number,
+        countryIdFromTocken:number ,
+        sectorIdFromTocken:number 
+      ): Promise<EmissionReductioDraftDataEntity> {
+        // console.log("user11111",this.request.user)
+        
+        // const countryId = this.request.user.user.countryId;
+        // console.log("context",countryId)
 
+
+        let filter: string = '';
+        if (countryIdFromTocken != 0) {
+          // console.log('countryIdFromTocken1111',countryIdFromTocken)
+          if (filter) {
+            filter = `${filter}  and ert.countryId = :countryIdFromTocken`;
+          } else {
+            filter = `ert.countryId = :countryIdFromTocken`;
+          }
+        }
+    
+    if(sectorIdFromTocken){ 
+      // console.log('sectorIdFromTocken111',sectorIdFromTocken)
+      if (filter) {
+        filter = `${filter}  and ert.sectorId = :sectorIdFromTocken`;
+      } else {
+        filter = `ert.sectorId = :sectorIdFromTocken`; 
+    }
+  }else if(sectorId!=0){
+
+    if (filter) {
+      filter = `${filter}  and ert.sectorId = sectorId `;
+    } else {
+      filter = `ert.sectorId =  sectorId`; 
+  }
+
+  }else{
+
+    if (filter) {
+      filter = `${filter}  and ert.sectorId is  null `;
+    } else {
+      filter = `ert.sectorId is  null`; 
+  }
+
+  }
+    
+     
+    
+        let data = this.repo
+          .createQueryBuilder('ert')
+          .where(filter, { countryIdFromTocken,sectorIdFromTocken,sectorId })
+          .orderBy('id', 'ASC');
+         
+        console.log(
+          '=====================================================================',
+        );
+        //console.log(data.getQuery());
+        let resualt = await data.getOne();
+
+        if(sectorIdFromTocken && !resualt){
+          return this.getEmissionReductionDraftDataForReport(0,countryIdFromTocken,undefined)
+        }
+        
+        // let resualt = await this.repo.findOne(countryIdFromTocken);
+    // console.log("emission",resualt)
+        if (resualt) {
+          // console.log("emission",resualt)
+          return resualt;
+        }
+      }
       
     
 }
