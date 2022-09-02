@@ -122,7 +122,13 @@ export class ReportController implements CrudController<Report> {
     'reportPDF',
   )
   async getReportPDF(@Body() reportData: ReportDataPDF): Promise<any> {
-    const res = await this.service.testPDF(reportData);
+
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+
+
+    [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    const res = await this.service.testPDF(reportData,countryIdFromTocken,sectorIdFromTocken);
     return { fileName: res };
   }
 
@@ -174,18 +180,36 @@ export class ReportController implements CrudController<Report> {
     return restult;
   }
 
-
+  @UseGuards(JwtAuthGuard)
   @Get('chartData/:years/:projIds/:assessType/:chartName')
   async getChartDownlordData(
     @Res({ passthrough: true }) res,
-    @Query('years') years: number[],
+    // @Query('years') years: number[],
     @Query('projIds') projIds: string[],
     @Query('assessType') assessType: string[],
+    // @Query('macAssessType') macAssessType: string[],
+    @Query('yearsId') yearsId: number[],
+    @Query('selectAllSectors') selectAllSectors: boolean,
+    @Query('sectorIds') sectorIds: number[]
   ): Promise<any> {
+
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+
+
+    [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+
+
+
     let imageName = await this.service.generateChartForDownlord(
-      years,
+      // years,
       projIds,
       assessType,
+      selectAllSectors,
+      sectorIds,
+      yearsId,
+      countryIdFromTocken,
+      sectorIdFromTocken
     );
   
 
