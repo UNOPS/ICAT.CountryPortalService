@@ -176,8 +176,36 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
 
 
   async updateParameterAlternative(parameters: Parameter[]) {
-    let result = this.repo.save(parameters)
 
+    let parentPara = parameters.filter(para => (para.isAlternative == false && para.isEnabledAlternative == true))
+
+    let childPara = parameters.filter(para => (para.isAlternative == true && para.isEnabledAlternative == true))
+
+
+    for (let para of childPara){
+      let data= await this.parameterRequestRepository.findOne({
+        where: { parameter: {id: parentPara[0].id} }
+      });
+      let cdata= await this.parameterRequestRepository.findOne({
+        where: { parameter: {id: para.id} }
+      });
+      let paraReq = new ParameterRequest();
+      if (cdata === undefined){
+        if (data){
+          paraReq.status = data.status;
+          paraReq.deadline = data.deadline;
+          paraReq.deadlineDataEntry = data.deadlineDataEntry;
+          paraReq.UserDataEntry = data.UserDataEntry;
+          paraReq.dataRequestStatus = data.dataRequestStatus;
+        } 
+        paraReq.parameter = para
+  
+        this.parameterRequestRepository.save(paraReq)
+      }
+    }
+
+
+    let result = this.repo.save(parameters)
     // console.log('result',result)
     return true;
   }
