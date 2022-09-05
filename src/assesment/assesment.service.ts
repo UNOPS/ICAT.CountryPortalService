@@ -209,6 +209,74 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       return resualt;
     }
   }
+  async assessmentForMAC(
+    projectId: number,
+    
+  ): Promise<any> {
+    
+    let filter: string = '';
+
+    
+      filter =' EXISTS (SELECT * FROM portelservice.assesment as ass1, portelservice.assesmentyear as assyr1 where ass1.id= assyr1.assessmentId and ass1.ghgAssessTypeForMac =asse.assessmentType and ay.assessmentYear=assyr1.assessmentYear and asse.projectId=ass1.projectId )'    
+
+  
+
+   
+      if (filter) {
+        filter = `${filter}  and asse.assessmentType in ('Ex-post','Ex-ante')`;
+      } else {
+        filter = `asse.assessmentType = in ('Ex-post','Ex-ante')`;
+      }
+    
+
+   
+      //console.log(isProposal);
+      if (filter) {
+        filter = `${filter}  and asse.isProposal = 0`;
+      } else {
+        filter = `asse.isProposal = 0`;
+      }
+    
+    if (projectId != 0) {
+      if (filter) {
+        filter = `${filter}  and pt.id = :projectId`;
+      } else {
+        filter = `pt.id = :projectId`;
+      }
+    }
+
+    // let ltype = 'ASC';
+
+    var data = this.repo
+      .createQueryBuilder('asse')
+      .leftJoinAndMapOne(
+        'asse.project',
+        Project,
+        'pt',
+        'pt.id = asse.projectId',
+      )
+      .leftJoinAndMapMany(
+        'asse.assessmentYear',
+        AssessmentYear,
+        'ay',
+        'ay.assessmentId = asse.id',
+      )
+      .where(filter, {
+        projectId
+      })
+      // .orderBy('asse.editedOn', 'DESC');
+      // .orderBy(
+      //   `(case when asse.assessmentStatus = 2 then 1 when asse.assessmentStatus = 1 then 2 end)`,
+      //   'DESC',
+      // )
+      // .addOrderBy('asse.editedOn', 'DESC');
+      console.log('im in....');
+    let resualt = await data.execute();
+
+    if (resualt) {
+      return resualt;
+    }
+  }
 
   async getassessmentsdetails(
     options: IPaginationOptions,
