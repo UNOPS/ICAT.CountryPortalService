@@ -76,6 +76,7 @@ import { Assessment } from './entity/assesment.entity';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('assesment')
 export class AssesmentController implements CrudController<Assessment> {
   constructor(
@@ -249,6 +250,17 @@ export class AssesmentController implements CrudController<Assessment> {
       sectorId,
       isProposal,
 
+    );
+  }
+
+  @Get('assessmentForMAC')
+  async assessmentForMAC(
+    @Request() request,
+    @Query('projectId') projectId: number,
+
+  ): Promise<any> {
+    return await this.service.assessmentForMAC(
+      projectId
     );
   }
 

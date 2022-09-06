@@ -4,8 +4,10 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { Country } from 'src/country/entity/country.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
+import { Sector } from '../sector/sector.entity';
 import { EmissionReductioDraftDataEntity } from './entity/emission-reductio-draft-data.entity';
 
 @Injectable()
@@ -61,8 +63,16 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     
         let data = this.repo
           .createQueryBuilder('ert')
-          .where(filter, { countryIdFromTocken,sectorIdFromTocken })
-          .orderBy('id', 'ASC');
+          .leftJoinAndMapOne('ert.country',
+          Country,
+          'con',
+          'con.id = ert.countryId')
+          .leftJoinAndMapOne('ert.sector',
+          Sector,
+          'sec',
+          'sec.id = ert.sectorId')
+          .where(filter, { countryIdFromTocken,sectorIdFromTocken });
+          // .orderBy('id', 'ASC');
          
         console.log(
           '=====================================================================',
