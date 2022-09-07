@@ -170,7 +170,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     console.log('mail-----------------',dto)
     let template =
       'Dear ' + dto.contactPersoFullName + ' ' +
-      ' <br/> Your project successfully Submitted .' +
+      ' <br/> Your project was successfully Submitted .' +
       '<br/> Project name -: ' + dto.climateActionName+'<br/>'+'<br/> Thank you';
 
     this.emaiService.sendMail(
