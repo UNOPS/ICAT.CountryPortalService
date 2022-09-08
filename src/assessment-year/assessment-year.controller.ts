@@ -340,9 +340,9 @@ async email ( @Query('yearId') yearId: number, ){
       for (let assYr of value) {
 
         //  console.log('prject',assYr.assessment.project.climateActionName);
-        console.log('assessment', assYr.assessment);
+        // console.log('assessment', assYr.assessment);
         //  console.log('macs',assYr.assessmentResault?assYr.assessmentResault.macResult?assYr.assessmentResault.macResult:0:0);
-        if (!projects.includes(assYr.assessment.project.climateActionName) && assYr.assessment && assYr.assessment.emmisionReductionValue > 0 && assYr.assessment.macValue) {
+        if (!projects.includes(assYr.assessment.project.climateActionName) && assYr.assessment && assYr.assessment.emmisionReductionValue > 0 && assYr.assessment.macValue && (assYr.assessment.macValue>-1000 && assYr.assessment.macValue<1000) ) {
           projects.push(assYr.assessment.project.climateActionName);
           ers.push(assYr.assessment.emmisionReductionValue);
           macs.push(assYr.assessment.macValue);
