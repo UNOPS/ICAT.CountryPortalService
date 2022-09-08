@@ -60,7 +60,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
     }
-
+    console.log("222222222222222222222222222222222222222222222" ,VRstatusId,filterText) 
     let data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
@@ -81,12 +81,65 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     // console.log(
     //   '=====================================================================',
     // );
-    //console.log(data.getQuery());
+    console.log("PPPPPPPP",data.getQuery());
 
     let resualt = await paginate(data, options);
 
     if (resualt) {
-      // console.log("result is...",resualt)
+      console.log("result is...",resualt)
+      return resualt;
+    }
+  }
+
+  async GetVerifierParameters(
+    options: IPaginationOptions,
+    filterText: string,
+    VRstatusId: number,
+    countryIdFromTocken: number,
+    userNameFromTocken:any,
+  ): Promise<Pagination<AssessmentYear>> {
+    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
+    //console.log("222222222222222222222222222222222222222222222")
+    let filter: string = `ae.verificationStatus is not null`;
+     let user = await this.userRepo.findOne({where:{username:userNameFromTocken}});
+
+    if (filterText != null && filterText != undefined && filterText != '') {
+      filter =
+        '(p.climateActionName LIKE :filterText  OR as.assessmentType LIKE :filterText OR ae.AssessmentYear like :filterText OR ae.editedOn  like :filterText OR ae.verificationDeadline  like :filterText OR ae.verificationStatus  like :filterText)';
+    }
+
+    if (VRstatusId != 0) {
+      filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
+    }
+    console.log("222222222222222222222222222222222222222222222" ,VRstatusId,filterText) 
+    let data = this.assessmentYearRepo
+      .createQueryBuilder('ae')
+      .innerJoinAndMapOne(
+        'ae.assessment',
+        Assessment,
+        'as',
+        'ae.assessmentId = as.id',   //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+      )
+      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
+
+      .where(filter + " AND (ae.verificationStatus !=7 AND ae.verificationStatus !=6 AND ae.verificationUser ="+user.id+" )" ,{
+        filterText: `%${filterText}%`,
+        VRstatusId,
+      })
+      // .groupBy('ae.Assessmentid')
+      // .groupBy('ae.AssessmentYear')
+      // .orderBy('ae.qaDeadline', 'DESC');
+    // console.log(
+    //   '=====================================================================',
+    // );
+    console.log("PPPPPPPP",data.getQuery());
+    
+    // data.
+
+    let resualt = await paginate(data, options);
+
+    if (resualt) {
+      console.log("result is...",resualt)
       return resualt;
     }
   }

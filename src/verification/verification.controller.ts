@@ -46,6 +46,35 @@ export class VerificationController
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('verification/GetVerifierParameters/:page/:limit/:statusId/:filterText')
+  async GetVerifierParameters(
+    @Request() request,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('statusId') statusId: number,
+    @Query('filterText') filterText: string,
+  ): Promise<any> {
+
+    let countryIdFromTocken:number ;
+    let userNameFromTocken:number ;
+    [countryIdFromTocken, userNameFromTocken] =    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.username ])
+
+  // let userId = 
+   
+
+    return await this.service.GetVerifierParameters(
+      {
+        limit: limit,
+        page: page,
+      },
+      filterText,
+      statusId,
+      countryIdFromTocken,
+      userNameFromTocken,
+    );
+  }
+
   @Get('verification/GetVerificationDetails/:assesmentYearId')
   async GetVerificationDetails(
     @Query('assesmentYearId') assesmentYearId: number,
