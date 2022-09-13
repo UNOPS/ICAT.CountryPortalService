@@ -13,6 +13,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CountrySector } from './country-sector.entity';
 import { countryStatus } from './country-status.entity';
 
 @Entity({name: 'country'})
@@ -87,10 +88,13 @@ export class Country extends BaseTrackingEntity{
   defaultValue: DefaultValue[]
 
 
-  @ManyToMany((type) => Sector, {
-    eager: true,
-    cascade: false,
-  })
-  @JoinTable({ name: 'country_sector' })
-  Sector?: Sector[];
+  @OneToMany(() => CountrySector, countrySector => countrySector.country,{eager:true})
+  @JoinColumn()
+  countrysector: CountrySector[];
+  // @ManyToMany((type) => Sector, {
+  //   eager: true,
+  //   cascade: false,
+  // })
+  // @JoinTable({ name: 'country_sector' })
+  // Sector?: Sector[];
 }

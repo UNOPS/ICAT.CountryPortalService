@@ -1,3 +1,4 @@
+import { CountrySector } from 'src/country/entity/country-sector.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { LearningMaterialSector } from 'src/learning-material/entity/learning-material-sector.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
@@ -31,9 +32,8 @@ export class Sector extends BaseTrackingEntity {
   @Column({ default: 1 })
   sortOrder: number;
 
-  @ManyToMany((type) => Country, { cascade: false })
-  @JoinTable({ name: 'country_sector' })
-  country: Country;
+  @OneToMany(() => CountrySector, countrySector => countrySector.sector)
+  public countrysector!: CountrySector[];
 
   @OneToMany(
     () => LearningMaterialSector,
