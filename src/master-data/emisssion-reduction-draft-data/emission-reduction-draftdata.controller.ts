@@ -31,7 +31,6 @@ export class EmissionReductionDraftdataController implements CrudController<Emis
     }
 
     get base(): CrudController<EmissionReductioDraftDataEntity> {
-      console.log("ghfhgfs")
         return this;
       }
 

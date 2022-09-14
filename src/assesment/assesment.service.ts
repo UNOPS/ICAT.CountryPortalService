@@ -848,4 +848,27 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       return resualt;
     }
   }
+
+
+
+  async testTransaction(): Promise<any> {
+    let filter: string = '';
+    filter = `asse.id = 216`;
+
+    let data = this.repo
+      .createQueryBuilder('asse')
+      .leftJoinAndMapOne(
+        'asse.methodology',
+        Methodology,
+        'meth',
+        'asse.methodologyId = meth.id',
+      )
+      .where(filter, {  });
+
+    let resualt = await data.getOneOrFail();
+
+    if (resualt) {
+      return resualt;
+    }
+  }
 }

@@ -30,7 +30,7 @@ import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Institution } from 'src/institution/institution.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -69,20 +69,37 @@ export class UsersController implements CrudController<User> {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Institution)
     private readonly institutionRepository: Repository<Institution>,
-    private readonly auditService:AuditService,
-    private readonly tokenDetails:TokenDetails,
-    
-  ) {}
+    private readonly auditService: AuditService,
+    private readonly tokenDetails: TokenDetails,
+
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createUserDto: User): Promise<User> {
-    let audit: AuditDto = new AuditDto();
-    audit.action = createUserDto.username+' Created';
-    audit.comment = "User Created";
-    audit.actionStatus = 'Created';
-    this.auditService.create(audit);
-    return this.service.create(createUserDto);
+  async create(@Body() createUserDto: User): Promise<User> {
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      let audit: AuditDto = new AuditDto();
+      let user= await queryRunner.manager.save(User, createUserDto);
+      audit.action = createUserDto.username + ' Created';
+      audit.comment = "User Created";
+      audit.actionStatus = 'Created';
+      // this.auditService.create(audit);
+      await queryRunner.manager.save(AuditDto, audit);
+      return user;
+    }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
+
   }
 
   // @Get()
@@ -97,7 +114,7 @@ export class UsersController implements CrudController<User> {
 
   @Override()
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() newUser: User ): Promise<User | null> {
+  async update(@Param('id') id: number, @Body() newUser: User): Promise<User | null> {
     const user = await this.userRepository.findOneOrFail(id);
     if (!user.id) {
       console.error("User doesn't exist");
@@ -106,7 +123,7 @@ export class UsersController implements CrudController<User> {
     this.userRepository.save(user)
     return await this.userRepository.findOne(id);
   }
- 
+
 
   @Get('isUserAvailable/:userName')
   async isUserAvailable(@Param('userName') userName: string): Promise<boolean> {
@@ -132,13 +149,13 @@ export class UsersController implements CrudController<User> {
 
 
   @Patch('changeStatus')
-  changeStatus( @Query('id') id:number, @Query('status') status:number): Promise<User> {
-   
-    return this.service.chnageStatus(id,status);
+  changeStatus(@Query('id') id: number, @Query('status') status: number): Promise<User> {
+
+    return this.service.chnageStatus(id, status);
   }
 
 
-  
+
 
   @Override()
   async getMany(@ParsedRequest() req: CrudRequest, @Request() req2) {
@@ -174,16 +191,16 @@ export class UsersController implements CrudController<User> {
     @Query('filterText') filterText: string,
     @Query('userTypeId') userTypeId: number,
   ): Promise<any> {
-   
-    
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number ;
-    let institutionIdFromTocken:number ;
-    let role:string;
-  
 
-   [countryIdFromTocken,sectorIdFromTocken,institutionIdFromTocken,role]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId,TokenReqestType.InstitutionId,TokenReqestType.role])
-    
+
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+    let institutionIdFromTocken: number;
+    let role: string;
+
+
+    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken, role] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId, TokenReqestType.InstitutionId, TokenReqestType.role])
+
     console.log('incontroler...');
     return await this.service.getUserDetails(
       {
