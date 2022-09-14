@@ -33,6 +33,7 @@ import { Project } from 'src/project/entity/project.entity';
 import { ProjectionYear } from 'src/projection-year/entity/projection-year.entity';
 import { User } from 'src/users/user.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { getConnection, Transaction } from 'typeorm';
 import { Repository } from 'typeorm-next';
 import { AssesmentService } from './assesment.service';
 import { Assessment } from './entity/assesment.entity';
@@ -76,11 +77,13 @@ import { Assessment } from './entity/assesment.entity';
     },
   },
 })
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('assesment')
 export class AssesmentController implements CrudController<Assessment> {
   constructor(
     public service: AssesmentService,
+    @InjectRepository(Assessment)
+    public assessmentRepo: Repository<Assessment>,
     @InjectRepository(Parameter)
     public paramterRepo: Repository<Parameter>,
     @InjectRepository(AssessmentYear)
@@ -959,6 +962,46 @@ export class AssesmentController implements CrudController<Assessment> {
 
   ): Promise<any> {
     return await this.service.getMethodologyNameByAssessmentId(id);
+  }
+
+  @Get('testTransaction')
+  // @Transaction({ isolation: "SERIALIZABLE" }) 
+  async testTransaction(
+    @Request() request,
+
+  ): Promise<any> {
+    console.log("worktran1")
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      
+      let asses=new Assessment();
+      asses.baseYear=0
+      // let assesment1 = await this.assessmentRepo.findByIds([800]);
+      // console.log(assesment1)
+      let assesment = await queryRunner.manager.save(Assessment ,asses);
+      let para=new Parameter()
+      // para.id=20000;
+      para.assessment=assesment;
+      let institution=new Institution()
+      institution.id=220;
+      // para.institution=institution;
+      para.institution.id=223;
+      // let paeameter=await this.paramterRepo.save(para); 
+      let paeameter= await queryRunner.manager.save(Parameter ,para);
+      await queryRunner.commitTransaction(); 
+      
+  } catch (err) {
+    console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+  } finally {
+      await queryRunner.release();
+  }
+ 
+    console.log("worktran3")
+    return await this.service.testTransaction();
   }
 
 }
