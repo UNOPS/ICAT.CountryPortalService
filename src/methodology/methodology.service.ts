@@ -63,7 +63,7 @@ export class MethodologyService extends TypeOrmCrudService<Methodology>{
                 countryIdFromTocken,
                 sectorIdFromTocken
             })
-            .orderBy('me.createdOn', 'DESC');
+            .orderBy('me.displayName', 'ASC');
 
         let resualt = await paginate(data, options);
 
