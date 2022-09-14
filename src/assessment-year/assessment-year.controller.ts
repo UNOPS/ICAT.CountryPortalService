@@ -23,6 +23,7 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { AssessmentYearService } from './assessment-year.service';
 import { DataVerifierDto } from './Dto/dataVerifier.dto';
 import { AssessmentYear } from './entity/assessment-year.entity';
+import { getConnection } from 'typeorm';
 
 import axios from "axios";
 import { Email } from 'read-excel-file/types';
@@ -59,8 +60,8 @@ export class AssessmentYearController
   constructor(
     public service: AssessmentYearService,
     private readonly auditService: AuditService,
-    private readonly tokenDetails:TokenDetails,
-  ) {}
+    private readonly tokenDetails: TokenDetails,
+  ) { }
 
   get base(): CrudController<AssessmentYear> {
     return this;
@@ -84,11 +85,11 @@ export class AssessmentYearController
   }
 
 
-@Get("email")
-async email ( @Query('yearId') yearId: number, ){
-  console.log("yearId",yearId)
-  this.service.mail(yearId);
-}
+  @Get("email")
+  async email(@Query('yearId') yearId: number,) {
+    console.log("yearId", yearId)
+    this.service.mail(yearId);
+  }
 
 
 
@@ -196,28 +197,58 @@ async email ( @Query('yearId') yearId: number, ){
 
   @UseGuards(JwtAuthGuard)
   @Put('update-assign-verifiers')
-  updateAssignVerifiers(
+  async updateAssignVerifiers(
     @Body() updateDeadlineDto: DataVerifierDto,
   ): Promise<boolean> {
-    let audit: AuditDto = new AuditDto();
-    console.log(updateDeadlineDto)
-    audit.action = 'Verifier Deadline Created';
-    audit.comment = 'Verifier Deadline Created';
-    audit.actionStatus = 'Created'
-    this.auditService.create(audit);
-    return this.service.acceptDataVerifiersForIds(updateDeadlineDto);
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      let audit: AuditDto = new AuditDto();
+      let paeameter = this.service.acceptDataVerifiersForIds(updateDeadlineDto);
+      console.log(updateDeadlineDto)
+      audit.action = 'Verifier Deadline Created';
+      audit.comment = 'Verifier Deadline Created';
+      audit.actionStatus = 'Created'
+      await queryRunner.manager.save(AuditDto ,audit);
+      return paeameter;
+    }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
+
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('accept-qc')
-  acceptQC(@Body() updateDeadlineDto: DataVerifierDto): Promise<boolean> {
-    let audit: AuditDto = new AuditDto();
-    console.log(updateDeadlineDto)
-    audit.action = 'Quality Check Added';
-    audit.comment = 'Quality Check Added';
-    audit.actionStatus = 'Added'
-    this.auditService.create(audit);
-    return this.service.acceptQC(updateDeadlineDto);
+  async acceptQC(@Body() updateDeadlineDto: DataVerifierDto): Promise<boolean> {
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      let audit: AuditDto = new AuditDto();
+      let paeameter = this.service.acceptQC(updateDeadlineDto);
+      console.log(updateDeadlineDto)
+      audit.action = 'Quality Check Added';
+      audit.comment = 'Quality Check Added';
+      audit.actionStatus = 'Added'
+      await queryRunner.manager.save(AuditDto ,audit);
+      // this.auditService.create(audit);
+      return paeameter;
+    }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @Get('assessmentYears/getVerification/:assessmentId/:assementYear')
@@ -273,17 +304,34 @@ async email ( @Query('yearId') yearId: number, ){
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: AssessmentYear,
   ) {
-    let updateData = await this.base.updateOneBase(req, dto);
-    let audit: AuditDto = new AuditDto();
-    //  console.log('+++++',updateData)
-    audit.action = updateData.assessment.assessmentType + ' Updated';
-    audit.comment = updateData.assessment.assessmentType + ' Updated';
-    audit.actionStatus = 'Updated'
-    this.auditService.create(audit);
-    //  console.log("its working...")
-    // console.log('Updated.............'+updateData.assessment.project.climateActionName);
 
+
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      let updateData = await queryRunner.manager.save(AssessmentYear, dto);
+      // let updateData = await this.base.updateOneBase(req, dto);
+      let audit: AuditDto = new AuditDto();
+
+      audit.action = updateData.assessment.assessmentType + ' Updated';
+      audit.comment = updateData.assessment.assessmentType + ' Updated';
+      audit.actionStatus = 'Updated'
+
+      await queryRunner.manager.save(AuditDto, audit);
+      // this.auditService.create(audit);
+    }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
   }
+
+
 
   @UseGuards(JwtAuthGuard)
   @Get("mac")
@@ -342,7 +390,7 @@ async email ( @Query('yearId') yearId: number, ){
         //  console.log('prject',assYr.assessment.project.climateActionName);
         // console.log('assessment', assYr.assessment);
         //  console.log('macs',assYr.assessmentResault?assYr.assessmentResault.macResult?assYr.assessmentResault.macResult:0:0);
-        if (!projects.includes(assYr.assessment.project.climateActionName) && assYr.assessment && assYr.assessment.emmisionReductionValue > 0 && assYr.assessment.macValue && (assYr.assessment.macValue>-1000 && assYr.assessment.macValue<1000) ) {
+        if (!projects.includes(assYr.assessment.project.climateActionName) && assYr.assessment && assYr.assessment.emmisionReductionValue > 0 && assYr.assessment.macValue && (assYr.assessment.macValue > -1000 && assYr.assessment.macValue < 1000)) {
           projects.push(assYr.assessment.project.climateActionName);
           ers.push(assYr.assessment.emmisionReductionValue);
           macs.push(assYr.assessment.macValue);
@@ -396,13 +444,13 @@ async email ( @Query('yearId') yearId: number, ){
   @Get('trackCA/assessmentYearList')
   async getAssessmentYearsListInTrackCA(
     @Request() request,
-    
-    
-  ): Promise<any> {
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number;
 
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+
+  ): Promise<any> {
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId])
 
 
     return await this.service.getAssessmentYearsListInTrackCA(
@@ -422,16 +470,16 @@ async email ( @Query('yearId') yearId: number, ){
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
     // @Query('assessmentStatusName') assessmentStatusName: string,
     // @Query('Active') Active: number,
-   // @Query('countryId') countryId: number,
-   // @Query('sectorId') sectorId: number,
+    // @Query('countryId') countryId: number,
+    // @Query('sectorId') sectorId: number,
     @Query('isProposal') isProposal: number,
 
   ): Promise<any> {
 
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number;
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId])
 
 
     return await this.service.assessmentYearForManageDataStatus(
@@ -444,8 +492,8 @@ async email ( @Query('yearId') yearId: number, ){
       projectApprovalStatusId,
       // assessmentStatusName,
       // Active,
-     // countryId,
-     // sectorId,
+      // countryId,
+      // sectorId,
       isProposal,
       countryIdFromTocken,
       sectorIdFromTocken,

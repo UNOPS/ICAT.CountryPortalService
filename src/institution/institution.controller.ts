@@ -24,7 +24,8 @@ import { InstitutionService } from './institution.service';
 import { basename } from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
+import {Repository } from 'typeorm';
+import { getConnection } from 'typeorm';
 import { request } from 'http';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { AuditService } from 'src/audit/audit.service';
@@ -262,6 +263,9 @@ export class InstitutionController implements CrudController<Institution> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Institution,
   ): Promise<Institution> {
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
     try {
       console.log(
         '-----------------------------------------------------------',
@@ -288,23 +292,35 @@ export class InstitutionController implements CrudController<Institution> {
       // dto.sector = null;
 
       console.log(dto);
-
-      let newInstitution = await this.base.createOneBase(req, dto);
+      let newInstitution= await queryRunner.manager.save(Institution ,dto);
+      // let newInstitution = await this.base.createOneBase(req, dto);
 
       let audit: AuditDto = new AuditDto();
       audit.action = newInstitution.name + ' Created';
       audit.comment = newInstitution.name + ' Created';
       audit.actionStatus = 'Created';
-      this.auditService.create(audit);
+      await queryRunner.manager.save(AuditDto ,audit);
+      // this.auditService.create(audit);
       console.log('Institution created');
 
       console.log('new.....', newInstitution);
       return newInstitution;
-    } catch (error) {
-      console.log('ssssssssssssaaaaaaaaaaaaaaaaaaa');
-      console.log('error');
-      throw error;
     }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
+    // try {
+     
+    // } catch (error) {
+    //   console.log('ssssssssssssaaaaaaaaaaaaaaaaaaa');
+    //   console.log('error');
+    //   throw error;
+    // }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -314,16 +330,32 @@ export class InstitutionController implements CrudController<Institution> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Institution,
   ): Promise<Institution> {
-    let updateInstitution = await this.base.updateOneBase(req, dto);
-    if (updateInstitution.status == 0) {
-      let audit: AuditDto = new AuditDto();
-      audit.action = updateInstitution.name + ' Institution Updated';
-      audit.comment = 'Institution Updated';
-      audit.actionStatus = 'Updated';
-      this.auditService.create(audit);
-      console.log('Institution Updated');
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      let updateInstitution= await queryRunner.manager.save(Institution ,dto);
+      // let updateInstitution = await this.base.updateOneBase(req, dto);
+      if (updateInstitution.status == 0) {
+        let audit: AuditDto = new AuditDto();
+        audit.action = updateInstitution.name + ' Institution Updated';
+        audit.comment = 'Institution Updated';
+        audit.actionStatus = 'Updated';
+        this.auditService.create(audit);
+        console.log('Institution Updated');
+      }
+      return updateInstitution;
     }
-    return updateInstitution;
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
+   
   }
   // @Override()
   // async getMany(
