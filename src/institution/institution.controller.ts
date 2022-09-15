@@ -32,6 +32,7 @@ import { AuditService } from 'src/audit/audit.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { REQUEST } from '@nestjs/core';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { Audit } from 'src/audit/entity/audit.entity';
 
 @Crud({
   model: {
@@ -299,11 +300,11 @@ export class InstitutionController implements CrudController<Institution> {
       audit.action = newInstitution.name + ' Created';
       audit.comment = newInstitution.name + ' Created';
       audit.actionStatus = 'Created';
-      await queryRunner.manager.save(AuditDto ,audit);
-      // this.auditService.create(audit);
+      // await queryRunner.manager.save(AuditDto ,audit);
+      this.auditService.create(audit);
       console.log('Institution created');
 
-      console.log('new.....', newInstitution);
+      await queryRunner.commitTransaction();
       return newInstitution;
     }
     catch (err) {
@@ -335,7 +336,8 @@ export class InstitutionController implements CrudController<Institution> {
     await queryRunner.startTransaction();
 
     try {
-      let updateInstitution= await queryRunner.manager.save(Institution ,dto);
+      dto.editedOn= new Date()
+      let updateInstitution= await queryRunner.manager.save(Institution,dto);
       // let updateInstitution = await this.base.updateOneBase(req, dto);
       if (updateInstitution.status == 0) {
         let audit: AuditDto = new AuditDto();
@@ -345,6 +347,7 @@ export class InstitutionController implements CrudController<Institution> {
         this.auditService.create(audit);
         console.log('Institution Updated');
       }
+      await queryRunner.commitTransaction();
       return updateInstitution;
     }
     catch (err) {

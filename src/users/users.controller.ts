@@ -87,8 +87,8 @@ export class UsersController implements CrudController<User> {
       audit.action = createUserDto.username + ' Created';
       audit.comment = "User Created";
       audit.actionStatus = 'Created';
-      // this.auditService.create(audit);
-      await queryRunner.manager.save(AuditDto, audit);
+      this.auditService.create(audit);
+      await queryRunner.commitTransaction();
       return user;
     }
     catch (err) {

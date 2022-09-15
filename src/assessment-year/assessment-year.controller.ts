@@ -210,7 +210,8 @@ export class AssessmentYearController
       audit.action = 'Verifier Deadline Created';
       audit.comment = 'Verifier Deadline Created';
       audit.actionStatus = 'Created'
-      await queryRunner.manager.save(AuditDto ,audit);
+      this.auditService.create(audit);
+      await queryRunner.commitTransaction();
       return paeameter;
     }
     catch (err) {
@@ -237,8 +238,8 @@ export class AssessmentYearController
       audit.action = 'Quality Check Added';
       audit.comment = 'Quality Check Added';
       audit.actionStatus = 'Added'
-      await queryRunner.manager.save(AuditDto ,audit);
-      // this.auditService.create(audit);
+      this.auditService.create(audit);
+      await queryRunner.commitTransaction();
       return paeameter;
     }
     catch (err) {
@@ -318,8 +319,8 @@ export class AssessmentYearController
       audit.comment = updateData.assessment.assessmentType + ' Updated';
       audit.actionStatus = 'Updated'
 
-      await queryRunner.manager.save(AuditDto, audit);
-      // this.auditService.create(audit);
+      this.auditService.create(audit);
+      await queryRunner.commitTransaction();
     }
     catch (err) {
       console.log("worktran2")
