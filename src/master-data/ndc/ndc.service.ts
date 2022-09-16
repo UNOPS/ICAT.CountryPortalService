@@ -170,7 +170,7 @@ if(sectorIdFromTocken){
 
 else{
  
-  if(sectorId!=0){
+  if(sectorId && sectorId!=0){
    
     if (filter) {
       // console.log('sectorId1',sectorId)
@@ -197,7 +197,7 @@ else{
       'ndc.assesment',
       Assessment,
       'asse',
-      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post"',
+      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post" and asse.isProposal= false',
     )
     .innerJoinAndMapMany(
       'asse.assessmentResult',
