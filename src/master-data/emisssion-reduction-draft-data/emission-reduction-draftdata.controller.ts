@@ -31,6 +31,7 @@ export class EmissionReductionDraftdataController implements CrudController<Emis
     }
 
     get base(): CrudController<EmissionReductioDraftDataEntity> {
+   
         return this;
       }
 

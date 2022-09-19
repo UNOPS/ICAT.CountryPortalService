@@ -28,6 +28,7 @@ import { AssesmentResaultService } from './assesment-resault.service';
 import { AssessmentResault } from './entity/assessment-resault.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
 import { getConnection } from 'typeorm';
+import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 
 @Crud({
   model: {
@@ -59,6 +60,7 @@ export class AssesmentResaultController
     @InjectRepository(Assessment)
     public assesmentRepo: Repository<Assessment>,
     private readonly auditService: AuditService,
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<AssessmentResault> {
@@ -220,6 +222,29 @@ export class AssesmentResaultController
   ): Promise<any> {
     return await this.service.getAssessmentResultBYAssessmentId(
       id,
+    );
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('dashboaremission')
+  async getAssessmentResultforDashboard(
+    @Request() request,
+    @Query('assesYear') assesYear: number,
+    
+  ): Promise<any> {
+    console.log("work")
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+    let institutionIdFromTocken: number;
+    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken] =
+      this.tokenDetails.getDetails([
+        TokenReqestType.countryId,
+        TokenReqestType.sectorId,
+        TokenReqestType.InstitutionId,
+      ]);
+    return await this.service.getAssessmentResultforDashboard(
+      assesYear,
+      countryIdFromTocken,
+      sectorIdFromTocken
     );
   }
 

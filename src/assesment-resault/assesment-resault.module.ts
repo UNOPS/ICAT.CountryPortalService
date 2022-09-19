@@ -12,6 +12,7 @@ import { EmailNotificationService } from 'src/notifications/email.notification.s
 import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
 import { User } from 'src/users/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { TokenDetails } from 'src/utills/token_details';
 import { AssesmentResaultController } from './assesment-resault.controller';
 import { AssesmentResaultService } from './assesment-resault.service';
 import { AssessmentResault } from './entity/assessment-resault.entity';
@@ -32,7 +33,7 @@ import { AssessmentResault } from './entity/assessment-resault.entity';
     UsersModule,
   ],
   controllers: [AssesmentResaultController],
-  providers: [AssesmentResaultService, AssessmentYear, ProjectionResault,Assessment,AuditService,EmailNotificationService],
+  providers: [AssesmentResaultService, AssessmentYear, ProjectionResault,Assessment,AuditService,EmailNotificationService,TokenDetails],
   exports: [AssesmentResaultService,AuditService],
 })
 export class AssesmentResaultModule {}

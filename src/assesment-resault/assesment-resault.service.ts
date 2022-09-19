@@ -511,6 +511,61 @@ return false;
 
     return result;
   }
+  async getAssessmentResultforDashboard(
+    assessmentYear:number,
+    countryIdFromTocken: number,
+    sectorIdFromTocken: number,
+    // institutionIdFromTocken: number
+  ): Promise<any> {
+    let filter: string = '';
+
+    if (countryIdFromTocken != 0) {
+      if (filter) {
+        filter = `${filter}  and proj.countryId = :countryIdFromTocken`;
+      } else {
+        filter = `proj.countryId = :countryIdFromTocken`;
+      }
+    }
+
+    if (sectorIdFromTocken) {
+      // console.log('sectorIdFromTocken')
+      if (filter) {
+        filter = `${filter}  and proj.sectorId = :sectorIdFromTocken  `;
+      } else {
+        filter = `proj.sectorId = :sectorIdFromTocken`;
+      }
+    }
+
+    let data = this.repo
+      .createQueryBuilder('ar')
+      .innerJoinAndMapOne('ar.assessmentYear',
+      AssessmentYear,
+      'assesyear',
+      `assesyear.id = ar.assessmentYearId and assesyear.assessmentYear = ${assessmentYear} `)
+      .innerJoinAndMapOne(
+        'ar.assessment',
+        Assessment,
+        'asse',
+        'asse.id = ar.assementId and asse.assessmentType="Ex-post" and asse.isProposal= false ',
+      )
+      .innerJoinAndMapOne('asse.project',
+      Project,
+      'proj',
+      'proj.id=asse.projectId and proj.projectApprovalStatusId = 5')
+      .where(filter, {
+        countryIdFromTocken,
+        sectorIdFromTocken,
+      
+      });
+      
+
+    // console.log(data.getQueryAndParameters());
+    // console.log(data.getQuery());
+    let result = await data.getMany();
+    // console.log(result);
+    return result;
+  }
+
 
 
 }

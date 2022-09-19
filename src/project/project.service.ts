@@ -1154,13 +1154,20 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
 
-    if (projectApprovalStatus && projectApprovalStatus.length > 0) {
+    if (projectApprovalStatus && projectApprovalStatus.length > 1) {
       if (filter) {
         filter = `${filter}  and dr.projectApprovalStatusId IN (:...projectApprovalStatus)`;
       } else {
         filter = `dr.projectApprovalStatusId IN  (:...projectApprovalStatus)`;
       }
-    }
+    }else if(projectApprovalStatus && projectApprovalStatus.length == 1)
+    {
+      if (filter) {
+        filter = `${filter}  and dr.projectApprovalStatusId = ${projectApprovalStatus[0]}`;
+      } else {
+        filter = `dr.projectApprovalStatusId =   ${projectApprovalStatus[0]}`;
+      }}
+
     if (ndcId != 0) {
       if (filter) {
         filter = `${filter}  and dr.ndcId = :ndcId`;
@@ -1259,7 +1266,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
     else {
 
-      if (sectorId != 0) {
+      if (sectorId && sectorId != 0) {
 
         if (filter) {
           // console.log('sectorId1',sectorId)
@@ -1274,12 +1281,22 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
 
-    if (projectApprovalStatus && projectApprovalStatus.length > 0) {
+    if (projectApprovalStatus && projectApprovalStatus.length > 1) {
       if (filter) {
         filter = `${filter}  and dr.projectApprovalStatusId IN (:...projectApprovalStatus)`;
       } else {
         filter = `dr.projectApprovalStatusId IN  (:...projectApprovalStatus)`;
       }
+    }else if(projectApprovalStatus && projectApprovalStatus.length == 1)
+    {
+      if (filter) {
+        filter = `${filter}  and dr.projectApprovalStatusId = ${projectApprovalStatus[0]}`;
+      } else {
+        filter = `dr.projectApprovalStatusId =   ${projectApprovalStatus[0]}`;
+      }
+
+
+
     }
     if (ndcId != 0) {
       if (filter) {
