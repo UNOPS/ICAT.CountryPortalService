@@ -27,6 +27,7 @@ import { Repository } from 'typeorm';
 import { AssesmentResaultService } from './assesment-resault.service';
 import { AssessmentResault } from './entity/assessment-resault.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
+import { getConnection } from 'typeorm';
 
 @Crud({
   model: {
@@ -182,16 +183,32 @@ export class AssesmentResaultController
   ): Promise<AssessmentResault> {
     //console.log("came to inside...",dto);
    // console.log('req1----', dto);
-
-    let asr = await this.base.createOneBase(req, dto);
+  
     //console.log(asr);
 
-    var assement = await this.assesmentRepo.findOne(asr.assement.id);
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
 
-    assement.macValue = asr.macResult;
-    this.assesmentRepo.save(assement);
+    try {
+      let asr= await queryRunner.manager.save(AssessmentResault, dto);
+      // let asr = await this.base.createOneBase(req, dto);
+      var assement = await this.assesmentRepo.findOne(asr.assement.id);
+      assement.macValue = asr.macResult;
 
-    return asr;
+      await queryRunner.manager.save(Assessment, assement);
+      // this.assesmentRepo.save(assement);
+      
+      await queryRunner.commitTransaction();
+      return asr;
+    }
+    catch (err) {
+      console.log("worktran2")
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
 

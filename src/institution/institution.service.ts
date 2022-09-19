@@ -203,7 +203,7 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
     // console.log('query',data.getQuery());
 
     let resualt = await paginate(data, options);
-    console.log('resula====', resualt);
+    // console.log('resula====', resualt);
     if (resualt) {
       // console.log('resula',resualt)
       return resualt;
@@ -255,7 +255,7 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
 
     let resualt = await data.getCount();
-    console.log('resula====', resualt);
+    // console.log('resula====', resualt);
     if (resualt) {
 
       return resualt;
@@ -448,7 +448,7 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
     let resualt = await paginate(data, options);
     // console.log("data====",data.execute())
-    console.log('resula======', resualt);
+    // console.log('resula======', resualt);
     if (resualt) {
       // console.log('resula',resualt)
       return resualt;
