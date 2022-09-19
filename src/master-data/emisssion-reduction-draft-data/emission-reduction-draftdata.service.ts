@@ -85,7 +85,7 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
         }
         
         // let resualt = await this.repo.findOne(countryIdFromTocken);
-    console.log("emission",resualt)
+    // console.log("emission",resualt)
         if (resualt) {
           // console.log("emission",resualt)
           return resualt;
