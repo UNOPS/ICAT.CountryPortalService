@@ -275,8 +275,8 @@ export class AssesmentController implements CrudController<Assessment> {
     @Request() request,
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Assessment,
-  ): Promise<any> {
-    let assesment:Assessment;
+  ): Promise<Assessment> {
+    // let assesment:Assessment;
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
     
@@ -299,7 +299,7 @@ export class AssesmentController implements CrudController<Assessment> {
       dto.project = proj;
 
       // let assesment = await this.base.createOneBase(req, dto);
-       assesment= await queryRunner.manager.save(Assessment ,dto);
+      let assesment= await queryRunner.manager.save(Assessment ,dto);
       let audit: AuditDto = new AuditDto();
       audit.action = dto.assessmentType + ' Assessment Created';
       audit.comment = dto.assessmentType + ' Assessment Created';
@@ -665,8 +665,9 @@ export class AssesmentController implements CrudController<Assessment> {
        })
          
       //  console.log("worktran2222")
-      //  console.log(assesment)
-      return await this.assessmentRepo.findOne(assesment.id);
+      //  let result:Assessment=
+      //  console.log(result)
+      return await this.assessmentRepo.findOne(assesment.id);;
     }
     else {
       //console.log("came to inside");
@@ -988,7 +989,7 @@ export class AssesmentController implements CrudController<Assessment> {
        })
      
 
-      return  await this.assessmentRepo.findOne(assesment.id);;
+      return  await this.assessmentRepo.findOne(assesment.id);
     }
   }
     catch (err) {
