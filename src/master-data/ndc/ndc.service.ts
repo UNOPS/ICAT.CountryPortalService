@@ -148,9 +148,32 @@ else{
     options: IPaginationOptions,
     sectorId: number,
     countryIdFromTocken: number,
-       sectorIdFromTocken: number
+       sectorIdFromTocken: number,
+       moduleLevelsFromTocken:number[]
   ): Promise<Pagination<any>>{
     let filter: string = '';
+
+    if(moduleLevelsFromTocken[3]==1){
+      if (filter) {
+        filter = `${filter}   and asse.isProposal= false `;
+      } else {
+        filter = `asse.isProposal= false`;
+      }
+    }else if(moduleLevelsFromTocken[1]==1){
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= true  `;
+      } else {
+        filter = `asse.isProposal= true`;
+      }
+
+    }else{
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= false `;
+      } else {
+        filter = `asse.isProposal= false`;
+      }
+    }
+
 
     if (countryIdFromTocken != 0) {
       if (filter) {

@@ -18,7 +18,7 @@ constructor(
         let details:any[]=[];
         let user:any = this.request.user.user;
 
-        // console.log("userToken====",user)
+        console.log("userToken====",user)
         
         for(let det of reqDetails){
          switch(det){
@@ -36,6 +36,9 @@ constructor(
              break;  
          case 5:
              details.push(user.usr)
+             break;  
+         case 6:
+             details.push(user.moduleLevels)
              break;  
          default:
 
@@ -55,7 +58,8 @@ export enum TokenReqestType{
     sectorId=2,
     InstitutionId=3,
     role=4,
-    username=5
+    username=5,
+    moduleLevels=6
 
 
 
