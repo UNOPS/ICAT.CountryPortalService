@@ -718,7 +718,7 @@ export class AssesmentController implements CrudController<Assessment> {
       //     await dto
       //   ).assessmentObjective,
       // );
-      let objectives = await queryRunner.manager.save(AssessmentObjective ,dto.assessmentYear);
+      let objectives = await queryRunner.manager.save(AssessmentObjective ,dto.assessmentObjective);
       // let objectives = await this.assessmentObjectiveRepo.save(
       //   (
       //     await dto
