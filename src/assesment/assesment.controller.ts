@@ -276,12 +276,17 @@ export class AssesmentController implements CrudController<Assessment> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Assessment,
   ): Promise<Assessment> {
-    // let assesment:Assessment;
+  
+    dto.createdBy = '-';
+    dto.createdOn = new Date();
+    dto.editedBy = '-';
+    dto.editedOn = new Date();
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
     
     // console.log("dto",dto);
     try{
+      
     if (dto.assessmentType != 'MAC') {
       let institution = [];
       // dto.ndc = null;
@@ -1048,10 +1053,10 @@ export class AssesmentController implements CrudController<Assessment> {
       let para=new Parameter()
       // para.id=20000;
       para.assessment=assesment;
-      let institution=new Institution()
-      institution.id=12000;
-      para.institution=institution;
-      para.institution.id=223;
+      // let institution=new Institution()
+      // institution.id=12000;
+      // para.institution=institution;
+      // para.institution.id=223;
       // let paeameter=await this.paramterRepo.save(para); 
       let paeameter= await queryRunner.manager.save(Parameter ,para);
       await queryRunner.commitTransaction(); 
