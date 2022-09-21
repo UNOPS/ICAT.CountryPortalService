@@ -153,13 +153,13 @@ else{
   ): Promise<Pagination<any>>{
     let filter: string = '';
 
-    if(moduleLevelsFromTocken[3]==1){
+    if(moduleLevelsFromTocken[3]==1 ||moduleLevelsFromTocken[4]==1){
       if (filter) {
         filter = `${filter}   and asse.isProposal= false `;
       } else {
         filter = `asse.isProposal= false`;
       }
-    }else if(moduleLevelsFromTocken[1]==1){
+    }else if(moduleLevelsFromTocken[1]==1 || moduleLevelsFromTocken[2]==1){
       if (filter) {
         filter = `${filter}  and  asse.isProposal= true  `;
       } else {
