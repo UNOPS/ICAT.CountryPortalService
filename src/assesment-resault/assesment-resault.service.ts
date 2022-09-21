@@ -515,9 +515,31 @@ return false;
     assessmentYear:number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
+    moduleLevelsFromTocken:number[]
     // institutionIdFromTocken: number
   ): Promise<any> {
     let filter: string = '';
+
+    if(moduleLevelsFromTocken[3]==1||moduleLevelsFromTocken[4]==1){
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= false `;
+      } else {
+        filter = `asse.isProposal= false`;
+      }
+    }else if(moduleLevelsFromTocken[1]==1||moduleLevelsFromTocken[2]==1){
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= true  `;
+      } else {
+        filter = `asse.isProposal= true`;
+      }
+
+    }else{
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= false `;
+      } else {
+        filter = `asse.isProposal= false`;
+      }
+    }
 
     if (countryIdFromTocken != 0) {
       if (filter) {
@@ -546,7 +568,7 @@ return false;
         'ar.assessment',
         Assessment,
         'asse',
-        'asse.id = ar.assementId and asse.assessmentType="Ex-post" and asse.isProposal= false ',
+        'asse.id = ar.assementId and asse.assessmentType="Ex-post"  ',
       )
       .innerJoinAndMapOne('asse.project',
       Project,

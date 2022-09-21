@@ -235,16 +235,19 @@ export class AssesmentResaultController
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;
-    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken] =
+    let moduleLevelsFromTocken: number[];
+    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken,moduleLevelsFromTocken] =
       this.tokenDetails.getDetails([
         TokenReqestType.countryId,
         TokenReqestType.sectorId,
         TokenReqestType.InstitutionId,
+        TokenReqestType.moduleLevels
       ]);
     return await this.service.getAssessmentResultforDashboard(
       assesYear,
       countryIdFromTocken,
-      sectorIdFromTocken
+      sectorIdFromTocken,
+      moduleLevelsFromTocken
     );
   }
 

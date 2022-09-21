@@ -147,11 +147,15 @@ export class NdcController implements CrudController<Ndc> {
    
     let countryIdFromTocken:number;
     let sectorIdFromTocken:number ;
-   
+    let moduleLevelsFromTocken: number[];
 
   
 
-   [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+   [countryIdFromTocken,sectorIdFromTocken,moduleLevelsFromTocken]=    this.tokenDetails
+      .getDetails([
+        TokenReqestType.countryId,
+        TokenReqestType.sectorId,
+        TokenReqestType.moduleLevels]);
     
 
      return await this.service.getNdcForDashboard(
@@ -161,7 +165,8 @@ export class NdcController implements CrudController<Ndc> {
        },
        sectorId,
        countryIdFromTocken,
-       sectorIdFromTocken
+       sectorIdFromTocken,
+       moduleLevelsFromTocken
      
      );
    }
