@@ -18,7 +18,7 @@ constructor(
         let details:any[]=[];
         let user:any = this.request.user.user;
 
-        console.log("userToken====",user)
+        // console.log("userToken====",user)
         
         for(let det of reqDetails){
          switch(det){
