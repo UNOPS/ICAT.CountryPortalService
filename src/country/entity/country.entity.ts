@@ -84,6 +84,9 @@ export class Country extends BaseTrackingEntity{
   dataCollectionGhgModule: boolean;
 
   @Column({ default: null })
+  hasExelTem: boolean;
+
+  @Column({ default: null })
   uniqueIdentification: string;
 
 

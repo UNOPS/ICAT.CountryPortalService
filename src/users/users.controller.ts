@@ -32,7 +32,7 @@ import { Institution } from 'src/institution/institution.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { getConnection, Repository } from 'typeorm';
 
-import { CreateUserDto } from './dto/create-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 
@@ -83,7 +83,7 @@ export class UsersController implements CrudController<User> {
 
     try {
       let audit: AuditDto = new AuditDto();
-      let user= await queryRunner.manager.save(User, createUserDto);
+      let user= this.service.create(createUserDto);
       audit.action = createUserDto.username + ' Created';
       audit.comment = "User Created";
       audit.actionStatus = 'Created';
