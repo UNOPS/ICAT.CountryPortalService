@@ -220,7 +220,7 @@ else{
       'ndc.assesment',
       Assessment,
       'asse',
-      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post" and asse.isProposal= false',
+      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post"',
     )
     .innerJoinAndMapMany(
       'asse.assessmentResult',
