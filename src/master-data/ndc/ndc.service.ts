@@ -161,9 +161,9 @@ else{
       }
     }else if(moduleLevelsFromTocken[1]==1 || moduleLevelsFromTocken[2]==1){
       if (filter) {
-        filter = `${filter}  and  asse.isProposal= true  `;
+        filter = `${filter}  and  asse.isProposal= true and proj.projectApprovalStatusId in (1,4) `;
       } else {
-        filter = `asse.isProposal= true`;
+        filter = `asse.isProposal= true and proj.projectApprovalStatusId in (1,4) `;
       }
 
     }else{
@@ -214,13 +214,20 @@ else{
       'ndc.name'  ,
       'asse.id as asseId' ,
       'asseRslt.id as asseRsltId ',
-      'asseRslt.totalEmission '
+      'asseRslt.totalEmission ',
+      'proj.projectApprovalStatusId'
       ])
     .innerJoinAndMapMany(
       'ndc.assesment',
       Assessment,
       'asse',
-      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post" and asse.isProposal= false',
+      'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post"',
+    )
+    .innerJoinAndMapOne(
+      'asse.project',
+      Project,
+      'proj',
+      'asse.projectId = proj.id ',
     )
     .innerJoinAndMapMany(
       'asse.assessmentResult',

@@ -522,22 +522,22 @@ return false;
 
     if(moduleLevelsFromTocken[3]==1||moduleLevelsFromTocken[4]==1){
       if (filter) {
-        filter = `${filter}  and  asse.isProposal= false `;
+        filter = `${filter}  and  asse.isProposal= false and proj.projectApprovalStatusId = 5`;
       } else {
-        filter = `asse.isProposal= false`;
+        filter = `asse.isProposal= false and proj.projectApprovalStatusId = 5`;
       }
     }else if(moduleLevelsFromTocken[1]==1||moduleLevelsFromTocken[2]==1){
       if (filter) {
-        filter = `${filter}  and  asse.isProposal= true  `;
+        filter = `${filter}  and  asse.isProposal= true  and proj.projectApprovalStatusId in (1,4)`;
       } else {
-        filter = `asse.isProposal= true`;
+        filter = `asse.isProposal= true and proj.projectApprovalStatusId in (1,4)`;
       }
 
     }else{
       if (filter) {
-        filter = `${filter}  and  asse.isProposal= false `;
+        filter = `${filter}  and  asse.isProposal= false and proj.projectApprovalStatusId = 5 `;
       } else {
-        filter = `asse.isProposal= false`;
+        filter = `asse.isProposal= false and proj.projectApprovalStatusId = 5`;
       }
     }
 
@@ -573,7 +573,7 @@ return false;
       .innerJoinAndMapOne('asse.project',
       Project,
       'proj',
-      'proj.id=asse.projectId and proj.projectApprovalStatusId = 5')
+      'proj.id=asse.projectId ')
       .where(filter, {
         countryIdFromTocken,
         sectorIdFromTocken,
