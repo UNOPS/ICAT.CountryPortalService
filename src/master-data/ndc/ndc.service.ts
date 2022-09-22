@@ -177,18 +177,18 @@ else{
 
     if (countryIdFromTocken != 0) {
       if (filter) {
-        filter = `${filter}  and ndc.countryId = :countryIdFromTocken`;
+        filter = `${filter}  and proj.countryId = :countryIdFromTocken`;
       } else {
-        filter = `ndc.countryId = :countryIdFromTocken`;
+        filter = `proj.countryId = :countryIdFromTocken`;
       }
     }
 
 if(sectorIdFromTocken){ 
   // console.log('sectorIdFromTocken')
   if (filter) {
-    filter = `${filter}  and ndc.sectorId = :sectorIdFromTocken  `;
+    filter = `${filter}  and proj.sectorId = :sectorIdFromTocken  `;
   } else {
-    filter = `ndc.sectorId = :sectorIdFromTocken`; 
+    filter = `proj.sectorId = :sectorIdFromTocken`; 
 }}
 
 else{
@@ -197,10 +197,10 @@ else{
    
     if (filter) {
       // console.log('sectorId1',sectorId)
-      filter = `${filter}  and ndc.sectorId = :sectorId`;
+      filter = `${filter}  and proj.sectorId = :sectorId`;
     } else {
       // console.log('sectorId2',sectorId)
-      filter = `ndc.sectorId = :sectorId`;
+      filter = `proj.sectorId = :sectorId`;
     }
   }
 
