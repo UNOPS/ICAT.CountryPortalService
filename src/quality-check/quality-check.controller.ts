@@ -27,6 +27,7 @@ export class QualityCheckController
     @Query('filterText') filterText: string,
     @Query('ndcId') ndcId: number,
     @Query('subNdcId') subNdcId: number,
+    @Query('ctAction') ctAction: string,
   ): Promise<any> {
     // console.log(moment(editedOn).format('YYYY-MM-DD'))
     let countryIdFromTocken:number ;
@@ -44,6 +45,7 @@ export class QualityCheckController
       ndcId,
       subNdcId,
       countryIdFromTocken,
+      ctAction,
     );
   }
 

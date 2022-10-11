@@ -217,7 +217,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     let filter: string = '';
 
     
-      filter =' EXISTS (SELECT * FROM portelservice.assesment as ass1, portelservice.assesmentyear as assyr1 where ass1.id= assyr1.assessmentId and ass1.ghgAssessTypeForMac =asse.assessmentType and ay.assessmentYear=assyr1.assessmentYear and asse.projectId=ass1.projectId )'    
+      // filter =' EXISTS (SELECT * FROM portelservice.assesment as ass1, portelservice.assesmentyear as assyr1 where ass1.id= assyr1.assessmentId and ass1.ghgAssessTypeForMac =asse.assessmentType and ay.assessmentYear=assyr1.assessmentYear and asse.projectId=ass1.projectId )'    
 
   
 
@@ -225,7 +225,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       if (filter) {
         filter = `${filter}  and asse.assessmentType in ('Ex-post','Ex-ante')`;
       } else {
-        filter = `asse.assessmentType = in ('Ex-post','Ex-ante')`;
+        filter = `asse.assessmentType  in ('Ex-post','Ex-ante')`;
       }
     
 
@@ -360,6 +360,12 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         Project,
         'pt',
         'pt.id = asse.projectId',
+      )
+      .leftJoinAndMapOne(
+        'asse.assessmentResult',
+        AssessmentResault,
+        'ar',
+        'ar.assementId = asse.id',
       )
       .leftJoinAndMapMany(
         'asse.assessmentYear',
@@ -580,7 +586,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
     var data = this.repo
       .createQueryBuilder('as')
-      .leftJoinAndMapMany(
+      .innerJoinAndMapMany(
         'as.parameters',
         Parameter,
         'para',
@@ -593,7 +599,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'par.ParameterId = para.id',
       )
       .where(
-        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString(),
+        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString() + ' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')',
       );
 
     // .where(
@@ -621,7 +627,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
 
       .where(
-        'par.dataRequestStatus in (11) AND as.id =' + assessmentId.toString(),
+        'par.dataRequestStatus in (11) AND as.id =' + assessmentId.toString() + ' AND (pa.projectionBaseYear = ' + assessmenYear.toString() + ' OR  pa.AssessmentYear = ' + assessmenYear.toString()+')',
       );
     // console.log('data1SQL2', data2.getSql());
     let totalRecordsApprovedStatus: any[] = await data2.execute();
@@ -652,7 +658,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
     var data = this.repo
       .createQueryBuilder('as')
-      .leftJoinAndMapMany(
+      .innerJoinAndMapMany(
         'as.parameters',
         Parameter,
         'para',
