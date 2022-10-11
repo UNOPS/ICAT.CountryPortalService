@@ -44,6 +44,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     NDCId: number,
     SubNdcId: number,
     countryIdFromTocken:number,
+    ctAction: string,
   ): Promise<Pagination<AssessmentYear>> {
     // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
     let filter: string = `ae.qaStatus is not null`;
@@ -56,12 +57,18 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     if (QAstatusId != 0) {
       filter = `${filter}  and ae.qaStatus = :QAstatusId`;
     }
+    if (ctAction != null && ctAction != undefined && ctAction != '') {
+      filter = `${filter}  and p.climateActionName = '${ctAction}'`;
+      console.log("+++++++++++++" ,filter)
+  }
     if (NDCId != 0) {
       filter = `${filter}  and as.ndcId = :NDCId`;
     }
     if (SubNdcId != 0) {
       filter = `${filter}  and as.subNdcId = :SubNdcId`;
     }
+console.log("+++++++++++++" ,ctAction)
+    
 
     let data = this.assessmentYearRepo
       .createQueryBuilder('ae')
@@ -71,7 +78,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         'as',
         'ae.assessmentId = as.id',  //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
       )
-      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
+      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken} ` )
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -85,7 +92,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     // console.log(
     //   '=====================================================================',
     // );
-    console.log(data.getQuery());
+    // console.log(data.getQuery());
 
     let resualt = await paginate(data, options);
 

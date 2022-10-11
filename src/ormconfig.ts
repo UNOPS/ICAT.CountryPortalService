@@ -28,14 +28,14 @@ const config: ConnectionOptions = {
   // password: '12345',
   //database: 'nccdsndb',
   username: 'root',
-  password: '7860150',
+  password: 'pradeep123#',
   database: 'portelservice',
   // password: '12345',
   // database: 'portelservice',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 
   // We are using migrations, synchronize should be set to false.
-  synchronize: false ,
+  synchronize: false , 
 
   // Run migrations automatically,
   // you can disable this if you prefer running migration manually .
