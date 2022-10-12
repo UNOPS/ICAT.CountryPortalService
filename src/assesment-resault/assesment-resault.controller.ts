@@ -231,7 +231,7 @@ export class AssesmentResaultController
     @Query('assesYear') assesYear: number,
     
   ): Promise<any> {
-    console.log("work")
+    // console.log("work")
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;
