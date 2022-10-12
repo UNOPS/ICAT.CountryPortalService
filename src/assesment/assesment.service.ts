@@ -671,7 +671,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'par.ParameterId = para.id',
       )
       .where(
-        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString(),
+        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString()+' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')',
       );
 
     // .where(
@@ -688,17 +688,17 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       .leftJoinAndMapMany(
         'as.parameters',
         Parameter,
-        'pa',
-        'as.id = pa.assessmentId',
+        'para',
+        'as.id = para.assessmentId',
       )
       .leftJoinAndMapMany(
-        'pa.parameterRequest',
+        'para.parameterRequest',
         ParameterRequest,
         'par',
-        'par.ParameterId = pa.id',
+        'par.ParameterId = para.id',
       )
 
-      .where('par.qaStatus in (4) AND as.id =' + assessmentId.toString());
+      .where('par.qaStatus in (4) AND as.id =' + assessmentId.toString()+' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')');
     // console.log('data1SQL2', data2.getSql());
     let totalRecordsApprovedStatus: any[] = await data2.execute();
 
