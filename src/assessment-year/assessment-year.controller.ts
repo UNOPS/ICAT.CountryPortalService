@@ -420,7 +420,7 @@ export class AssessmentYearController
 
     })
     console.log(typeof (graphsData))
-    for (let gr of graphsData) {
+     for await (let gr of graphsData) {
       // console.log('gr',gr[1])
       await axios.post('http://localhost:8000/image', gr[1]).then(res => {
         // console.log(res.data)

@@ -28,7 +28,7 @@ const config: ConnectionOptions = {
   // password: '12345',
   //database: 'nccdsndb',
   username: 'root',
-  password: '7860150',
+  password: 'pradeep123#',
   database: 'portelservice',
   // password: '12345',
   // database: 'portelservice',
