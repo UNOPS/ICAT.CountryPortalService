@@ -855,6 +855,22 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     }
   }
 
+  getAssessmentsByCountryMethodology(methodId: number, countryId: number){
+    let filter = `asse.methodologyId = :methodId AND asse.countryId = :countryId`
+
+    let data = this.repo
+      .createQueryBuilder('asse')
+      .leftJoinAndMapOne(
+        'asse.methodology',
+        Methodology,
+        'meth',
+        'asse.methodologyId = meth.id',
+      )
+      .where(filter, { methodId, countryId });
+
+      return data.getMany()
+  }
+
 
 
   async testTransaction(): Promise<any> {
