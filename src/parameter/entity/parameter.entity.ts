@@ -71,6 +71,9 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isDefault: boolean;
 
+  @Column({nullable: true})
+  isHistorical: boolean;
+
   @Column({ nullable: true })
   vehical?: string;
 
