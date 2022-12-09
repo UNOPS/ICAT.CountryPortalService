@@ -258,6 +258,14 @@ export class AssesmentController implements CrudController<Assessment> {
     );
   }
 
+  @Get('get-assessments-by-country-methodology')
+  async getAssessmentsByCountryMethodology(
+    @Query('methodId') methodId: number,
+    @Query('countryId') countryId: number
+  ) {
+    return this.service.getAssessmentsByCountryMethodology(methodId, countryId)
+  }
+
   @Get('assessmentForMAC')
   async assessmentForMAC(
     @Request() request,
