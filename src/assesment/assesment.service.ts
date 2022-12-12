@@ -856,6 +856,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
   }
 
   async getAssessmentsByCountryMethodology(methodId: number, countryId: number){
+    let values = []
     let filter = `asse.methodologyId = :methodId AND asse.countryId = :countryId`
 
     let data = this.repo
@@ -867,31 +868,30 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'asse.methodologyId = meth.id',
       )
       .where(filter, { methodId, countryId });
-    
-      if (await data.getCount() === 0){
-        console.log("data count = 0")
-        let filter = `asse.methodologyId = :methodId AND project.countryId = :countryId`
 
-        let data = this.repo
-          .createQueryBuilder('asse')
-          .leftJoinAndMapOne(
-            'asse.methodology',
-            Methodology,
-            'meth',
-            'asse.methodologyId = meth.id',
-          )
-          .leftJoinAndMapOne(
-            'asse.project',
-            Project,
-            'project',
-            'asse.projectId = project.id',
-          )
-          .where(filter, { methodId, countryId });
+    values.push(... await data.getMany())
 
-        return data.getMany()
-      } else {
-        return data.getMany()
-      }
+    let filter2 = `asse.methodologyId = :methodId AND project.countryId = :countryId`
+
+    let data2 = this.repo
+      .createQueryBuilder('asse')
+      .leftJoinAndMapOne(
+        'asse.methodology',
+        Methodology,
+        'meth',
+        'asse.methodologyId = meth.id',
+      )
+      .leftJoinAndMapOne(
+        'asse.project',
+        Project,
+        'project',
+        'asse.projectId = project.id',
+      )
+      .where(filter2, { methodId, countryId });
+
+    values.push(... await data2.getMany())
+
+    return values
 
   }
 
