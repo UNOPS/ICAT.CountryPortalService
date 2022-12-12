@@ -469,6 +469,10 @@ export class AssesmentController implements CrudController<Assessment> {
             parent.institution = null;
           }
 
+          if (parent.isHistorical){
+            parent.institution = null;
+          }
+
           parent.parameterRequest = null;
           parent.verificationDetail = null;
           parent.isAlternative = false;
