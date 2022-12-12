@@ -1063,7 +1063,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'pas',
         'pas.id = dr.projectApprovalStatusId',
       )
-      .leftJoinAndMapMany(
+      .innerJoinAndMapMany(
         'dr.assessement',
         Assessment,
         'asse',
@@ -1093,7 +1093,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     // console.log(data.getQuery());
 
     let result = await paginate(data, options);
-    console.log("results..", result);
+    console.log("results..", data.getQuery());
+    console.log("results.===.", result);
     if (result) {
       return result;
     }
