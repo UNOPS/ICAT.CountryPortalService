@@ -60,6 +60,16 @@ export class ProjectionResaultController
     );
   }
 
+  @Get('checkAllQCApprovmentProjectionResult')
+  async checkAllQCApprovmentProjectionResult(
+    @Query('assementId') assementId: number,
+    
+  ):Promise<boolean> {
+    return await this.service.checkAllQCApprovmentProjectionResult(
+      assementId
+    );
+  }
+
   @Get('projection-resault/GetProjectionResult/:AssessmentId/:ProjectionYear')
   async GetProjectionResult(
     @Query('AssessmentId') AssessmentId: number,

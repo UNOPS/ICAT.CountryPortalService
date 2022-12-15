@@ -37,4 +37,26 @@ export class ProjectionResaultService extends TypeOrmCrudService<ProjectionResau
 
     return assessmentResault;
   }
+
+
+  async checkAllQCApprovmentProjectionResult(assementId:number):Promise<boolean>{
+
+    let result =await this.repo
+    .createQueryBuilder('dr')
+  
+    .where('dr.assementId=:assementId', {
+      assementId
+    }).getOne();
+    console.log('checkAllQCApprovmentAssessmentResult', assementId)
+    console.log('checkAllQCApprovmentAssessmentResult', result)
+    if(result){
+      if(result.qcStatus==4){
+        return true
+      }
+
+      return false
+    }
+
+return true;
+  }
 }
