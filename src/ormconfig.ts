@@ -22,16 +22,11 @@ import { ConnectionOptions } from 'typeorm';
 // Check typeORM documentation for more information.
 const config: ConnectionOptions = {
   type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  // username: 'root',
-  // password: '12345',
-  //database: 'nccdsndb',
-  username: 'root',
-  password: '7860150',
-  database: 'portelservice',
-  // password: '12345',
-  // database: 'portelservice',
+  socketPath: process.env.SOCKET_PATH,
+  port: Number(process.env.DATABASE_PORT),
+  username: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 
   // We are using migrations, synchronize should be set to false.
@@ -39,7 +34,7 @@ const config: ConnectionOptions = {
 
   // Run migrations automatically,
   // you can disable this if you prefer running migration manually .
-  migrationsRun: false,
+  migrationsRun: true,
   logging: true,
   logger: 'file',
 

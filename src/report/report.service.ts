@@ -1522,7 +1522,7 @@ let yrList:number[]=[];
                               <h4>Projection of GHG Emissions</h4>
                               <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assesment.projectionBaseYear} based on the ${assesment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
-                              <div><img src="http://localhost:7080/graph` + assesment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
+                              <div><img src="http://localhost:8080/graph` + assesment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
                               <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
                               </div>
                               </div>
@@ -2129,7 +2129,7 @@ let yrList:number[]=[];
       </tr></thead><tbody>${tableContent}</tbody>
       </table></div> 
       <div class="container-fluid mb-5" >${paragraph}</div>
-      <div><img src="http://localhost:7080/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
+      <div><img src="http://localhost:8080/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
       <div><p>Figure 1 Emissions reduction of ${reportData.sectors.toString()} sector of ${reportData.country
         }</p></div>
         <p><strong>Note:</strong> Only the emission reductions of Climate Actions calculated Ex-post using the tool are reflected in the Actual Emissions curve</p>
