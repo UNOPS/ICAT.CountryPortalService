@@ -28,7 +28,11 @@ export class ParameterRequest extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne((type) => Parameter, { cascade: false, onUpdate: 'RESTRICT' ,eager: true})
+  @OneToOne((type) => Parameter, {
+    cascade: false,
+    onUpdate: 'RESTRICT',
+    eager: true,
+  })
   @JoinColumn({ name: 'ParameterId' })
   parameter?: Parameter;
 

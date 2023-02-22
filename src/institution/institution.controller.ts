@@ -24,7 +24,7 @@ import { InstitutionService } from './institution.service';
 import { basename } from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
-import {Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { getConnection } from 'typeorm';
 import { request } from 'http';
 import { AuditDto } from 'src/audit/dto/audit-dto';
@@ -196,7 +196,7 @@ export class InstitutionController implements CrudController<Institution> {
   @UseGuards(JwtAuthGuard)
   @Get('deactivateInstituion')
   async deactivateInstitution(@Query('instiId') instiId: number): Promise<any> {
-    let audit: AuditDto = new AuditDto();
+    const audit: AuditDto = new AuditDto();
     audit.action = 'Institution Deactivated';
     audit.comment = 'Institution Deactivated';
     audit.actionStatus = 'Deactivated';
@@ -209,29 +209,32 @@ export class InstitutionController implements CrudController<Institution> {
   @Get('getInstitutionforAssesment')
   async getInstitutionforAssesment(): Promise<any> {
     console.log('wwwwwwwwwwwwwwwwwwww');
-    let countryIdFromTocken:number ;
-    let sectorIdFromTocken:number;
-  
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
-
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
     return await this.service.getInstitutionforAssesment(countryIdFromTocken);
   }
-  
 
   @UseGuards(JwtAuthGuard)
   @Get('getInstitutionforApproveData')
   async getInstitutionforApproveData(): Promise<any> {
-    
-    let countryIdFromTocken:number ;
-    let sectorIdFromTocken:number;
-  
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
-
-    return await this.service.getInstitutionforApproveData(countryIdFromTocken,sectorIdFromTocken);
+    return await this.service.getInstitutionforApproveData(
+      countryIdFromTocken,
+      sectorIdFromTocken,
+    );
   }
   // @Override()
   // //@UseInterceptors(InstitutionFilterInterceptor, CrudRequestInterceptor)
@@ -264,7 +267,6 @@ export class InstitutionController implements CrudController<Institution> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Institution,
   ): Promise<Institution> {
-
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
     try {
@@ -293,10 +295,10 @@ export class InstitutionController implements CrudController<Institution> {
       // dto.sector = null;
 
       console.log(dto);
-      let newInstitution= await queryRunner.manager.save(Institution ,dto);
+      const newInstitution = await queryRunner.manager.save(Institution, dto);
       // let newInstitution = await this.base.createOneBase(req, dto);
 
-      let audit: AuditDto = new AuditDto();
+      const audit: AuditDto = new AuditDto();
       audit.action = newInstitution.name + ' Created';
       audit.comment = newInstitution.name + ' Created';
       audit.actionStatus = 'Created';
@@ -306,9 +308,8 @@ export class InstitutionController implements CrudController<Institution> {
 
       await queryRunner.commitTransaction();
       return newInstitution;
-    }
-    catch (err) {
-      console.log("worktran2")
+    } catch (err) {
+      console.log('worktran2');
       console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
@@ -316,7 +317,7 @@ export class InstitutionController implements CrudController<Institution> {
       await queryRunner.release();
     }
     // try {
-     
+
     // } catch (error) {
     //   console.log('ssssssssssssaaaaaaaaaaaaaaaaaaa');
     //   console.log('error');
@@ -331,16 +332,18 @@ export class InstitutionController implements CrudController<Institution> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Institution,
   ): Promise<Institution> {
-
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
 
     try {
-      dto.editedOn= new Date()
-      let updateInstitution= await queryRunner.manager.save(Institution,dto);
+      dto.editedOn = new Date();
+      const updateInstitution = await queryRunner.manager.save(
+        Institution,
+        dto,
+      );
       // let updateInstitution = await this.base.updateOneBase(req, dto);
       if (updateInstitution.status == 0) {
-        let audit: AuditDto = new AuditDto();
+        const audit: AuditDto = new AuditDto();
         audit.action = updateInstitution.name + ' Institution Updated';
         audit.comment = 'Institution Updated';
         audit.actionStatus = 'Updated';
@@ -349,16 +352,14 @@ export class InstitutionController implements CrudController<Institution> {
       }
       await queryRunner.commitTransaction();
       return updateInstitution;
-    }
-    catch (err) {
-      console.log("worktran2")
+    } catch (err) {
+      console.log('worktran2');
       console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
       await queryRunner.release();
     }
-   
   }
   // @Override()
   // async getMany(
@@ -389,7 +390,8 @@ export class InstitutionController implements CrudController<Institution> {
     let InstitutionIdFromTocken: number;
     let role: string;
 
-    [countryIdFromTocken, sectorIdFromTocken, InstitutionIdFromTocken,role] =this.tokenDetails.getDetails([
+    [countryIdFromTocken, sectorIdFromTocken, InstitutionIdFromTocken, role] =
+      this.tokenDetails.getDetails([
         TokenReqestType.countryId,
         TokenReqestType.sectorId,
         TokenReqestType.InstitutionId,
@@ -401,7 +403,7 @@ export class InstitutionController implements CrudController<Institution> {
 
     console.log('InstitutionIdFromTocken====', InstitutionIdFromTocken);
 
-    let resault = await this.service.getInstitutionForManageUsers(
+    const resault = await this.service.getInstitutionForManageUsers(
       {
         limit: limit,
         page: page,
@@ -409,26 +411,19 @@ export class InstitutionController implements CrudController<Institution> {
       countryIdFromTocken,
       sectorIdFromTocken,
       InstitutionIdFromTocken,
-      role
+      role,
     );
 
     return resault;
   }
 
-
- 
   @Get('getInstitutionForUsers')
   async getInstitutionForUsers(
     @Request() request,
     @Query('insId') insId: number,
     @Query('userType') userType: number,
   ): Promise<any> {
-   
-
-    let resault = await this.service.getInstitutionForUsers(
-   insId,
-   userType
-    );
+    const resault = await this.service.getInstitutionForUsers(insId, userType);
 
     return resault;
   }

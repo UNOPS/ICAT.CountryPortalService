@@ -33,13 +33,13 @@ export class Institution extends BaseTrackingEntity {
   @Column({ nullable: false })
   name: string;
 
-  @Column({ length: 300, nullable: true  })
+  @Column({ length: 300, nullable: true })
   description: string;
 
   @Column()
   sortOrder: number;
 
-  @ManyToOne((type) => InstitutionCategory,  { cascade: false, nullable: true })
+  @ManyToOne((type) => InstitutionCategory, { cascade: false, nullable: true })
   @JoinColumn()
   category: InstitutionCategory;
 
@@ -60,17 +60,17 @@ export class Institution extends BaseTrackingEntity {
   @Column({ default: 0 })
   canNotDelete?: boolean;
 
-  @Column({ length: 100 ,nullable: true })
+  @Column({ length: 100, nullable: true })
   address: string;
 
   @Column({ name: 'sectorId' })
   sectorId: number;
 
-  @ManyToOne((type) => Sector, { cascade: false, nullable: true ,eager:true})
+  @ManyToOne((type) => Sector, { cascade: false, nullable: true, eager: true })
   @JoinColumn()
   sector?: Sector;
 
-  @ManyToOne((type) => Country, { cascade: false, nullable: true ,eager:true})
+  @ManyToOne((type) => Country, { cascade: false, nullable: true, eager: true })
   @JoinColumn()
   country: Country;
 

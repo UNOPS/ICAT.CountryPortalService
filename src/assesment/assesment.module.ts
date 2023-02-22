@@ -53,6 +53,12 @@ import { EmailNotificationService } from 'src/notifications/email.notification.s
     TokenDetails,
     EmailNotificationService,
   ],
-  exports: [AssesmentService, Parameter, AssessmentYear, AuditService,EmailNotificationService],
+  exports: [
+    AssesmentService,
+    Parameter,
+    AssessmentYear,
+    AuditService,
+    EmailNotificationService,
+  ],
 })
 export class AssesmentModule {}

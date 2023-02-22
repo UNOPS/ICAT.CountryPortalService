@@ -52,7 +52,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     assesmentId: number,
     assessmentYear: number,
   ): Promise<any> {
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapMany(
         'dr.parameter',
@@ -77,7 +77,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<Pagination<any>> {
-    let whereCond = (
+    const whereCond = (
       (climateActionId != 0
         ? `p.id=${climateActionId} AND  p.countryId = ${countryIdFromTocken} AND `
         : '') +
@@ -93,7 +93,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     console.log(whereCond);
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
         'dr.parameter',
@@ -148,7 +148,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       .orderBy('dr.createdOn', 'DESC')
       .groupBy('dr.id');
     console.log(options);
-    let result = await paginate(data, options);
+    const result = await paginate(data, options);
 
     // let pageResult = data
     //   .skip((options.limit as number) * ((options.page as number) - 1))
@@ -171,7 +171,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<Pagination<any>> {
-    let whereCond = (
+    const whereCond = (
       (climateActionId != 0
         ? `p.id=${climateActionId} AND  p.countryId = ${countryIdFromTocken} AND `
         : '') +
@@ -187,7 +187,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     console.log(whereCond);
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .select(['dr.id', 'para.id ', 'a.id as aid', 'p.id as pid'])
       .leftJoinAndMapOne(
@@ -226,7 +226,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       .orderBy('dr.createdOn', 'DESC')
       .groupBy('dr.id');
     console.log(options);
-    let result = await paginate(data, options);
+    const result = await paginate(data, options);
 
     if (result) {
       // console.log(result);
@@ -239,13 +239,13 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     options: IPaginationOptions,
     filterText: string,
   ): Promise<Pagination<any>> {
-    let filter: string = '';
+    let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
         '(dr.climateActionName LIKE :filterText  OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
     }
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapMany(
         'dr.parameter',
@@ -278,7 +278,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         filterText: `%${filterText}%`,
       })
       .orderBy('dr.createdOn', 'DESC');
-    let result = await data.execute();
+    const result = await data.execute();
     //   console.log('result2', result2);
     if (result) {
       return result;
@@ -291,10 +291,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     climateActionId: number,
     userName: string,
   ): Promise<Pagination<any>> {
-    let userItem = await this.userService.findByUserName(userName);
-    let institutionId = userItem.institution ? userItem.institution.id : 0;
+    const userItem = await this.userService.findByUserName(userName);
+    const institutionId = userItem.institution ? userItem.institution.id : 0;
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
         'dr.parameterId',
@@ -354,7 +354,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     //   .skip((options.limit as number) * ((options.page as number) - 1))
     //   .take(options.limit as number);
     //console.log('data2', data);
-    let result = await paginate(data, options);
+    const result = await paginate(data, options);
     //let result = await data.execute();
     //   console.log('result2', result2);
     if (result) {
@@ -369,13 +369,13 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     year: string,
     userName: string,
   ): Promise<Pagination<any>> {
-    let userItem = await this.userService.findByUserName(userName);
+    const userItem = await this.userService.findByUserName(userName);
     // console.log("userItem..",userItem.institution.id)
-    let userId = userItem ? userItem.id : 0;
-    let insId = userItem ? userItem.institution.id : 0;
+    const userId = userItem ? userItem.id : 0;
+    const insId = userItem ? userItem.institution.id : 0;
 
     if (userItem.userType.name != 'Institution Admin') {
-      let data = this.repo
+      const data = this.repo
         .createQueryBuilder('dr')
         .leftJoinAndMapOne(
           'dr.parameterId',
@@ -411,13 +411,13 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         .groupBy('dr.id')
         .orderBy('dr.deadline', 'DESC');
 
-      let result = await paginate(data, options);
+      const result = await paginate(data, options);
 
       if (result) {
         return result;
       }
     } else {
-      let data = this.repo
+      const data = this.repo
         .createQueryBuilder('dr')
         .leftJoinAndMapOne(
           'dr.parameterId',
@@ -457,7 +457,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         )
         .orderBy('dr.deadline', 'DESC');
 
-      let result = await paginate(data, options);
+      const result = await paginate(data, options);
 
       if (result) {
         return result;
@@ -474,10 +474,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     userName: string,
   ): Promise<Pagination<any>> {
     console.log('userName', userName);
-    let userItem = await this.userService.findByUserName(userName);
-    let institutionId = userItem.institution ? userItem.institution.id : 0;
+    const userItem = await this.userService.findByUserName(userName);
+    const institutionId = userItem.institution ? userItem.institution.id : 0;
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
         'dr.parameter',
@@ -536,7 +536,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .groupBy('dr.id');
 
-    let result = await paginate(data, options);
+    const result = await paginate(data, options);
 
     // let pageResult = data
     //   .skip((options.limit as number) * ((options.page as number) - 1))
@@ -558,14 +558,14 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
 
-      let ss = await this.paramterRepo.findByIds([
+      const ss = await this.paramterRepo.findByIds([
         dataRequestItem.parameter.id,
       ]);
       if (ss[0].institution != null) {
         console.log('sssssss', ss);
-        var template =
+        const template =
           'Dear ' +
           ss[0].institution.name +
           '<br/>Data request with following information has shared with you.' +
@@ -582,7 +582,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         );
       }
 
-      let originalStatus = dataRequestItem.dataRequestStatus;
+      const originalStatus = dataRequestItem.dataRequestStatus;
       dataRequestItem.deadline = updateDataRequestDto.deadline;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
       //dataRequestItemList.push(dataRequestItem);
@@ -610,16 +610,16 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
       console.log('updateDataRequestDto', updateDataRequestDto);
-      let user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
+      const user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
 
-      let originalStatus = dataRequestItem.dataRequestStatus;
+      const originalStatus = dataRequestItem.dataRequestStatus;
       dataRequestItem.deadlineDataEntry = updateDataRequestDto.deadline;
       dataRequestItem.UserDataEntry = updateDataRequestDto.userId;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
 
-      var template =
+      const template =
         'Dear ' +
         user[0].fullName +
         ' ' +
@@ -667,8 +667,8 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      let originalStatus = dataRequestItem
+      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      const originalStatus = dataRequestItem
         ? dataRequestItem.dataRequestStatus
         : 0;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
@@ -697,9 +697,9 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         );
       });
 
-      let filter: string = '';
+      let filter = '';
       filter = `dr.id = :id`;
-      let data = this.repo
+      const data = this.repo
         .createQueryBuilder('dr')
         .leftJoinAndMapOne(
           'dr.parameter',
@@ -708,22 +708,22 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           'dr.ParameterId= pm.id',
         )
         .where(filter, { id });
-      let result = await data.getOne();
+      const result = await data.getOne();
       // console.log("data...",result)
 
       const paraId = result.parameter.id;
       console.log('paraid', paraId);
-      let parameterItem = await this.paramterRepo.findOne({
+      const parameterItem = await this.paramterRepo.findOne({
         where: { id: paraId },
       });
       if (parameterItem.isDefault == true) {
-        let defaultVal = parameterItem.value;
+        const defaultVal = parameterItem.value;
         // console.log("defaultVal",defaultVal)
         // let defaultValId = parameterItem.defaultValue.id;
 
-        let filter: string = '';
+        let filter = '';
         filter = `pr.id = :paraId`;
-        let data2 = this.defaultValRepo
+        const data2 = this.defaultValRepo
           .createQueryBuilder('df')
           .leftJoinAndMapOne(
             'df.parameter',
@@ -732,27 +732,29 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
             'df.id = pr.defaultValueId',
           )
           .where(filter, { paraId });
-        let result2 = await data2.getOne();
+        const result2 = await data2.getOne();
         //  console.log("result2",result2)
 
-        let defaultValId = result2.id;
+        const defaultValId = result2.id;
         // console.log("defaultValId",defaultValId)
-        let defaultValObject = await this.defaultValRepo.findOne({
+        const defaultValObject = await this.defaultValRepo.findOne({
           where: { id: defaultValId },
         });
         defaultValObject.value = defaultVal;
-        let savedObject = await this.defaultValRepo.save(defaultValObject);
+        const savedObject = await this.defaultValRepo.save(defaultValObject);
         // console.log("defaultValObject...",defaultValObject)
       }
     }
-    let user:User[];
-    let ins = await this.institutionRepo.findOne({
+    let user: User[];
+    const ins = await this.institutionRepo.findOne({
       where: { country: inscon, sector: insSec, type: 2 },
     });
-    user= await this.userRepo.find({where:{country:inscon,userType:6,institution:ins}})
-    user.forEach((ab)=>{
+    user = await this.userRepo.find({
+      where: { country: inscon, userType: 6, institution: ins },
+    });
+    user.forEach((ab) => {
       console.log('=========', ins);
-      var template: any;
+      let template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
           'Dear ' +
@@ -774,10 +776,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
         // '<br/> value -:' + dataRequestItem.parameter.value;
       }
-  
+
       this.emaiService.sendMail(ab.email, 'Accepted parameter', '', template);
-    })
-    
+    });
+
     // this.repo.save(dataRequestItemList);
 
     return true;
@@ -790,13 +792,13 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      let originalStatus = dataRequestItem.dataRequestStatus;
+      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      const originalStatus = dataRequestItem.dataRequestStatus;
       dataRequestItem.noteDataRequest = updateDataRequestDto.comment;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
       dataRequestItem.UserDataEntry = updateDataRequestDto.userId;
 
-      let email = dataRequestItem.parameter.institution.email;
+      const email = dataRequestItem.parameter.institution.email;
       var template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
@@ -848,14 +850,14 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      let originalStatus = dataRequestItem.dataRequestStatus;
+      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      const originalStatus = dataRequestItem.dataRequestStatus;
 
-      let user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
+      const user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
       let template: any;
 
       if (updateDataRequestDto.status === -9) {
-        let ins = dataRequestItem.parameter;
+        const ins = dataRequestItem.parameter;
         template =
           'Dear ' +
           ins.institution.name +
@@ -932,7 +934,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   }
 
   async getClimateActionByDataRequestStatus(): Promise<any> {
-    let data = this.ProjectRepo.createQueryBuilder('pr')
+    const data = this.ProjectRepo.createQueryBuilder('pr')
       .leftJoinAndMapMany(
         'pr.Assessment',
         Assessment,
@@ -953,13 +955,13 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .where('paraReq.dataRequestStatus = ' + 2);
 
-    let result = await data.getMany();
+    const result = await data.getMany();
 
     return result;
   }
 
   async getClimateActionByDataRequestStatusSix(): Promise<any> {
-    let data = this.ProjectRepo.createQueryBuilder('pr')
+    const data = this.ProjectRepo.createQueryBuilder('pr')
       .leftJoinAndMapMany(
         'pr.Assessment',
         Assessment,
@@ -980,7 +982,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .where('paraReq.dataRequestStatus = ' + 6);
 
-    let result = await data.getMany();
+    const result = await data.getMany();
 
     return result;
   }

@@ -138,20 +138,19 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
       isGlobal: true,
     }),
     MailerModule.forRoot({
-      transport:{
+      transport: {
         // service: 'gmail',
-        host: 'smtp.office365.com', 
-        port:587,
-       secure: false, 
-      //  ignoreTLS: true,
-       
-       auth: {
-        user: "no-reply-icat-ca-tool@climatesi.com",
-        pass: "ICAT2022tool",
-        // user: "pradeep@climatesi.com",
-        // pass: "RPpkr95#",
+        host: 'smtp.office365.com',
+        port: 587,
+        secure: false,
+        //  ignoreTLS: true,
 
-      },
+        auth: {
+          user: 'no-reply-icat-ca-tool@climatesi.com',
+          pass: 'ICAT2022tool',
+          // user: "pradeep@climatesi.com",
+          // pass: "RPpkr95#",
+        },
         // 'smtp://janiya.rolfson49@ethereal.email:T8pnMS7xzzX7k3QSkM@ethereal.email',
       },
       defaults: {
@@ -185,7 +184,6 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
     UnitConversionModule,
     TrackClimateModule,
     CaActionHistoryModule,
-    
   ],
   controllers: [
     AppController,
@@ -219,6 +217,6 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
     // UserController,
   ],
 
-  providers: [AppService, SubsectionService,TokenDetails,],
+  providers: [AppService, SubsectionService, TokenDetails],
 })
 export class AppModule {}

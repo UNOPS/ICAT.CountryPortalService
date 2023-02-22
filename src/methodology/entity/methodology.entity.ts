@@ -109,7 +109,6 @@ export class Methodology extends BaseTrackingEntity {
   // @JoinColumn({ name: 'applicabilityId' })
   // applicability?: ApplicabilityEntity;
 
-
   @ManyToMany((type) => Ndc, {
     eager: true,
     cascade: false,
@@ -130,9 +129,7 @@ export class Methodology extends BaseTrackingEntity {
   )
   methodologySubsection: SubsectionEntity[];
 
-  
   @ManyToOne((type) => MethodologyData, { cascade: false })
   @JoinColumn({ name: 'methodId' })
   method?: MethodologyData;
-
 }

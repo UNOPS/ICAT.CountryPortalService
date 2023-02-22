@@ -5,7 +5,7 @@ import { NdcSet } from './ndc-set.entity';
 
 @Injectable()
 export class NdcSetService extends TypeOrmCrudService<NdcSet> {
-    constructor(@InjectRepository(NdcSet) repo) {
-        super(repo);
-      }
+  constructor(@InjectRepository(NdcSet) repo) {
+    super(repo);
+  }
 }

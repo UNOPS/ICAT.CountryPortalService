@@ -13,7 +13,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { request, response } from 'express';
-import { createReadStream,readFile } from 'fs';
+import { createReadStream, readFile } from 'fs';
 import { AssesmentResaultService } from 'src/assesment-resault/assesment-resault.service';
 import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
 import { Assessment } from 'src/assesment/entity/assesment.entity';
@@ -63,7 +63,7 @@ export class ReportController implements CrudController<Report> {
     public yrService: AssessmentYearService,
     public resaultService: AssesmentResaultService,
     private readonly tokenDetails: TokenDetails,
-  ) { }
+  ) {}
 
   get base(): CrudController<Report> {
     return this;
@@ -85,14 +85,12 @@ export class ReportController implements CrudController<Report> {
     @Query('projectId') projectId: number,
     @Query('assessmentType') assessmentType: string,
   ): Promise<any> {
-
     let countryIdFromTocken: number;
     // let sectorIdFromTocken: number;
 
-
-    [countryIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId])
-
-
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
 
     return await this.service.getReportDetails(
       {
@@ -105,7 +103,7 @@ export class ReportController implements CrudController<Report> {
       ndcId,
       projectId,
       assessmentType,
-      countryIdFromTocken
+      countryIdFromTocken,
     );
   }
 
@@ -115,23 +113,26 @@ export class ReportController implements CrudController<Report> {
     return res;
   }
 
-
   @UseGuards(JwtAuthGuard)
   @Post(
     // 'report/reportinfo/:page/:limit/:filterText/:countryId/:sectorId/:ndcId/:projectId/:assessmentType',
     'reportPDF',
   )
   async getReportPDF(@Body() reportData: ReportDataPDF): Promise<any> {
-
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
-
-    [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
-    const res = await this.service.testPDF(reportData,countryIdFromTocken,sectorIdFromTocken);
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
+    const res = await this.service.testPDF(
+      reportData,
+      countryIdFromTocken,
+      sectorIdFromTocken,
+    );
     return { fileName: res };
   }
-
 
   @Post('reportPdfFileData')
   async getReportPdfFileData(@Body() dto: ReportPdfInsert): Promise<any> {
@@ -148,35 +149,30 @@ export class ReportController implements CrudController<Report> {
     @Query('sector') sector: string,
     @Query('reportName') reportName: string,
   ) {
-
     let countryIdFromTocken: number;
     // let sectorIdFromTocken: number;
 
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
 
-    [countryIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId])
-
-    let restult = await this.service.getPdfFileData(
+    const restult = await this.service.getPdfFileData(
       ndc,
       climateAction,
       sector,
       reportName,
-      countryIdFromTocken
+      countryIdFromTocken,
     );
-
 
     return restult;
   }
-
 
   @Get('parameterData/:assesId/:assesYear')
   async getParameterData(
     @Query('assesId') assesId: string,
     @Query('assesYear') assesYear: string,
   ): Promise<any> {
-    let restult = await this.service.getParameterData(
-      assesId,
-      assesYear,
-    );
+    const restult = await this.service.getParameterData(assesId, assesYear);
     return restult;
   }
 
@@ -190,18 +186,17 @@ export class ReportController implements CrudController<Report> {
     // @Query('macAssessType') macAssessType: string[],
     @Query('yearsId') yearsId: number[],
     @Query('selectAllSectors') selectAllSectors: boolean,
-    @Query('sectorIds') sectorIds: number[]
+    @Query('sectorIds') sectorIds: number[],
   ): Promise<any> {
-
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
-    [countryIdFromTocken,sectorIdFromTocken]= this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
-
-
-
-    let imageName = await this.service.generateChartForDownlord(
+    const imageName = await this.service.generateChartForDownlord(
       // years,
       projIds,
       assessType,
@@ -209,31 +204,25 @@ export class ReportController implements CrudController<Report> {
       sectorIds,
       yearsId,
       countryIdFromTocken,
-      sectorIdFromTocken
+      sectorIdFromTocken,
     );
-  
 
     return `{"name":"${imageName}"}`;
-
   }
 
   @Get('chartDataImage/:img')
   async getChartDownlordDataImage(
     @Res({ passthrough: true }) res,
-   
+
     @Param('img') img: string,
-   
   ): Promise<any> {
-  
     res.set({
       'Content-Type': `image/png`,
-      'Content-Disposition': `attachment; filename= emmision_reduction.png`
-    })
-  
+      'Content-Disposition': `attachment; filename= emmision_reduction.png`,
+    });
 
-    const file = createReadStream('./public/'+img);
+    const file = createReadStream('./public/' + img);
     return new StreamableFile(file);
-
   }
 
   // @Post('newReportInfo')
@@ -310,14 +299,14 @@ export class ReportController implements CrudController<Report> {
   async getFinalReportDetails(
     @Body() getReportDto: GetReportDto,
   ): Promise<any> {
-    var finalReport = new ReportResponseDto();
+    const finalReport = new ReportResponseDto();
     let assesment = new Assessment();
     let project = new Project();
     let parameter: Parameter[] = [];
-    let assemenntIdList: number[] = new Array();
+    const assemenntIdList: number[] = [];
     let yr: AssessmentYear[] = [];
-    let res: AssessmentResault[] = [];
-    let resault: AssessmentResault[] = [];
+    const res: AssessmentResault[] = [];
+    const resault: AssessmentResault[] = [];
 
     // console.log('new project infor API request==================',getReportDto.project[0].climateActionName)
 
@@ -329,7 +318,7 @@ export class ReportController implements CrudController<Report> {
         finalReport.sector.push(project.sector);
         finalReport.ndc.push(project.ndc);
 
-        for (var b = 0; b < getReportDto.project[a].assessments.length; b++) {
+        for (let b = 0; b < getReportDto.project[a].assessments.length; b++) {
           assesment = getReportDto.project[a].assessments[b];
 
           //get assessments based on selected assessment type

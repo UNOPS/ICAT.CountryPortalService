@@ -8,16 +8,14 @@ import { CountrySector } from './entity/country-sector.entity';
 import { Country } from './entity/country.entity';
 
 @Injectable()
-export class CountryService extends TypeOrmCrudService<Country>{
-    constructor(
-        @InjectRepository(Country) repo,
-        @InjectRepository(CountrySector)
-        private readonly CountrySectorRepo: Repository<CountrySector>,
-        @InjectRepository(Sector)
-        private readonly SectorRepo: Repository<Sector>,) {
-        super(repo);
-
-    }
-
-   
+export class CountryService extends TypeOrmCrudService<Country> {
+  constructor(
+    @InjectRepository(Country) repo,
+    @InjectRepository(CountrySector)
+    private readonly CountrySectorRepo: Repository<CountrySector>,
+    @InjectRepository(Sector)
+    private readonly SectorRepo: Repository<Sector>,
+  ) {
+    super(repo);
+  }
 }

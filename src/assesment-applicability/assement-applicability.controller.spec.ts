@@ -9,7 +9,9 @@ describe('AssementApplicabilityController', () => {
       controllers: [AssementApplicabilityController],
     }).compile();
 
-    controller = module.get<AssementApplicabilityController>(AssementApplicabilityController);
+    controller = module.get<AssementApplicabilityController>(
+      AssementApplicabilityController,
+    );
   });
 
   it('should be defined', () => {

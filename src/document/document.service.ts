@@ -17,8 +17,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Country } from 'src/country/entity/country.entity';
 import { In } from 'typeorm';
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 @Injectable()
 export class DocumentService extends TypeOrmCrudService<Documents> {
@@ -36,7 +36,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
   }
 
   async deleteDocument(docId: number): Promise<any> {
-    let document = await this.repo
+    const document = await this.repo
       .createQueryBuilder('document')
       .where('id=:id', {
         id: docId,
@@ -45,7 +45,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     console.log('document.....', document);
     if (document) {
       console.log('document Deleted.....', document);
-      let del = await this.repo.delete(document);
+      const del = await this.repo.delete(document);
       // console.log("document.....1",del)
       this.deleteFile(document.relativePath);
     }
@@ -65,7 +65,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
   }
 
   async anonymousDeleteDocument(docId: number): Promise<any> {
-    let document = await this.repo
+    const document = await this.repo
       .createQueryBuilder('document')
       .where('countryId = :countryId AND id=:id', {
         countryId: 0,
@@ -79,7 +79,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     // }); //this.getDocument(docId);
     console.log('document.....', document);
     if (document) {
-      let del = await this.repo.delete(document).catch((a) => {
+      const del = await this.repo.delete(document).catch((a) => {
         return a;
       });
       // console.log("document.....1",del)
@@ -101,8 +101,8 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
   }
 
   deleteFile(filepath: string) {
-    let rootPath = path.resolve('./');
-    let fullfilePath = join(rootPath, statticFileLocation, filepath);
+    const rootPath = path.resolve('./');
+    const fullfilePath = join(rootPath, statticFileLocation, filepath);
     console.log(fullfilePath);
     if (fs.existsSync(fullfilePath)) {
       fs.unlinkSync(fullfilePath);
@@ -118,9 +118,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     owner: DocumentOwner,
     countryIdFromTocken: number,
   ): Promise<Documents[]> {
-    let country = new Country();
+    const country = new Country();
     country.id = countryIdFromTocken;
-    let documenst = await this.repo.find({
+    const documenst = await this.repo.find({
       where: {
         documentOwnerId: oid,
         documentOwner: owner,
@@ -141,9 +141,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     oid: number,
     countryIdFromTocken: number,
   ): Promise<Documents[]> {
-    let country = new Country();
+    const country = new Country();
     country.id = countryIdFromTocken;
-    let documenst = await this.repo.find({
+    const documenst = await this.repo.find({
       where: { documentOwnerId: oid, country: country },
     });
     console.log(documenst);

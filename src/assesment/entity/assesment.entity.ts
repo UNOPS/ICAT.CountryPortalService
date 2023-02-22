@@ -50,8 +50,8 @@ export class Assessment extends BaseTrackingEntity {
   @Column({ nullable: true })
   projectDuration: number;
 
-  @Column({ nullable: true }) // renamed entity 
-  ghgAssessTypeForMac: string; 
+  @Column({ nullable: true }) // renamed entity
+  ghgAssessTypeForMac: string;
 
   @Column({ default: 0 })
   assessmentStatus: AssessmentStatus; // Published or Report Generation or Data Collection or QA or QD ...
@@ -75,7 +75,7 @@ export class Assessment extends BaseTrackingEntity {
   isGuided: boolean;
 
   @Column({ nullable: true })
-  isProposal: boolean;     
+  isProposal: boolean;
 
   @Column({ nullable: true })
   lekageScenario: string;
@@ -95,7 +95,7 @@ export class Assessment extends BaseTrackingEntity {
   @Column({ nullable: true })
   methodologyVersion: string;
 
-  @ManyToOne((type) => Country, { cascade: false, nullable: true ,eager:true})
+  @ManyToOne((type) => Country, { cascade: false, nullable: true, eager: true })
   country?: Country;
 
   @ManyToOne(() => Methodology, (methodology) => methodology.assessments, {
@@ -110,7 +110,7 @@ export class Assessment extends BaseTrackingEntity {
   @ManyToOne(() => Project, (project) => project.assessments, {
     cascade: false,
     nullable: true,
-    eager:true
+    eager: true,
   })
   // @JoinColumn()
   project: Project;
@@ -138,11 +138,10 @@ export class Assessment extends BaseTrackingEntity {
   @OneToMany(
     () => AssessmentResault,
     (assessmentResult) => assessmentResult.assement,
-    { cascade: false, nullable: true }
+    { cascade: false, nullable: true },
   )
   //  @JoinColumn()
   assessmentResult: AssessmentResault[];
-
 
   @ManyToOne(() => MitigationActionType, { cascade: false, nullable: true })
   // @JoinColumn()
@@ -164,8 +163,6 @@ export class Assessment extends BaseTrackingEntity {
   @JoinColumn()
   parameters: Parameter[];
 
-
-
   // @ManyToOne(() => AssesmentApplication, { cascade: false, nullable: true })
   // // @JoinColumn()
   // assessmentApplication: AssesmentApplication;
@@ -183,11 +180,16 @@ export class Assessment extends BaseTrackingEntity {
   @JoinTable()
   applicability?: ApplicabilityEntity[];
 
-  @OneToMany(() => ReportAssessment,(reportAssessment) => reportAssessment.assessment ,{nullable: true})
+  @OneToMany(
+    () => ReportAssessment,
+    (reportAssessment) => reportAssessment.assessment,
+    { nullable: true },
+  )
   public reportAssessment!: ReportAssessment[];
 
-  @OneToMany(() => ProjectionResault, (projectiondata) => projectiondata.assement)
-  projectionResult: ProjectionResault[]
-
-
+  @OneToMany(
+    () => ProjectionResault,
+    (projectiondata) => projectiondata.assement,
+  )
+  projectionResult: ProjectionResault[];
 }

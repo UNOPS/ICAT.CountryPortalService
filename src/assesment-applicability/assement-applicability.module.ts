@@ -4,6 +4,6 @@ import { AssementApplicabilityService } from './assement-applicability.service';
 
 @Module({
   controllers: [AssementApplicabilityController],
-  providers: [AssementApplicabilityService]
+  providers: [AssementApplicabilityService],
 })
 export class AssementApplicabilityModule {}

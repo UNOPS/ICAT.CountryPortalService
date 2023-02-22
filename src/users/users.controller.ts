@@ -71,35 +71,31 @@ export class UsersController implements CrudController<User> {
     private readonly institutionRepository: Repository<Institution>,
     private readonly auditService: AuditService,
     private readonly tokenDetails: TokenDetails,
-
-  ) { }
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createUserDto: User): Promise<User> {
-
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
 
     try {
-      let audit: AuditDto = new AuditDto();
-      let user= this.service.create(createUserDto);
+      const audit: AuditDto = new AuditDto();
+      const user = this.service.create(createUserDto);
       audit.action = createUserDto.username + ' Created';
-      audit.comment = "User Created";
+      audit.comment = 'User Created';
       audit.actionStatus = 'Created';
       this.auditService.create(audit);
       await queryRunner.commitTransaction();
       return user;
-    }
-    catch (err) {
-      console.log("worktran2")
+    } catch (err) {
+      console.log('worktran2');
       console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
       await queryRunner.release();
     }
-
   }
 
   // @Get()
@@ -114,16 +110,18 @@ export class UsersController implements CrudController<User> {
 
   @Override()
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() newUser: User): Promise<User | null> {
+  async update(
+    @Param('id') id: number,
+    @Body() newUser: User,
+  ): Promise<User | null> {
     const user = await this.userRepository.findOneOrFail(id);
     if (!user.id) {
       console.error("User doesn't exist");
     }
-    Object.assign(user, newUser)
-    this.userRepository.save(user)
+    Object.assign(user, newUser);
+    this.userRepository.save(user);
     return await this.userRepository.findOne(id);
   }
-
 
   @Get('isUserAvailable/:userName')
   async isUserAvailable(@Param('userName') userName: string): Promise<boolean> {
@@ -147,15 +145,13 @@ export class UsersController implements CrudController<User> {
     return this;
   }
 
-
   @Patch('changeStatus')
-  changeStatus(@Query('id') id: number, @Query('status') status: number): Promise<User> {
-
+  changeStatus(
+    @Query('id') id: number,
+    @Query('status') status: number,
+  ): Promise<User> {
     return this.service.chnageStatus(id, status);
   }
-
-
-
 
   @Override()
   async getMany(@ParsedRequest() req: CrudRequest, @Request() req2) {
@@ -178,7 +174,7 @@ export class UsersController implements CrudController<User> {
     console.log('yyyyyyyyyyyyyyyyyyyyyyyy');
     console.log(req.parsed.filter.length, req.parsed.search['$and'][0]);
 
-    let userList = this.base.getManyBase(req);
+    const userList = this.base.getManyBase(req);
 
     return userList;
   }
@@ -191,15 +187,18 @@ export class UsersController implements CrudController<User> {
     @Query('filterText') filterText: string,
     @Query('userTypeId') userTypeId: number,
   ): Promise<any> {
-
-
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;
     let role: string;
 
-
-    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken, role] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId, TokenReqestType.InstitutionId, TokenReqestType.role])
+    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken, role] =
+      this.tokenDetails.getDetails([
+        TokenReqestType.countryId,
+        TokenReqestType.sectorId,
+        TokenReqestType.InstitutionId,
+        TokenReqestType.role,
+      ]);
 
     console.log('incontroler...');
     return await this.service.getUserDetails(
@@ -212,7 +211,7 @@ export class UsersController implements CrudController<User> {
       countryIdFromTocken,
       sectorIdFromTocken,
       institutionIdFromTocken,
-      role
+      role,
     );
   }
 

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query ,Request, UseGuards,} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
@@ -15,15 +23,15 @@ import { DefaultValue } from './entity/defaultValue.entity';
       country: {
         eager: true,
       },
-    }
+    },
   },
 })
 @Controller('default-value')
 export class DefaultValueController implements CrudController<DefaultValue> {
-  constructor(public service: DefaultValueService,
-    private readonly tokenDetails:TokenDetails,
-    ) {}
-
+  constructor(
+    public service: DefaultValueService,
+    private readonly tokenDetails: TokenDetails,
+  ) {}
 
   get base(): CrudController<DefaultValue> {
     return this;
@@ -37,24 +45,22 @@ export class DefaultValueController implements CrudController<DefaultValue> {
   }
 
   @Post('update')
-  async createValue(@Body() val:DefaultValue):Promise<any>{
-    console.log("++++++++++++",val)
-    let def = new DefaultValue();
+  async createValue(@Body() val: DefaultValue): Promise<any> {
+    console.log('++++++++++++', val);
+    const def = new DefaultValue();
     def.parameterName = val.parameterName;
-    def.unit= val.unit;
-    def.administrationLevel =val.administrationLevel;
-    def.country=val.country;
-    let result=await this.service.createValue(def);
-    if (result){
+    def.unit = val.unit;
+    def.administrationLevel = val.administrationLevel;
+    def.country = val.country;
+    const result = await this.service.createValue(def);
+    if (result) {
       return true;
     }
-    return false
+    return false;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(
-    'Defaultvalues/info/:page/:limit/:filterText/:source/:year/:status',
-  )
+  @Get('Defaultvalues/info/:page/:limit/:filterText/:source/:year/:status')
   async getDefaultvalueInfo(
     @Request() request,
     @Query('page') page: number,
@@ -66,11 +72,12 @@ export class DefaultValueController implements CrudController<DefaultValue> {
   ): Promise<any> {
     // console.log("heelo controler");
 
-    let countryIdFromTocken:number;
-   // let sectorIdFromTocken:number;
+    let countryIdFromTocken: number;
+    // let sectorIdFromTocken:number;
 
-    [countryIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId])
-
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
 
     return await this.service.getDefaultvalueInfo(
       {
@@ -84,7 +91,4 @@ export class DefaultValueController implements CrudController<DefaultValue> {
       countryIdFromTocken,
     );
   }
-
-
-
 }

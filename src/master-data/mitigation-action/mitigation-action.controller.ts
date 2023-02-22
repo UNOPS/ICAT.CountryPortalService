@@ -8,13 +8,12 @@ import { MitigationActionService } from './mitigation-action.service';
     type: MitigationActionType,
   },
   query: {
-      join: {
-        methodology: {
-          eager: true,
-        },
+    join: {
+      methodology: {
+        eager: true,
       },
+    },
   },
-  
 })
 @Controller('mitigation-action')
 export class MitigationActionController

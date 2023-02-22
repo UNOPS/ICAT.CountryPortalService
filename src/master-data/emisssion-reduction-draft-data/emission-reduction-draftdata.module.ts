@@ -8,9 +8,9 @@ import { EmissionReductionDraftdataController } from './emission-reduction-draft
 import { EmissionReductionDraftdataService } from './emission-reduction-draftdata.service';
 import { EmissionReductioDraftDataEntity } from './entity/emission-reductio-draft-data.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([EmissionReductioDraftDataEntity,User])],
+  imports: [TypeOrmModule.forFeature([EmissionReductioDraftDataEntity, User])],
   controllers: [EmissionReductionDraftdataController],
-  providers: [EmissionReductionDraftdataService,TokenDetails],
+  providers: [EmissionReductionDraftdataService, TokenDetails],
   exports: [EmissionReductionDraftdataService],
 })
 export class EmissionReductionDraftdataModule {}

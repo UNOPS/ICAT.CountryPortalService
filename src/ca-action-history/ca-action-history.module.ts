@@ -5,10 +5,9 @@ import { CaActionHistoryService } from './ca-action-history.service';
 import { CaActionHistory } from './entity/ca-action-history.entity';
 
 @Module({
-
-    imports: [TypeOrmModule.forFeature([CaActionHistory])],
-    controllers: [CaActionHistoryController],
-    providers: [CaActionHistoryService],
-    exports: [CaActionHistoryService],
+  imports: [TypeOrmModule.forFeature([CaActionHistory])],
+  controllers: [CaActionHistoryController],
+  providers: [CaActionHistoryService],
+  exports: [CaActionHistoryService],
 })
 export class CaActionHistoryModule {}

@@ -38,10 +38,8 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isAlternative: boolean;
 
-
   @Column({ default: false })
-  isEnabledAlternative:boolean;
-
+  isEnabledAlternative: boolean;
 
   // @ManyToOne((type) => Parameter, {
   //   cascade: false,
@@ -51,7 +49,6 @@ export class Parameter extends BaseTrackingEntity {
   // })
   // @JoinColumn({ name: 'ParentParameterId' })
   ParentParameter?: Parameter;
-  
 
   @Column({ nullable: true })
   ParentParameterId?: number;
@@ -71,7 +68,7 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isDefault: boolean;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   isHistorical: boolean;
 
   @Column({ nullable: true })
@@ -145,17 +142,16 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ nullable: true })
   isAcceptedByVerifier: number;
-  
+
   @Column({ nullable: true })
   defaultValueId: number;
-  
 
   @ManyToOne((type) => Institution, {
     cascade: false,
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
     nullable: true,
-    eager: true
+    eager: true,
   })
   // @JoinColumn({ name: 'institutionId' })
   institution?: Institution;
@@ -173,7 +169,7 @@ export class Parameter extends BaseTrackingEntity {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
     nullable: true,
-    eager: true
+    eager: true,
   })
   // @JoinColumn({ name: 'AssessmentId' })
   defaultValue?: DefaultValue;
@@ -182,10 +178,11 @@ export class Parameter extends BaseTrackingEntity {
   // @JoinColumn()
   parameterRequest?: ParameterRequest;
 
-  @OneToMany(() => VerificationDetail,(verificationDetail) => verificationDetail.parameter)
+  @OneToMany(
+    () => VerificationDetail,
+    (verificationDetail) => verificationDetail.parameter,
+  )
   public verificationDetail: VerificationDetail[];
-
-
 
   // @OneToOne((type) => DefaultValue,{ nullable: true })
   // @JoinColumn()
@@ -196,6 +193,4 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ default: false })
   hasChild: boolean;
-
-
 }

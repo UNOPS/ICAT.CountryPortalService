@@ -6,9 +6,9 @@ import { Sector } from './sector.entity';
 import { SectorService } from './sector.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Sector,CountrySector])],
+  imports: [TypeOrmModule.forFeature([Sector, CountrySector])],
   controllers: [SectorController],
-  providers: [SectorService,CountrySector],
+  providers: [SectorService, CountrySector],
   exports: [SectorService],
 })
 export class SectorModule {}

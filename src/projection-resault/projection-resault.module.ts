@@ -8,9 +8,9 @@ import { ProjectionResaultController } from './projection-resault.controller';
 import { ProjectionResaultService } from './projection-resault.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProjectionResault,User,Audit])],
+  imports: [TypeOrmModule.forFeature([ProjectionResault, User, Audit])],
   controllers: [ProjectionResaultController],
-  providers: [ProjectionResaultService,AuditService],
-  exports: [ProjectionResaultService,AuditService]
+  providers: [ProjectionResaultService, AuditService],
+  exports: [ProjectionResaultService, AuditService],
 })
 export class ProjectionResaultModule {}

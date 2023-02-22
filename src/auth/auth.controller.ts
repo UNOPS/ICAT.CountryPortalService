@@ -21,18 +21,18 @@ export class AuthController {
     private usersService: UsersService,
     private configService: ConfigService,
     private emailService: EmailNotificationService,
-    private readonly auditService:AuditService,
+    private readonly auditService: AuditService,
   ) {}
-  
+
   @Post('auth/login')
   async login(@Body() authCredentialDto: AuthCredentialDto): Promise<any> {
     //return req.user;
     console.log('AppController.login');
-    console.log('AppController.login',authCredentialDto);
-    let audit: AuditDto = new AuditDto();
-    audit.userName=authCredentialDto.username;
-    audit.action =  authCredentialDto.username +" Logged In";
-    audit.comment = "User Log In";
+    console.log('AppController.login', authCredentialDto);
+    const audit: AuditDto = new AuditDto();
+    audit.userName = authCredentialDto.username;
+    audit.action = authCredentialDto.username + ' Logged In';
+    audit.comment = 'User Log In';
     audit.actionStatus = 'Log In';
     this.auditService.create(audit);
 
@@ -61,7 +61,7 @@ export class AuthController {
     ) {
       console.log('is valid');
 
-      let res = await this.usersService.resetPassword(
+      const res = await this.usersService.resetPassword(
         resetPwd.email,
         resetPwd.password,
       );
@@ -89,7 +89,7 @@ export class AuthController {
       return response.status(400).send(errorResponse);
     }
 
-    let pwdRestToken = uuidv4();
+    const pwdRestToken = uuidv4();
 
     user = await this.usersService.updateChnagePasswordToken(
       user.id,

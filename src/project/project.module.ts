@@ -14,9 +14,14 @@ import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project,Audit,User])],
+  imports: [TypeOrmModule.forFeature([Project, Audit, User])],
   controllers: [ProjectController],
-  providers: [ProjectService, EmailNotificationService,AuditService,TokenDetails],
-  exports: [ProjectService,AuditService],
+  providers: [
+    ProjectService,
+    EmailNotificationService,
+    AuditService,
+    TokenDetails,
+  ],
+  exports: [ProjectService, AuditService],
 })
 export class ProjectModule {}

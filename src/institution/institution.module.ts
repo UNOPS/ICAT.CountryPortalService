@@ -17,9 +17,33 @@ import { TokenDetails } from 'src/utills/token_details';
 import { Country } from 'src/country/entity/country.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Institution, User,InstitutionType, InstitutionCategory,Audit,Country])],
-  providers: [InstitutionService, InstitutionTypeService, InstitutionCategoryService,AuditService,TokenDetails],
-  controllers: [InstitutionController, InstitutionTypeController, InstitutionCategoryController],
-  exports: [InstitutionService, InstitutionTypeService, InstitutionCategoryService,AuditService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Institution,
+      User,
+      InstitutionType,
+      InstitutionCategory,
+      Audit,
+      Country,
+    ]),
+  ],
+  providers: [
+    InstitutionService,
+    InstitutionTypeService,
+    InstitutionCategoryService,
+    AuditService,
+    TokenDetails,
+  ],
+  controllers: [
+    InstitutionController,
+    InstitutionTypeController,
+    InstitutionCategoryController,
+  ],
+  exports: [
+    InstitutionService,
+    InstitutionTypeService,
+    InstitutionCategoryService,
+    AuditService,
+  ],
 })
 export class InstitutionModule {}

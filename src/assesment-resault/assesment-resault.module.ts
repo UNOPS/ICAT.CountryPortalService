@@ -26,14 +26,22 @@ import { AssessmentResault } from './entity/assessment-resault.entity';
       Assessment,
       User,
       Audit,
-      Institution
+      Institution,
     ]),
     AssesmentModule,
     HttpModule,
     UsersModule,
   ],
   controllers: [AssesmentResaultController],
-  providers: [AssesmentResaultService, AssessmentYear, ProjectionResault,Assessment,AuditService,EmailNotificationService,TokenDetails],
-  exports: [AssesmentResaultService,AuditService],
+  providers: [
+    AssesmentResaultService,
+    AssessmentYear,
+    ProjectionResault,
+    Assessment,
+    AuditService,
+    EmailNotificationService,
+    TokenDetails,
+  ],
+  exports: [AssesmentResaultService, AuditService],
 })
 export class AssesmentResaultModule {}

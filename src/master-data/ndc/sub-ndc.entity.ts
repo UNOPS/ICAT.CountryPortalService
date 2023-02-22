@@ -1,6 +1,14 @@
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { Assessment } from 'src/assesment/entity/assesment.entity';
-import { Entity, JoinColumn, ManyToOne, OneToMany,JoinTable, ManyToMany, OneToOne } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+} from 'typeorm';
 import { Ndc } from './ndc.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';
 
@@ -13,7 +21,6 @@ export class SubNdc extends MasterData {
   @ManyToMany((type) => Methodology, { cascade: false })
   @JoinTable({ name: 'methodology_subndc' })
   methodology: Methodology;
-  @OneToMany(() => Assessment, assessment => assessment.subNdc)
-    assessments: Assessment[];
-
+  @OneToMany(() => Assessment, (assessment) => assessment.subNdc)
+  assessments: Assessment[];
 }

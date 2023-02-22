@@ -55,8 +55,8 @@ export class User extends BaseTrackingEntity {
   @JoinColumn()
   institution: Institution;
 
-  @OneToMany(() => Assessment, assessment => assessment.user)
-    assessments: Assessment[];
+  @OneToMany(() => Assessment, (assessment) => assessment.user)
+  assessments: Assessment[];
 
   @Column()
   telephone: string;
@@ -67,11 +67,10 @@ export class User extends BaseTrackingEntity {
   @Column({ nullable: true })
   designation: string;
 
-
   // @Column({ name: 'countryId' })
   // countryId: number;
 
-  @ManyToOne((type) => Country, {eager: true})
+  @ManyToOne((type) => Country, { eager: true })
   @JoinColumn()
   country: Country;
 
@@ -94,7 +93,7 @@ export class User extends BaseTrackingEntity {
   canNotDelete?: boolean;
 
   @Column({ default: null })
-    uniqueIdentification: string;
+  uniqueIdentification: string;
 
   fullName: string;
 

@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
@@ -10,10 +17,10 @@ import { QualityCheckService } from './quality-check.service';
 export class QualityCheckController
   implements CrudController<ParameterRequest>
 {
-  constructor(public service: QualityCheckService,
-    private readonly tokenDetails:TokenDetails,
-    ) {}
-
+  constructor(
+    public service: QualityCheckService,
+    private readonly tokenDetails: TokenDetails,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get(
@@ -30,10 +37,10 @@ export class QualityCheckController
     @Query('ctAction') ctAction: string,
   ): Promise<any> {
     // console.log(moment(editedOn).format('YYYY-MM-DD'))
-    let countryIdFromTocken:number ;
-    [countryIdFromTocken] =    this.tokenDetails.getDetails([TokenReqestType.countryId])
-   
-
+    let countryIdFromTocken: number;
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
 
     return await this.service.GetQCParameters(
       {
@@ -59,9 +66,7 @@ export class QualityCheckController
     @Query('qaStatusId') qaStatusId: number,
     @Query('comment') comment: string,
     @Query('userQc') userQc: string,
-   
-  ):Promise<any> {
-
+  ): Promise<any> {
     return this.service.UpdateQCStatus(
       paramId,
       assesmentYearId,

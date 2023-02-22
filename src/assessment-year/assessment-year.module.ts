@@ -18,12 +18,18 @@ import { Institution } from 'src/institution/institution.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AssessmentYear,User,Audit,Institution,User]),
+    TypeOrmModule.forFeature([AssessmentYear, User, Audit, Institution, User]),
     ParameterHistoryModule,
     UsersModule,
   ],
   controllers: [AssessmentYearController],
-  providers: [AssessmentYearService, EmailNotificationService,AuditService,TokenDetails,Institution,],
-  exports: [AssessmentYearService,AuditService,],
+  providers: [
+    AssessmentYearService,
+    EmailNotificationService,
+    AuditService,
+    TokenDetails,
+    Institution,
+  ],
+  exports: [AssessmentYearService, AuditService],
 })
 export class AssessmentYearModule {}

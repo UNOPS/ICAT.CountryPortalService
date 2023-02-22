@@ -1,6 +1,12 @@
 import { Country } from 'src/country/entity/country.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DocumentOwner } from './document-owner.entity';
 
 @Entity()
@@ -23,11 +29,9 @@ export class Documents extends BaseTrackingEntity {
   @Column()
   relativePath: string;
 
-  @ManyToOne((type) => Country, {eager: true})
+  @ManyToOne((type) => Country, { eager: true })
   @JoinColumn()
   country: Country;
 
   url: string;
-
-  
 }

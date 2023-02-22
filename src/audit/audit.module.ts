@@ -9,9 +9,7 @@ import { Audit } from './entity/audit.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Audit, User])],
   controllers: [AuditController],
-  providers: [AuditService,TokenDetails],
-  exports: [AuditService]
+  providers: [AuditService, TokenDetails],
+  exports: [AuditService],
 })
-export class AuditModule {
-
-}
+export class AuditModule {}

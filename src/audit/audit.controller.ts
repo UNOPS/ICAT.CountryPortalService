@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,8 +42,7 @@ export class AuditController implements CrudController<Audit> {
     @InjectRepository(Audit)
     private readonly projectRepository: Repository<Audit>,
     public configService: ConfigService,
-    private readonly tokenDetails:TokenDetails
-  
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<Audit> {
@@ -49,7 +56,7 @@ export class AuditController implements CrudController<Audit> {
   }
 
   @Get('userCount')
-  async getUserCount(@Query('countryId') countryId: number){
+  async getUserCount(@Query('countryId') countryId: number) {
     return this.service.userCount(countryId);
   }
 
@@ -66,8 +73,8 @@ export class AuditController implements CrudController<Audit> {
   ): Promise<any> {
     //let editedOnnew= moment(editedOn, "DD/MM/YYYY");
 
-    var timestamp = Date.parse(editedOn);
-    var dateObject = new Date(timestamp);
+    const timestamp = Date.parse(editedOn);
+    const dateObject = new Date(timestamp);
 
     // console.log(
     //   'jjjjjjfffff',
@@ -75,16 +82,26 @@ export class AuditController implements CrudController<Audit> {
     // );
     // console.log('hhh', editedOn);
 
-    let role:string;
-    let username:string ;
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number ;
-    let institutionIdFromTocken:number ;
+    let role: string;
+    let username: string;
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+    let institutionIdFromTocken: number;
 
-  
+    [
+      role,
+      username,
+      countryIdFromTocken,
+      sectorIdFromTocken,
+      institutionIdFromTocken,
+    ] = this.tokenDetails.getDetails([
+      TokenReqestType.role,
+      TokenReqestType.username,
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+      TokenReqestType.InstitutionId,
+    ]);
 
-   [role,username,countryIdFromTocken,sectorIdFromTocken,institutionIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.role,TokenReqestType.username,TokenReqestType.countryId,TokenReqestType.sectorId,TokenReqestType.InstitutionId])
-    
     return await this.service.getAuditDetails(
       {
         limit: limit,

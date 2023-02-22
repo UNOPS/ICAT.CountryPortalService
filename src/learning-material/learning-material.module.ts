@@ -8,7 +8,7 @@ import { LearningMaterialService } from './learning-material.service';
 @Module({
   imports: [TypeOrmModule.forFeature([LearningMaterial])],
   controllers: [LearningMaterialController],
-  providers: [LearningMaterialService,TokenDetails],
+  providers: [LearningMaterialService, TokenDetails],
   exports: [LearningMaterialService],
 })
 export class LearningMaterialModule {}

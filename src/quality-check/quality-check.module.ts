@@ -11,12 +11,12 @@ import { QualityCheckService } from './quality-check.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ParameterRequest, AssessmentYear,User]),
+    TypeOrmModule.forFeature([ParameterRequest, AssessmentYear, User]),
     ParameterHistoryModule,
     AssesmentModule,
   ],
   controllers: [QualityCheckController],
-  providers: [QualityCheckService, AssessmentYear,TokenDetails,User],
+  providers: [QualityCheckService, AssessmentYear, TokenDetails, User],
   exports: [QualityCheckService],
 })
 export class QualityCheckModule {}

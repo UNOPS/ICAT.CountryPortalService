@@ -32,7 +32,7 @@ export class Sector extends BaseTrackingEntity {
   @Column({ default: 1 })
   sortOrder: number;
 
-  @OneToMany(() => CountrySector, countrySector => countrySector.sector)
+  @OneToMany(() => CountrySector, (countrySector) => countrySector.sector)
   public countrysector!: CountrySector[];
 
   @OneToMany(
@@ -41,12 +41,13 @@ export class Sector extends BaseTrackingEntity {
   )
   public learningMaterialsector!: LearningMaterialSector[];
 
-  @OneToMany(() => ReportSector, (reportSector) => reportSector.sector, { nullable: true })
+  @OneToMany(() => ReportSector, (reportSector) => reportSector.sector, {
+    nullable: true,
+  })
   public reportSector!: ReportSector[];
 
   @OneToMany(() => SubSector, (subSector) => subSector.sector)
   public subSector!: SubSector[];
-
 
   @Column()
   emissionSummary: string;

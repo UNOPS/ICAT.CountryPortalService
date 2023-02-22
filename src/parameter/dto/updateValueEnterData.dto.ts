@@ -4,5 +4,5 @@ export class UpdateValueEnterData {
   value: string;
   institutionId: string;
   unitType: string;
-  assumptionParameter:string;
+  assumptionParameter: string;
 }

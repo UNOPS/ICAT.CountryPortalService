@@ -16,9 +16,8 @@ import {
 import { CountrySector } from './country-sector.entity';
 import { countryStatus } from './country-status.entity';
 
-@Entity({name: 'country'})
-export class Country extends BaseTrackingEntity{
-    
+@Entity({ name: 'country' })
+export class Country extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -38,7 +37,7 @@ export class Country extends BaseTrackingEntity{
   sortOrder: number;
 
   @Column()
-  submissions: string; // add as string for document upload 
+  submissions: string; // add as string for document upload
 
   @Column({ default: null })
   emissionSummary: string;
@@ -55,14 +54,13 @@ export class Country extends BaseTrackingEntity{
   @Column({ default: null })
   registeredDate: Date;
 
-  
   @Column({ default: null })
   isMember: boolean;
 
- // @Column({ default: null })
- // isRegister: boolean;
+  // @Column({ default: null })
+  // isRegister: boolean;
 
-  @Column({ default: null })  // enum 
+  @Column({ default: null }) // enum
   countryStatus: countryStatus;
 
   @Column({ default: null })
@@ -89,12 +87,12 @@ export class Country extends BaseTrackingEntity{
   @Column({ default: null })
   uniqueIdentification: string;
 
-
   @OneToMany(() => DefaultValue, (defaultValue) => defaultValue.country)
-  defaultValue: DefaultValue[]
+  defaultValue: DefaultValue[];
 
-
-  @OneToMany(() => CountrySector, countrySector => countrySector.country,{eager:true})
+  @OneToMany(() => CountrySector, (countrySector) => countrySector.country, {
+    eager: true,
+  })
   @JoinColumn()
   countrysector: CountrySector[];
   // @ManyToMany((type) => Sector, {

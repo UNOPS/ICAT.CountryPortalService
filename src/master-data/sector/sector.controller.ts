@@ -42,7 +42,7 @@ export class SectorController implements CrudController<Sector> {
     @Request() req2,
   ): Promise<GetManyDefaultResponse<Sector> | Sector[]> {
     try {
-      let res = await this.base.getManyBase(req);
+      const res = await this.base.getManyBase(req);
       // console.log('*********************************************');
       // console.log(res);
       // console.log('*********************************************');
@@ -54,39 +54,32 @@ export class SectorController implements CrudController<Sector> {
     }
   }
 
+  @Get('sector/sectorinfo/:page/:limit/:filterText')
+  async getSectorDetails(
+    @Request() request,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('filterText') filterText: string,
+  ): Promise<any> {
+    // console.log(moment(editedOn).format('YYYY-MM-DD'))
+    return await this.service.getSectorDetails(
+      {
+        limit: limit,
+        page: page,
+      },
+      filterText,
+    );
+  }
 
-
-  @Get(
-    'sector/sectorinfo/:page/:limit/:filterText', 
-    )
-    async getSectorDetails(
-      @Request() request,
-      @Query('page') page: number,
-      @Query('limit') limit: number,
-      @Query('filterText') filterText: string,
-      
-    ): Promise<any> {
-      // console.log(moment(editedOn).format('YYYY-MM-DD'))
-      return await this.service.getSectorDetails(
-        {
-          limit: limit,
-          page: page,
-        },
-        filterText,
-        
-      );
-    }
-  
-
-    @Get('sector/:countryId')
-    async getCountrySector(
-      @Request() request,
-      @Query('countryId') countryId: number): Promise<any> {
-        
-  
-  console.log("+++++++++++++++++++++++++++",await this.service.getCountrySector(countryId))
-      return await this.service.getCountrySector(countryId);
-    }
-
-
+  @Get('sector/:countryId')
+  async getCountrySector(
+    @Request() request,
+    @Query('countryId') countryId: number,
+  ): Promise<any> {
+    console.log(
+      '+++++++++++++++++++++++++++',
+      await this.service.getCountrySector(countryId),
+    );
+    return await this.service.getCountrySector(countryId);
+  }
 }

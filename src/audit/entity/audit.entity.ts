@@ -1,6 +1,12 @@
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { User } from 'src/users/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'audit' })
 export class Audit extends BaseTrackingEntity {

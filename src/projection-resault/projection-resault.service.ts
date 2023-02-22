@@ -17,10 +17,10 @@ export class ProjectionResaultService extends TypeOrmCrudService<ProjectionResau
     qcStatus: QuAlityCheckStatus,
     comment: string,
   ) {
-    var result = await this.repo.findOne(id);
+    const result = await this.repo.findOne(id);
     result.qcComment = comment;
     result.qcStatus = qcStatus;
-    let projectioResultTo = this.repo.save(result);
+    const projectioResultTo = this.repo.save(result);
     return projectioResultTo;
   }
 
@@ -28,10 +28,10 @@ export class ProjectionResaultService extends TypeOrmCrudService<ProjectionResau
     assesmentId: number,
     projectionYear: number,
   ): Promise<any> {
-    let assement = new Assessment();
+    const assement = new Assessment();
     assement.id = assesmentId;
 
-    let assessmentResault = await this.repo.find({
+    const assessmentResault = await this.repo.find({
       where: { assement: assement },
     });
 

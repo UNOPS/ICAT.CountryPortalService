@@ -27,28 +27,27 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
     status: string,
     statusPrevious: string | null,
   ) {
-    let datareqest = await this.parameterRequestRepo.findOne(dataReqestId); // let parametr
-   // console.log("my datarequest id ..",datareqest.id)
+    const datareqest = await this.parameterRequestRepo.findOne(dataReqestId); // let parametr
+    // console.log("my datarequest id ..",datareqest.id)
 
-    let data = this.parameterRequestRepo
-    .createQueryBuilder('paraReq')
-    .innerJoinAndMapOne(
-      'paraReq.parameter',
-      Parameter,
-      'para',
-      `paraReq.ParameterId = para.id and paraReq.id = ${dataReqestId}`,
-    )
+    const data = this.parameterRequestRepo
+      .createQueryBuilder('paraReq')
+      .innerJoinAndMapOne(
+        'paraReq.parameter',
+        Parameter,
+        'para',
+        `paraReq.ParameterId = para.id and paraReq.id = ${dataReqestId}`,
+      );
     //.where('paraHis.id = dataReqestId')
 
-    let result1 = await data.getOne();
-    console.log("my parameter111..",result1)
+    const result1 = await data.getOne();
+    console.log('my parameter111..', result1);
 
+    // let parameter = await this.parameterRepo.findOne(datareqest.parameter.id);
 
-   // let parameter = await this.parameterRepo.findOne(datareqest.parameter.id);
-   
-   // console.log("my parameter..",parameter.name)
+    // console.log("my parameter..",parameter.name)
 
-    let parameterHistory = new ParameterHistory();
+    const parameterHistory = new ParameterHistory();
     parameterHistory.description = description;
     parameterHistory.comment = comment;
     parameterHistory.parameterId = result1.parameter.id;
@@ -60,35 +59,23 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
     parameterHistory.parameterStatusPrevious = statusPrevious!;
     parameterHistory.deoAssumption = result1.parameter?.enterDataAssumption;
     parameterHistory.qcAssumption = datareqest?.qaComment;
-    
 
     parameterHistory.Action = action;
 
-    let param = await this.repo.insert(parameterHistory);
+    const param = await this.repo.insert(parameterHistory);
   }
 
-
-
-
-
-  async getHistory(id: number): Promise<any> 
-  {
-    let filter: string = 'as.parameterId = :id';
-    var data = this.repo
+  async getHistory(id: number): Promise<any> {
+    const filter = 'as.parameterId = :id';
+    const data = this.repo
       .createQueryBuilder('as')
       .where(filter, {
         id,
-        
       })
-      .orderBy('as.createdOn', 'DESC');;
-
+      .orderBy('as.createdOn', 'DESC');
 
     // console.log('data.....',data)
     //console.log('query...', data.getQueryAndParameters());
     return await data.getMany();
   }
-
-
-
-
 }

@@ -9,9 +9,22 @@ import { DefaultValueService } from './default-value.service';
 import { DefaultValue } from './entity/defaultValue.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DefaultValue,Parameter,Institution,ParameterRequest])],
+  imports: [
+    TypeOrmModule.forFeature([
+      DefaultValue,
+      Parameter,
+      Institution,
+      ParameterRequest,
+    ]),
+  ],
   controllers: [DefaultValueController],
-  providers: [DefaultValueService,Parameter,Institution,ParameterRequest,TokenDetails,],
-  exports: [DefaultValueService,Parameter,Institution,ParameterRequest],
+  providers: [
+    DefaultValueService,
+    Parameter,
+    Institution,
+    ParameterRequest,
+    TokenDetails,
+  ],
+  exports: [DefaultValueService, Parameter, Institution, ParameterRequest],
 })
 export class DefaultValueModule {}

@@ -10,35 +10,22 @@ export class ApplicabilityService extends TypeOrmCrudService<ApplicabilityEntity
     super(repo);
   }
 
+  async getApplicability(): // id: number,
+  Promise<any> {
+    const data = this.repo
+      .createQueryBuilder('appli')
+      .leftJoinAndMapMany(
+        'appli.methodologies',
+        Methodology,
+        'meth',
+        'appli.id = meth.applicabilityId',
+      )
+      .orderBy('appli.createdOn', 'ASC');
 
+    const resualt = await data.getMany();
 
-  async getApplicability(
-    
-   // id: number,
-  ): Promise<any> {
-    
-  
-   let data = this.repo
-     .createQueryBuilder('appli')
-     .leftJoinAndMapMany(
-       'appli.methodologies',
-       Methodology,
-       'meth',
-       'appli.id = meth.applicabilityId',
-     )
-     .orderBy('appli.createdOn', 'ASC');
-     
-   
-
-   let resualt = await data.getMany();;
-   
-   if (resualt) {
-   
-     return resualt;
-   }
-
-  
+    if (resualt) {
+      return resualt;
+    }
   }
-
-
 }

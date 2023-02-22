@@ -48,7 +48,10 @@ export class ProjectionResault extends BaseTrackingEntity {
   @Column({ default: null })
   emissionReductionUnit: string;
 
-  @ManyToOne((type) => AssessmentResault, (assesmentResult) => assesmentResult.projectionResult)
+  @ManyToOne(
+    (type) => AssessmentResault,
+    (assesmentResult) => assesmentResult.projectionResult,
+  )
   @JoinColumn()
   assementResult: AssessmentResault;
 

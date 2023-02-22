@@ -34,7 +34,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
-    
+
     // @InjectRepository(User)
     // public userRepo: Repository<User>,
     @InjectRepository(ProjectionResault)
@@ -54,15 +54,15 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentYearId: number,
     isCalculate: boolean,
   ): Promise<any> {
-    console.log("qastatus..1");
-    let assement = new Assessment();
+    console.log('qastatus..1');
+    const assement = new Assessment();
     assement.id = assesmentId;
 
     let assesmentYear = new AssessmentYear();
     assesmentYear.id = assesmentYearId;
-    console.log("AID-----",assesmentYear.id )
+    console.log('AID-----', assesmentYear.id);
 
-    let assessmentResault = await this.repo.findOne({
+    const assessmentResault = await this.repo.findOne({
       where: { assement: assement, assessmentYear: assesmentYear },
       relations: ['assessmentYear'],
     });
@@ -72,32 +72,27 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     if (isCalculate.toString() == 'false') {
       return assessmentResault;
     } else {
+      const asseDetail = await this.assesmentRepo.findOne(assesmentId);
 
-      let asseDetail = await this.assesmentRepo.findOne(assesmentId);
-     
-
-      if(asseDetail.isProposal)
-      {
-        console.log("asse details..id ",asseDetail.id)
+      if (asseDetail.isProposal) {
+        console.log('asse details..id ', asseDetail.id);
         var assesment = await this.assesmentservice.getAssessmentDetails(
           assesmentId,
           assesmentYear.assessmentYear,
         );
-      }
-      else
-      {
+      } else {
         var assesment = await this.assesmentservice.getAssessmentDetailsForQC(
           assesmentId,
           assesmentYear.assessmentYear,
         );
       }
 
-     
-
       if (!assesment.isProposal) {
-        console.log("qastatus..2");
-        let result = assesment.parameters.find(
-          (m) =>m.parameterRequest?m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass:false,
+        console.log('qastatus..2');
+        const result = assesment.parameters.find((m) =>
+          m.parameterRequest
+            ? m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass
+            : false,
         );
 
         if (result === null || result === undefined) {
@@ -105,7 +100,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             assesment.parameters,
           ).subscribe(async (a) => {
             console.log('Calcuclation Responce 123', a.data);
-            let saveEntity = await this.saveAssesmentResult(
+            const saveEntity = await this.saveAssesmentResult(
               a.data,
               assesmentId,
               assesmentYearId,
@@ -120,7 +115,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           return null;
         }
       } else {
-        console.log("lemgth of para..",assesment.parameters.length)
+        console.log('lemgth of para..', assesment.parameters.length);
         await this.getAssesmentResultFromEngine(assesment.parameters).subscribe(
           (a) => {
             console.log('Calcuclation Responce....', a.data);
@@ -140,10 +135,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentId: number,
     assesmentYearId: number,
   ) {
-    let assesment = new Assessment();
+    const assesment = new Assessment();
     assesment.id = assesmentId;
 
-    let assesmentYear = new AssessmentYear();
+    const assesmentYear = new AssessmentYear();
     assesmentYear.id = assesmentYearId;
 
     let assesmentResult = await this.repo.findOne({
@@ -162,12 +157,12 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentResult.totalEmission = data.emissionReduction;
 
     if (assesmentResult.id > 0) {
-      let responce = await this.repo.save(assesmentResult);
+      const responce = await this.repo.save(assesmentResult);
       await this.saveProjectionResult(data, assesment, assesmentYear);
 
       return responce;
     } else {
-      let responce = await this.repo.insert(assesmentResult);
+      const responce = await this.repo.insert(assesmentResult);
       await this.saveProjectionResult(data, assesment, assesmentYear);
 
       return responce;
@@ -199,14 +194,16 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         if (projectionResult.id > 0) {
           await this.projectionResaultRepo.save(projectionResult);
         } else {
-          let responce = await this.projectionResaultRepo.insert(
+          const responce = await this.projectionResaultRepo.insert(
             projectionResult,
           );
         }
       });
     }
   }
-  async checkAllQCApprovmentAssessmentResult(assRsltId:number):Promise<boolean>{
+  async checkAllQCApprovmentAssessmentResult(
+    assRsltId: number,
+  ): Promise<boolean> {
     // this.repo.findOne({  where: {
     //   id: assRsltId,
     //   qcStatusBaselineResult:4,
@@ -217,23 +214,26 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     //   qcStatuscostDifference:4,
     //   qcStatuspsTotalAnnualCost:4,
     //   qcStatusbsTotalAnnualCost:4,
-     
+
     // }});
 
-    let result =await this.repo
-    .createQueryBuilder('dr')
-  
-    .where('dr.id=:assRsltId and (dr.qcStatusBaselineResult= 4 or dr.baselineResult is null ) and (dr.qcStatuProjectResult= 4 or dr.projectResult is null)and (dr.qcStatusLekageResult= 4 or dr.lekageResult is null) and (dr.qcStatusTotalEmission= 4 or dr.totalEmission is null)and (dr.qcStatusmacResult= 4 or dr.macResult is null) and (dr.qcStatuscostDifference= 4 or dr.costDifference is null)and (dr.qcStatuspsTotalAnnualCost= 4 or dr.psTotalAnnualCost is null)and (dr.qcStatusbsTotalAnnualCost= 4 or dr.bsTotalAnnualCost is null) ', {
-      assRsltId
-    }).getOne();
-    console.log('checkAllQCApprovmentAssessmentResult', assRsltId)
-    console.log('checkAllQCApprovmentAssessmentResult', result)
-    if(result){
+    const result = await this.repo
+      .createQueryBuilder('dr')
 
-      return true
+      .where(
+        'dr.id=:assRsltId and (dr.qcStatusBaselineResult= 4 or dr.baselineResult is null ) and (dr.qcStatuProjectResult= 4 or dr.projectResult is null)and (dr.qcStatusLekageResult= 4 or dr.lekageResult is null) and (dr.qcStatusTotalEmission= 4 or dr.totalEmission is null)and (dr.qcStatusmacResult= 4 or dr.macResult is null) and (dr.qcStatuscostDifference= 4 or dr.costDifference is null)and (dr.qcStatuspsTotalAnnualCost= 4 or dr.psTotalAnnualCost is null)and (dr.qcStatusbsTotalAnnualCost= 4 or dr.bsTotalAnnualCost is null) ',
+        {
+          assRsltId,
+        },
+      )
+      .getOne();
+    console.log('checkAllQCApprovmentAssessmentResult', assRsltId);
+    console.log('checkAllQCApprovmentAssessmentResult', result);
+    if (result) {
+      return true;
     }
 
-return false;
+    return false;
   }
 
   async updateQCStatus(
@@ -243,83 +243,73 @@ return false;
     assessmentResultType: AssessmentResultType,
     comment: string,
   ) {
-    console.log("qastatus..3");
-    var result = await this.repo.findOne(id);
+    console.log('qastatus..3');
+    const result = await this.repo.findOne(id);
     result.qcComment = comment;
 
-    let re = await this.repo.findOne({where:{id:id},relations:['assement']})
-    let country = re.assement.project.country;
-    let sec = re.assement.project.sector;
+    const re = await this.repo.findOne({
+      where: { id: id },
+      relations: ['assement'],
+    });
+    const country = re.assement.project.country;
+    const sec = re.assement.project.sector;
     let template: any;
-    let ins :any;
-    let user:User[];
-    if(qcStatus==QuAlityCheckStatus.Pass){
-       ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 2 } });
-       user= await this.userService.find({where:{country:country,userType:5,institution:ins}})
-      console.log("=========", ins)
-      user.forEach((ab)=>{
+    let ins: any;
+    let user: User[];
+    if (qcStatus == QuAlityCheckStatus.Pass) {
+      ins = await this.institutionRepo.findOne({
+        where: { country: country, sector: sec, type: 2 },
+      });
+      user = await this.userService.find({
+        where: { country: country, userType: 5, institution: ins },
+      });
+      console.log('=========', ins);
+      user.forEach((ab) => {
         if (comment != undefined) {
           template =
             'Dear ' +
-            ab.username + ' ' +
+            ab.username +
+            ' ' +
             ' <br/> Data request with following information has shared with you.' +
-            '<br/> parameter name -: ' + re.assement.project.climateActionName ;
-        }
-        else {
+            '<br/> parameter name -: ' +
+            re.assement.project.climateActionName;
+        } else {
           template =
-            'Dear ' + ab.username + ' ' +
-            ' <br/> Accepted reviw value '
+            'Dear ' + ab.username + ' ' + ' <br/> Accepted reviw value ';
           // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
           // '<br/> value -:' + dataRequestItem.parameter.value;
         }
-  
-        this.emaiService.sendMail(
-          ab.email,
-          'Pass QC',
-          '',
-          template,
-        );
-      })
-      
-    }
 
-    else{
-      ins = await this.institutionRepo.findOne({ where: { country: country, sector: sec, type: 2} });
-      user= await this.userService.find({where:{country:country,userType:6,institution:ins}})
+        this.emaiService.sendMail(ab.email, 'Pass QC', '', template);
+      });
+    } else {
+      ins = await this.institutionRepo.findOne({
+        where: { country: country, sector: sec, type: 2 },
+      });
+      user = await this.userService.find({
+        where: { country: country, userType: 6, institution: ins },
+      });
       // console.log("=========", ins)
-      user.forEach((ab)=>{
-        
-      if (comment != undefined) {
-        template =
-          'Dear ' +
-          ab.username  + ' ' +
-          ' <br/> Reject QC' +
-          '<br/> parameter name -: ' + re.assement.project.climateActionName +
-          // '<br/> value -:' + dataRequestItem.parameter.value +
-          '<br> comment -: ' + comment;
-      }
-      else {
-        template =
-          'Dear ' + ab.username  + ' ' +
-          ' <br/> Reject QC '
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value;
-
-      }
-      this.emaiService.sendMail(
-        ab.email,
-        'Reject QC',
-        '',
-        template,
-      );
-      })
-    
+      user.forEach((ab) => {
+        if (comment != undefined) {
+          template =
+            'Dear ' +
+            ab.username +
+            ' ' +
+            ' <br/> Reject QC' +
+            '<br/> parameter name -: ' +
+            re.assement.project.climateActionName +
+            // '<br/> value -:' + dataRequestItem.parameter.value +
+            '<br> comment -: ' +
+            comment;
+        } else {
+          template = 'Dear ' + ab.username + ' ' + ' <br/> Reject QC ';
+          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
+          // '<br/> value -:' + dataRequestItem.parameter.value;
+        }
+        this.emaiService.sendMail(ab.email, 'Reject QC', '', template);
+      });
     }
-
-    
-
-
-   
 
     if (assessmentResultType === AssessmentResultType.Baseline) {
       result.qcStatusBaselineResult = qcStatus;
@@ -329,57 +319,53 @@ return false;
       result.qcStatusLekageResult = qcStatus;
     } else if (assessmentResultType === AssessmentResultType.TotalEmission) {
       result.qcStatusTotalEmission = qcStatus;
-    }
-    else if (assessmentResultType === AssessmentResultType.macResult) {
+    } else if (assessmentResultType === AssessmentResultType.macResult) {
       result.qcStatusmacResult = qcStatus;
-    }
-    else if (assessmentResultType === AssessmentResultType.costDifference) {
+    } else if (assessmentResultType === AssessmentResultType.costDifference) {
       result.qcStatuscostDifference = qcStatus;
-    }
-    else if (assessmentResultType === AssessmentResultType.psTotalAnnualCost) {
+    } else if (
+      assessmentResultType === AssessmentResultType.psTotalAnnualCost
+    ) {
       result.qcStatuspsTotalAnnualCost = qcStatus;
-    }
-    else if (assessmentResultType === AssessmentResultType.bsTotalAnnualCost) {
+    } else if (
+      assessmentResultType === AssessmentResultType.bsTotalAnnualCost
+    ) {
       result.qcStatusbsTotalAnnualCost = qcStatus;
     }
-     let resultTo = this.repo.save(result);
-     
-     if(qcStatus==QuAlityCheckStatus.Fail  || await this.checkAllQCApprovmentAssessmentResult(result.id)){
+    const resultTo = this.repo.save(result);
 
-      var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
-    
+    if (
+      qcStatus == QuAlityCheckStatus.Fail ||
+      (await this.checkAllQCApprovmentAssessmentResult(result.id))
+    ) {
+      const assementYear = await this.assessmentYearRepo.findOne(
+        assesmentyearId,
+      );
+
       assementYear.qaStatus = qcStatus;
       this.assessmentYearRepo.save(assementYear);
+    }
 
-     }
-    
-     return resultTo;
+    return resultTo;
   }
 
-
   async updateQCStatusforMac(
-    
     assesmentyearId: number,
     qcStatus: QuAlityCheckStatus,
-    
   ) {
-    console.log("qastatus..4");
-    var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    console.log('qastatus..4');
+    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
 
     assementYear.qaStatus = qcStatus;
     this.assessmentYearRepo.save(assementYear);
     return 1;
   }
 
-
   async updateVRStatusforMac(
-    
     assesmentyearId: number,
     VRStatus: VerificationStatus,
-    
   ) {
-    
-    var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
 
     assementYear.verificationStatus = VRStatus;
     this.assessmentYearRepo.save(assementYear);
@@ -390,32 +376,33 @@ return false;
     parametrs: Parameter[],
   ): Observable<AxiosResponse<any>> {
     try {
-      console.log("tttttteeee");
+      console.log('tttttteeee');
 
-      let baseurl = this.configService.get<string>('calculationEngineUrl');
-        let fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
+      const baseurl = this.configService.get<string>('calculationEngineUrl');
+      const fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
       // let fullUrl =  'http://localhost:3600/methodology/calculation';
 
       const content_ = JSON.stringify(parametrs);
       //console.log("json obj,...",content_);
-      let options_ = <RequestInit>{
+      const options_ = <RequestInit>{
         body: content_,
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        
-      }
+      };
       // options_.headers = headersRequest;
 
-      var bodyParser = require('body-parser');
-     console.log("ppppppppppppppppppppppppppppppppppppppppppppppp")
-      
-      return this.httpService.post(fullUrl, {body:content_},{headers:{'api-key':'1234'}});
+      const bodyParser = require('body-parser');
+      console.log('ppppppppppppppppppppppppppppppppppppppppppppppp');
+
+      return this.httpService.post(
+        fullUrl,
+        { body: content_ },
+        { headers: { 'api-key': '1234' } },
+      );
       //return this.httpService.post(fullUrl,{headers:{'api-key':'1234'}});
-
-
     } catch (e) {
       console.log('calculation Engine error', e);
     }
@@ -427,7 +414,7 @@ return false;
     assessmentResultType: AssessmentResultType,
     assesmentyearId: number,
   ) {
-    var result = await this.repo.findOne(id);
+    const result = await this.repo.findOne(id);
 
     if (assessmentResultType === AssessmentResultType.Baseline) {
       result.qcStatusBaselineResult = qcStatus;
@@ -440,7 +427,7 @@ return false;
     }
     this.repo.save(result);
 
-    var assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
 
     assementYear.qaStatus = qcStatus;
     this.assessmentYearRepo.save(assementYear);
@@ -450,7 +437,7 @@ return false;
     options: IPaginationOptions,
     AssessmentYearId: number,
   ): Promise<any> {
-    let filter: string = '';
+    let filter = '';
 
     if (AssessmentYearId != 0) {
       if (filter) {
@@ -459,7 +446,7 @@ return false;
         filter = `dr.assessmentYearId = :AssessmentYearId`;
       }
     }
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
         'dr.assement',
@@ -481,21 +468,15 @@ return false;
 
     console.log(data.getQuery());
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
     if (resualt) {
       return resualt;
     }
   }
 
-
-  async getAssessmentResultBYAssessmentId(
-    
-    id: number,
-  ): Promise<any> {
-    
-
-    let data = this.repo
+  async getAssessmentResultBYAssessmentId(id: number): Promise<any> {
+    const data = this.repo
       .createQueryBuilder('ar')
       .leftJoinAndMapOne(
         'ar.assessmentResult',
@@ -507,33 +488,35 @@ return false;
 
     // console.log(data.getQueryAndParameters());
 
-    let result = await data.getMany();
+    const result = await data.getMany();
 
     return result;
   }
   async getAssessmentResultforDashboard(
-    assessmentYear:number,
+    assessmentYear: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
-    moduleLevelsFromTocken:number[]
+    moduleLevelsFromTocken: number[],
     // institutionIdFromTocken: number
   ): Promise<any> {
-    let filter: string = '';
+    let filter = '';
 
-    if(moduleLevelsFromTocken[3]==1||moduleLevelsFromTocken[4]==1){
+    if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
       if (filter) {
         filter = `${filter}  and  asse.isProposal= false and proj.projectApprovalStatusId = 5`;
       } else {
         filter = `asse.isProposal= false and proj.projectApprovalStatusId = 5`;
       }
-    }else if(moduleLevelsFromTocken[1]==1||moduleLevelsFromTocken[2]==1){
+    } else if (
+      moduleLevelsFromTocken[1] == 1 ||
+      moduleLevelsFromTocken[2] == 1
+    ) {
       if (filter) {
         filter = `${filter}  and  asse.isProposal= true  and proj.projectApprovalStatusId in (1,4)`;
       } else {
         filter = `asse.isProposal= true and proj.projectApprovalStatusId in (1,4)`;
       }
-
-    }else{
+    } else {
       if (filter) {
         filter = `${filter}  and  asse.isProposal= false and proj.projectApprovalStatusId = 5 `;
       } else {
@@ -558,36 +541,35 @@ return false;
       }
     }
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('ar')
-      .innerJoinAndMapOne('ar.assessmentYear',
-      AssessmentYear,
-      'assesyear',
-      `assesyear.id = ar.assessmentYearId and assesyear.assessmentYear = ${assessmentYear} `)
+      .innerJoinAndMapOne(
+        'ar.assessmentYear',
+        AssessmentYear,
+        'assesyear',
+        `assesyear.id = ar.assessmentYearId and assesyear.assessmentYear = ${assessmentYear} `,
+      )
       .innerJoinAndMapOne(
         'ar.assessment',
         Assessment,
         'asse',
         'asse.id = ar.assementId and asse.assessmentType="Ex-post"  ',
       )
-      .innerJoinAndMapOne('asse.project',
-      Project,
-      'proj',
-      'proj.id=asse.projectId ')
+      .innerJoinAndMapOne(
+        'asse.project',
+        Project,
+        'proj',
+        'proj.id=asse.projectId ',
+      )
       .where(filter, {
         countryIdFromTocken,
         sectorIdFromTocken,
-      
       });
-      
 
     // console.log(data.getQueryAndParameters());
     // console.log(data.getQuery());
-    let result = await data.getMany();
+    const result = await data.getMany();
     // console.log(result);
     return result;
   }
-
-
-
 }

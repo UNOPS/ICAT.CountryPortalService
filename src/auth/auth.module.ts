@@ -26,7 +26,7 @@ import { AuditService } from 'src/audit/audit.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '600s' },
     }),
-    TypeOrmModule.forFeature([Institution, UserType, User, Country,Audit]),
+    TypeOrmModule.forFeature([Institution, UserType, User, Country, Audit]),
   ],
   providers: [
     AuthService,
@@ -35,9 +35,9 @@ import { AuditService } from 'src/audit/audit.service';
     EmailNotificationService,
     UsersService,
     ConfigService,
-    AuditService
+    AuditService,
   ],
-  exports: [AuthService,AuditService],
+  exports: [AuthService, AuditService],
   controllers: [AuthController],
 })
 export class AuthModule {}

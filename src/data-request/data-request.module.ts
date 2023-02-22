@@ -18,13 +18,35 @@ import { TokenDetails } from 'src/utills/token_details';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ParameterRequest,User,Audit,Parameter,DefaultValue,Project,Institution]),
+    TypeOrmModule.forFeature([
+      ParameterRequest,
+      User,
+      Audit,
+      Parameter,
+      DefaultValue,
+      Project,
+      Institution,
+    ]),
     UsersModule,
     ParameterHistoryModule,
-    
   ],
- providers: [ParameterRequestService,AuditService,Parameter,DefaultValue,Project,EmailNotificationService,Institution,TokenDetails],
+  providers: [
+    ParameterRequestService,
+    AuditService,
+    Parameter,
+    DefaultValue,
+    Project,
+    EmailNotificationService,
+    Institution,
+    TokenDetails,
+  ],
   controllers: [ParameterRequestController],
-  exports: [ParameterRequestService,AuditService,Parameter,DefaultValue,Project],
+  exports: [
+    ParameterRequestService,
+    AuditService,
+    Parameter,
+    DefaultValue,
+    Project,
+  ],
 })
 export class ParameterRequestModule {}

@@ -16,7 +16,7 @@ import { ProjectionResaultService } from './projection-resault.service';
       assement: {
         eager: true,
       },
-      assementResult:{
+      assementResult: {
         eager: true,
       },
     },
@@ -44,8 +44,8 @@ export class ProjectionResaultController
     @Query('yearId') yearId: number,
     @Query('qcStatus') qcStatus: number,
     @Query('comment') comment: string,
-  ):Promise<any> {
-    let audit: AuditDto = new AuditDto();
+  ): Promise<any> {
+    const audit: AuditDto = new AuditDto();
     audit.action = 'QC Status Updated';
     audit.comment = 'QC Status Updated';
     audit.actionStatus = 'Updated';
@@ -65,7 +65,7 @@ export class ProjectionResaultController
     @Query('AssessmentId') AssessmentId: number,
     @Query('ProjectionYear') ProjectionYear: number,
   ) {
-    let restult = await this.service.GetProjectionResult(
+    const restult = await this.service.GetProjectionResult(
       AssessmentId,
       ProjectionYear,
     );

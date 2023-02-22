@@ -90,10 +90,13 @@ export class AssessmentResault extends BaseTrackingEntity {
   @JoinColumn()
   assessmentYear: AssessmentYear;
 
-  @ManyToOne((type) => Assessment ,{ cascade: false, nullable: true})
+  @ManyToOne((type) => Assessment, { cascade: false, nullable: true })
   @JoinColumn()
   assement: Assessment;
 
-  @OneToMany(() => ProjectionResault, (projectiondata) => projectiondata.assementResult)
-  projectionResult: ProjectionResault[]
+  @OneToMany(
+    () => ProjectionResault,
+    (projectiondata) => projectiondata.assementResult,
+  )
+  projectionResult: ProjectionResault[];
 }

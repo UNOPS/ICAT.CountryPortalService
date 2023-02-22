@@ -1,4 +1,3 @@
-
 import { ApiHideProperty } from '@nestjs/swagger';
 
 import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
@@ -61,23 +60,22 @@ export class AssessmentYear extends BaseTrackingEntity {
   @Column({ nullable: true })
   assessmentAssumption: string;
 
-
   @ManyToOne(() => Assessment, (assessment) => assessment.assessmentYear, {
     cascade: false,
     // eager:true,
   })
   assessment: Assessment;
 
-  @OneToOne(() => AssessmentResault,(assessmentResault)=> assessmentResault.assessmentYear)
-  @ApiHideProperty() 
+  @OneToOne(
+    () => AssessmentResault,
+    (assessmentResault) => assessmentResault.assessmentYear,
+  )
+  @ApiHideProperty()
   assessmentResault: AssessmentResault;
 
-  @OneToMany(() => VerificationDetail, verificationDetail => verificationDetail.assessmentYear)
-    public verificationDetail!: VerificationDetail[];
-
-
-    
-
-   
+  @OneToMany(
+    () => VerificationDetail,
+    (verificationDetail) => verificationDetail.assessmentYear,
+  )
+  public verificationDetail!: VerificationDetail[];
 }
-

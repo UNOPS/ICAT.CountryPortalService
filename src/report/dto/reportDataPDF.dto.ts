@@ -6,16 +6,15 @@ export class ReportDataPDF {
   // types: string[] = [];
   sectors: string[] = [];
   climateActionIds: number[] = [];
-  country: string = '';
+  country = '';
 
-  selectAllSectors: boolean=false;
-  sectorIds:number[]=[];
-
+  selectAllSectors = false;
+  sectorIds: number[] = [];
 
   //Report Parameters
   projIds: string[] = [];
   assessType: string[] = [];
   yearIds: string[] = [];
-  macAssecmentType:string[] = [];
-  ndcIdList:string[] = [];
+  macAssecmentType: string[] = [];
+  ndcIdList: string[] = [];
 }

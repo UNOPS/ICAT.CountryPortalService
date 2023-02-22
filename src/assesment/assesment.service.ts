@@ -82,7 +82,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     sectorId: number,
     isProposal: number,
   ): Promise<any> {
-    let filter: string = '';
+    let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
         // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR para.AssessmentYear LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
@@ -163,7 +163,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     }
     let select: string[];
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
 
       .leftJoinAndMapOne(
@@ -202,41 +202,31 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     );
 
     // console.log("query",data.getQuery())
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
     // console.log('my result...', resualt);
     if (resualt) {
       console.log('results for manage..', resualt);
       return resualt;
     }
   }
-  async assessmentForMAC(
-    projectId: number,
-    
-  ): Promise<any> {
-    
-    let filter: string = '';
+  async assessmentForMAC(projectId: number): Promise<any> {
+    let filter = '';
 
-    
-      // filter =' EXISTS (SELECT * FROM portelservice.assesment as ass1, portelservice.assesmentyear as assyr1 where ass1.id= assyr1.assessmentId and ass1.ghgAssessTypeForMac =asse.assessmentType and ay.assessmentYear=assyr1.assessmentYear and asse.projectId=ass1.projectId )'    
+    // filter =' EXISTS (SELECT * FROM portelservice.assesment as ass1, portelservice.assesmentyear as assyr1 where ass1.id= assyr1.assessmentId and ass1.ghgAssessTypeForMac =asse.assessmentType and ay.assessmentYear=assyr1.assessmentYear and asse.projectId=ass1.projectId )'
 
-  
+    if (filter) {
+      filter = `${filter}  and asse.assessmentType in ('Ex-post','Ex-ante')`;
+    } else {
+      filter = `asse.assessmentType  in ('Ex-post','Ex-ante')`;
+    }
 
-   
-      if (filter) {
-        filter = `${filter}  and asse.assessmentType in ('Ex-post','Ex-ante')`;
-      } else {
-        filter = `asse.assessmentType  in ('Ex-post','Ex-ante')`;
-      }
-    
+    //console.log(isProposal);
+    if (filter) {
+      filter = `${filter}  and asse.isProposal = 0`;
+    } else {
+      filter = `asse.isProposal = 0`;
+    }
 
-   
-      //console.log(isProposal);
-      if (filter) {
-        filter = `${filter}  and asse.isProposal = 0`;
-      } else {
-        filter = `asse.isProposal = 0`;
-      }
-    
     if (projectId != 0) {
       if (filter) {
         filter = `${filter}  and pt.id = :projectId`;
@@ -247,7 +237,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
     // let ltype = 'ASC';
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.project',
@@ -262,16 +252,16 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'ay.assessmentId = asse.id',
       )
       .where(filter, {
-        projectId
-      })
-      // .orderBy('asse.editedOn', 'DESC');
-      // .orderBy(
-      //   `(case when asse.assessmentStatus = 2 then 1 when asse.assessmentStatus = 1 then 2 end)`,
-      //   'DESC',
-      // )
-      // .addOrderBy('asse.editedOn', 'DESC');
-      console.log('im in....');
-    let resualt = await data.execute();
+        projectId,
+      });
+    // .orderBy('asse.editedOn', 'DESC');
+    // .orderBy(
+    //   `(case when asse.assessmentStatus = 2 then 1 when asse.assessmentStatus = 1 then 2 end)`,
+    //   'DESC',
+    // )
+    // .addOrderBy('asse.editedOn', 'DESC');
+    console.log('im in....');
+    const resualt = await data.execute();
 
     if (resualt) {
       return resualt;
@@ -289,7 +279,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     sectorIdFromTocken: number,
   ): Promise<Pagination<Assessment>> {
     console.log('im in....');
-    let filter: string = '';
+    let filter = '';
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -353,7 +343,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
     // let ltype = 'ASC';
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.project',
@@ -397,7 +387,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
       .addOrderBy('asse.editedOn', 'DESC');
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
     if (resualt) {
       return resualt;
@@ -408,11 +398,11 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     options: IPaginationOptions,
     assementYear: string[],
   ): Promise<any> {
-    let arr = new Array();
+    const arr = [];
 
     // console.log(year);
-    let i: number = 0;
-    let filter: string = '';
+    const i = 0;
+    const filter = '';
     // for(let year of assementYear){
     // if (assementYear != null && assementYear != undefined) {
     //   if (filter) {
@@ -433,7 +423,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //   }
     // })
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapMany(
         'dr',
@@ -446,7 +436,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
     arr.push(data);
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
     if (resualt) {
       return resualt;
@@ -458,7 +448,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     assessmentId: number,
     assementYear: string,
   ): Promise<any> {
-    let filter: string = 'as.id = :assessmentId';
+    const filter = 'as.id = :assessmentId';
 
     // if (
     //   assementYear != undefined &&
@@ -468,7 +458,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //   filter = filter + ' and pa.AssessmentYear = :assementYear';
     // }
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('as')
       .leftJoinAndMapMany(
         'as.parameters',
@@ -518,7 +508,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     assessmentId: number,
     assementYear: string,
   ): Promise<any> {
-    let filter: string = 'as.id = :assessmentId';
+    const filter = 'as.id = :assessmentId';
 
     // if (
     //   assementYear != undefined &&
@@ -528,7 +518,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //   filter = filter + ' and pa.AssessmentYear = :assementYear';
     // }
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('as')
       .leftJoinAndMapMany(
         'as.parameters',
@@ -580,11 +570,11 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     assessmentId: number,
     assessmenYear: number,
   ): Promise<boolean> {
-    let asseType = await this.repo.findOne(assessmentId);
+    const asseType = await this.repo.findOne(assessmentId);
     //  console.log("assetype..",asseType.assessmentType)
-    let filter: string = 'as.id = :assessmentId';
+    const filter = 'as.id = :assessmentId';
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('as')
       .innerJoinAndMapMany(
         'as.parameters',
@@ -599,7 +589,13 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'par.ParameterId = para.id',
       )
       .where(
-        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString() + ' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')',
+        'par.UserDataEntry is not null AND as.id =' +
+          assessmentId.toString() +
+          ' AND (para.projectionBaseYear = ' +
+          assessmenYear.toString() +
+          ' OR  para.AssessmentYear = ' +
+          assessmenYear.toString() +
+          ')',
       );
 
     // .where(
@@ -607,11 +603,11 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //     assessmentId.toString() + ` AND (para.isEnabledAlternative = true AND para.isAlternative = true OR para.isEnabledAlternative = false AND para.isAlternative = false ) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmenYear }`,
     // );
     //console.log('data1SQL', data.getSql());
-    let totalRecordsAllStatus: any[] = await data.execute();
+    const totalRecordsAllStatus: any[] = await data.execute();
 
     ///////////////////////////////////////////////////////////
 
-    var data2 = this.repo
+    const data2 = this.repo
       .createQueryBuilder('as')
       .leftJoinAndMapMany(
         'as.parameters',
@@ -627,10 +623,16 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
 
       .where(
-        'par.dataRequestStatus in (11) AND as.id =' + assessmentId.toString() + ' AND (pa.projectionBaseYear = ' + assessmenYear.toString() + ' OR  pa.AssessmentYear = ' + assessmenYear.toString()+')',
+        'par.dataRequestStatus in (11) AND as.id =' +
+          assessmentId.toString() +
+          ' AND (pa.projectionBaseYear = ' +
+          assessmenYear.toString() +
+          ' OR  pa.AssessmentYear = ' +
+          assessmenYear.toString() +
+          ')',
       );
     // console.log('data1SQL2', data2.getSql());
-    let totalRecordsApprovedStatus: any[] = await data2.execute();
+    const totalRecordsApprovedStatus: any[] = await data2.execute();
 
     console.log(
       'totalRecordsApprovedStatus',
@@ -652,11 +654,11 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     assessmentId: number,
     assessmenYear: number,
   ): Promise<boolean> {
-    let asseType = await this.repo.findOne(assessmentId);
+    const asseType = await this.repo.findOne(assessmentId);
     //  console.log("assetype..",asseType.assessmentType)
-    let filter: string = 'as.id = :assessmentId';
+    const filter = 'as.id = :assessmentId';
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('as')
       .innerJoinAndMapMany(
         'as.parameters',
@@ -671,7 +673,13 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'par.ParameterId = para.id',
       )
       .where(
-        'par.UserDataEntry is not null AND as.id =' + assessmentId.toString()+' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')',
+        'par.UserDataEntry is not null AND as.id =' +
+          assessmentId.toString() +
+          ' AND (para.projectionBaseYear = ' +
+          assessmenYear.toString() +
+          ' OR  para.AssessmentYear = ' +
+          assessmenYear.toString() +
+          ')',
       );
 
     // .where(
@@ -679,11 +687,11 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //     assessmentId.toString() + ` AND (para.isEnabledAlternative = true AND para.isAlternative = true OR para.isEnabledAlternative = false AND para.isAlternative = false ) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmenYear }`,
     // );
     //console.log('data1SQL', data.getSql());
-    let totalRecordsAllStatus: any[] = await data.execute();
+    const totalRecordsAllStatus: any[] = await data.execute();
 
     ///////////////////////////////////////////////////////////
 
-    var data2 = this.repo
+    const data2 = this.repo
       .createQueryBuilder('as')
       .leftJoinAndMapMany(
         'as.parameters',
@@ -698,9 +706,17 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'par.ParameterId = para.id',
       )
 
-      .where('par.qaStatus in (4) AND as.id =' + assessmentId.toString()+' AND (para.projectionBaseYear = ' + assessmenYear.toString() + ' OR  para.AssessmentYear = ' + assessmenYear.toString()+')');
+      .where(
+        'par.qaStatus in (4) AND as.id =' +
+          assessmentId.toString() +
+          ' AND (para.projectionBaseYear = ' +
+          assessmenYear.toString() +
+          ' OR  para.AssessmentYear = ' +
+          assessmenYear.toString() +
+          ')',
+      );
     // console.log('data1SQL2', data2.getSql());
-    let totalRecordsApprovedStatus: any[] = await data2.execute();
+    const totalRecordsApprovedStatus: any[] = await data2.execute();
 
     // var data3 = this.repo
     //   .createQueryBuilder('as')
@@ -748,12 +764,12 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     // let filter: string =
     //   'as.id = :assessmentId AND par.dataRequestStatus in (9,-9,11) AND pa.AssessmentYear = :assementYear or pa.isProjection';
 
-    let userItem = await this.userService.findByUserName(userName);
+    const userItem = await this.userService.findByUserName(userName);
     console.log('userItem', userItem);
-    let institutionId = userItem.institution ? userItem.institution.id : 0;
+    const institutionId = userItem.institution ? userItem.institution.id : 0;
 
     // institutionId is not being used in the query
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('as')
       .leftJoinAndMapMany(
         'as.parameters',
@@ -796,13 +812,13 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
   }
 
   async getAssmentDetailsByProjectId(projectId: number): Promise<any> {
-    let filter: string = '';
+    let filter = '';
 
     if (projectId != 0) {
       filter = `pt.id = :projectId`;
     }
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.project',
@@ -824,13 +840,13 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
   }
 
   async getAssessmentsBYProjectId(id: number): Promise<any> {
-    let project = new Project();
+    const project = new Project();
     project.id = id;
     return await this.repo.find({ where: { project: project } });
   }
 
   async getMethodologyNameByAssessmentId(id: number): Promise<any> {
-    let filter: string = '';
+    let filter = '';
     filter = `asse.id = :id`;
     // let assessement = this.repo.findOne(id);
     // let methId = this.meth
@@ -838,7 +854,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     // project.id = id;
     // return await this.repo.find({ where: { project: project } });
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.methodology',
@@ -848,17 +864,17 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
       .where(filter, { id });
 
-    let resualt = await data.getOneOrFail();
+    const resualt = await data.getOneOrFail();
 
     if (resualt) {
       return resualt;
     }
   }
 
-  getAssessmentsByCountryMethodology(methodId: number, countryId: number){
-    let filter = `asse.methodologyId = :methodId AND asse.countryId = :countryId`
+  getAssessmentsByCountryMethodology(methodId: number, countryId: number) {
+    const filter = `asse.methodologyId = :methodId AND asse.countryId = :countryId`;
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.methodology',
@@ -868,16 +884,14 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
       .where(filter, { methodId, countryId });
 
-      return data.getMany()
+    return data.getMany();
   }
 
-
-
   async testTransaction(): Promise<any> {
-    let filter: string = '';
+    let filter = '';
     filter = `asse.id = 216`;
 
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
         'asse.methodology',
@@ -885,9 +899,9 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'meth',
         'asse.methodologyId = meth.id',
       )
-      .where(filter, {  });
+      .where(filter, {});
 
-    let resualt = await data.getOneOrFail();
+    const resualt = await data.getOneOrFail();
 
     if (resualt) {
       return resualt;

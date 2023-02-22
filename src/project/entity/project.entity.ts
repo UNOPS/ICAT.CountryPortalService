@@ -66,8 +66,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   mappedInstitution?: Institution;
 
-
-  @ManyToOne((type) => Country, { cascade: false,eager:true })
+  @ManyToOne((type) => Country, { cascade: false, eager: true })
   @JoinColumn({ name: 'countryId' })
   country?: Country;
 
@@ -75,7 +74,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   projectStatus?: ProjectStatus;
 
-  @ManyToOne((type) => Sector, { cascade: false ,eager:true})
+  @ManyToOne((type) => Sector, { cascade: false, eager: true })
   @JoinColumn()
   sector?: Sector;
 
@@ -97,7 +96,10 @@ export class Project extends BaseTrackingEntity {
   @OneToMany(() => Assessment, (assessment) => assessment.project)
   assessments: Assessment[];
 
-  @OneToMany(() => CaActionHistory, (caActionHistory) => caActionHistory.project)
+  @OneToMany(
+    () => CaActionHistory,
+    (caActionHistory) => caActionHistory.project,
+  )
   caActionHistories?: CaActionHistory[];
 
   @Column({ default: null })
@@ -106,18 +108,17 @@ export class Project extends BaseTrackingEntity {
   @Column()
   proposeDateofCommence: Date;
 
-  @Column({ default: 0})
-  duration: number;   // project life (project scenario)
-
-
-  @Column({ default: 0})
-  baseScenarioProjectLife: number;   // project life (baseline scenario)
+  @Column({ default: 0 })
+  duration: number; // project life (project scenario)
 
   @Column({ default: 0 })
-  projectScenarioTotalInvestment: number;  // total investement (project scenario)
+  baseScenarioProjectLife: number; // project life (baseline scenario)
 
   @Column({ default: 0 })
-  baseScenarioTotalInvestment: number;  // total investement (baseline scenario)
+  projectScenarioTotalInvestment: number; // total investement (project scenario)
+
+  @Column({ default: 0 })
+  baseScenarioTotalInvestment: number; // total investement (baseline scenario)
 
   @Column({ length: 500, default: null, nullable: true })
   objective: string;
@@ -215,7 +216,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   mitigationActionType?: MitigationActionType;
 
-  @ManyToOne((type) => ProjectApprovalStatus, { cascade: false})
+  @ManyToOne((type) => ProjectApprovalStatus, { cascade: false })
   @JoinColumn()
   projectApprovalStatus?: ProjectApprovalStatus;
 
@@ -233,11 +234,13 @@ export class Project extends BaseTrackingEntity {
 
   @Column({ default: null, nullable: true })
   gdp: string;
-  
+
   @Column({ default: null, nullable: true })
   assumption: string;
 
-  @OneToMany(() => ReportProject,(reportProject) => reportProject.project ,{nullable: true})
+  @OneToMany(() => ReportProject, (reportProject) => reportProject.project, {
+    nullable: true,
+  })
   public reportProject!: ReportProject[];
 
   @Column({ default: null })
@@ -266,5 +269,4 @@ export class Project extends BaseTrackingEntity {
 
   @Column({ default: null })
   actionJustification: string;
-
 }

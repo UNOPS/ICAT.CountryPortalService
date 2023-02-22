@@ -5,12 +5,7 @@ import { CaActionHistory } from './entity/ca-action-history.entity';
 
 @Injectable()
 export class CaActionHistoryService extends TypeOrmCrudService<CaActionHistory> {
-
-    constructor(
-        @InjectRepository(CaActionHistory) repo,
-        
-      ) {
-        super(repo);
-      }
-    
+  constructor(@InjectRepository(CaActionHistory) repo) {
+    super(repo);
+  }
 }

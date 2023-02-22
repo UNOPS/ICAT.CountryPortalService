@@ -99,6 +99,8 @@ export class VerificationDetail extends BaseTrackingEntity {
   )
   public assessmentYear!: AssessmentYear;
 
-  @ManyToOne(() => Parameter, (parameter) => parameter.verificationDetail,{nullable: true})
+  @ManyToOne(() => Parameter, (parameter) => parameter.verificationDetail, {
+    nullable: true,
+  })
   public parameter: Parameter;
 }

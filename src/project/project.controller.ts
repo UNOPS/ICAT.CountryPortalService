@@ -128,7 +128,7 @@ export class ProjectController implements CrudController<Project> {
       console.log(dto);
 
       // await this.service.mail(dto);
-      let newplData = await this.base.createOneBase(req, dto);
+      const newplData = await this.base.createOneBase(req, dto);
       // let audit: AuditDto = new AuditDto();
       // audit.action = dto.climateActionName + ' Created';
       // audit.comment = dto.climateActionName + ' Created';
@@ -454,7 +454,7 @@ export class ProjectController implements CrudController<Project> {
 
     //await this.service.mail(dto);
 
-    let existingProject = await this.projectRepository.findOne({
+    const existingProject = await this.projectRepository.findOne({
       where: { id: dto.id, projectApprovalStatus: null },
     });
     if (existingProject) {
@@ -481,13 +481,13 @@ export class ProjectController implements CrudController<Project> {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Project,
   ) {
-    let project = await this.projectRepository.findOne({
+    const project = await this.projectRepository.findOne({
       where: { id: dto.id },
       relations: ['projectApprovalStatus'],
     });
 
-    let updateData = await this.base.updateOneBase(req, dto);
-    let audit: AuditDto = new AuditDto();
+    const updateData = await this.base.updateOneBase(req, dto);
+    const audit: AuditDto = new AuditDto();
     const baseurl = this.configService.get<string>('ClientURl');
     //console.log("client url...",baseurl);
 
@@ -620,7 +620,7 @@ export class ProjectController implements CrudController<Project> {
       ]);
 
     console.log('countryIdFromTocken', countryIdFromTocken);
-    let resault = await this.service.getProjectsForCountryAndSectorAdmins(
+    const resault = await this.service.getProjectsForCountryAndSectorAdmins(
       {
         limit: limit,
         page: page,
@@ -694,7 +694,7 @@ export class ProjectController implements CrudController<Project> {
       ]);
 
     console.log('countryIdFromTocken', countryIdFromTocken);
-    let resault =
+    const resault =
       await this.service.getProjectsForCountryAndSectorAdminsprojectApprovalStatusWise(
         {
           limit: limit,
@@ -734,7 +734,7 @@ export class ProjectController implements CrudController<Project> {
       ]);
 
     console.log('countryIdFromTocken', countryIdFromTocken);
-    let resault = await this.service.getProjectsForCountrySectorInstitution(
+    const resault = await this.service.getProjectsForCountrySectorInstitution(
       {
         limit: limit,
         page: page,

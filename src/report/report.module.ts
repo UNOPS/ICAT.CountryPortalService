@@ -54,7 +54,7 @@ import { ReportService } from './report.service';
       Ndc,
       ProjectOwner,
       ReportPdfFileData,
-      DefaultValue
+      DefaultValue,
     ]),
     ProjectModule,
     AssesmentModule,
@@ -74,7 +74,6 @@ import { ReportService } from './report.service';
     ProjectService,
     DefaultValueService,
     TokenDetails,
-
   ],
   exports: [
     ReportService,
@@ -83,7 +82,6 @@ import { ReportService } from './report.service';
     AssesmentResaultService,
     ProjectService,
     DefaultValueService,
-    
   ],
 })
 export class ReportModule {}

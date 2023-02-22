@@ -1,4 +1,4 @@
-import { Controller, Get,Query,Request } from '@nestjs/common';
+import { Controller, Get, Query, Request } from '@nestjs/common';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { ApplicabilityService } from './applicability.service';
 import { ApplicabilityEntity } from './entity/applicability.entity';
@@ -8,7 +8,7 @@ import { ApplicabilityEntity } from './entity/applicability.entity';
     type: ApplicabilityEntity,
   },
   query: {
-    join:{
+    join: {
       Methodology: {
         eager: true,
       },
@@ -25,14 +25,11 @@ export class ApplicabilityController
     return this;
   }
 
-
   @Get('appplicability/byMitigationActions')
   async getApplicability(
     @Request() request,
-  //  @Query('id') id: number,
-    
+    //  @Query('id') id: number,
   ): Promise<any> {
     return await this.service.getApplicability();
   }
-
 }

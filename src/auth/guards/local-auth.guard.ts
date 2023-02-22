@@ -12,7 +12,7 @@ export class LocalAuthGuard implements CanActivate {
     const apiKeys = ['1234', '56789'];
     const request = context.switchToHttp().getRequest();
     //console.log("req==",request)
-     const headerFieldValue = request.headers;
+    const headerFieldValue = request.headers;
     console.log(headerFieldValue);
 
     // console.log('api-key -----------', request.headers['api-key']);

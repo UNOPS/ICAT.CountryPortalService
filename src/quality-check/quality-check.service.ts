@@ -31,8 +31,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     private readonly userRepo: Repository<User>,
     private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
-    private readonly tokenDetails:TokenDetails,
-    
+    private readonly tokenDetails: TokenDetails,
   ) {
     super(repo);
   }
@@ -43,11 +42,11 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     QAstatusId: number,
     NDCId: number,
     SubNdcId: number,
-    countryIdFromTocken:number,
+    countryIdFromTocken: number,
     ctAction: string,
   ): Promise<Pagination<AssessmentYear>> {
     // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-    let filter: string = `ae.qaStatus is not null`;
+    let filter = `ae.qaStatus is not null`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -59,26 +58,30 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     }
     if (ctAction != null && ctAction != undefined && ctAction != '') {
       filter = `${filter}  and p.climateActionName = '${ctAction}'`;
-      console.log("+++++++++++++" ,filter)
-  }
+      console.log('+++++++++++++', filter);
+    }
     if (NDCId != 0) {
       filter = `${filter}  and as.ndcId = :NDCId`;
     }
     if (SubNdcId != 0) {
       filter = `${filter}  and as.subNdcId = :SubNdcId`;
     }
-console.log("+++++++++++++" ,ctAction)
-    
+    console.log('+++++++++++++', ctAction);
 
-    let data = this.assessmentYearRepo
+    const data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',  //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id', //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
       )
-      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken} ` )
+      .innerJoinAndMapOne(
+        'as.project',
+        Project,
+        'p',
+        `as.projectId = p.id and p.countryId = ${countryIdFromTocken} `,
+      )
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -94,7 +97,7 @@ console.log("+++++++++++++" ,ctAction)
     // );
     // console.log(data.getQuery());
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
     if (resualt) {
       return resualt;
@@ -106,49 +109,47 @@ console.log("+++++++++++++" ,ctAction)
     assementYearId: number,
     qaStatus: QuAlityCheckStatus,
     comment: string,
-    userQc:string,
+    userQc: string,
   ) {
     try {
+      // let userObj = await this.userRepo.findOne({ }userQc);
+      // console.log("my user...",userObj);
 
-     // let userObj = await this.userRepo.findOne({ }userQc);
-     // console.log("my user...",userObj);
-
-      let assementYear = await this.assessmentYearRepo.findOne(assementYearId, {
-        relations: ['assessment'],
-      });
-
-      
-     
+      const assementYear = await this.assessmentYearRepo.findOne(
+        assementYearId,
+        {
+          relations: ['assessment'],
+        },
+      );
 
       if (assementYear.qaStatus === QuAlityCheckStatus.Pending) {
         assementYear.qaStatus = QuAlityCheckStatus.InProgress;
         this.assessmentYearRepo.save(assementYear);
       }
 
-      let param = new Parameter();
+      const param = new Parameter();
       param.id = paramId;
-      let dataRequset = await this.repo.findOne({
+      const dataRequset = await this.repo.findOne({
         where: { parameter: param },
       });
 
-      let originalStatus = dataRequset.qaStatus;
+      const originalStatus = dataRequset.qaStatus;
 
       if (dataRequset !== undefined && dataRequset !== null) {
         dataRequset.qaStatus = qaStatus;
         dataRequset.qaComment = comment;
         dataRequset.qcUserName = userQc;
-        dataRequset.dataRequestStatus=qaStatus==QuAlityCheckStatus.Fail? 30:11;
+        dataRequset.dataRequestStatus =
+          qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
         dataRequset.qaStatusUpdatedDate = new Date();
         var dataRequestTo = dataRequset;
         await this.repo.save(dataRequset);
       }
 
-      let assesment = await this.assesmentservice.getAssessmentDetails(
+      const assesment = await this.assesmentservice.getAssessmentDetails(
         assementYear.assessment.id,
         assementYearId.toString(),
       );
-
-     
 
       this.parameterHistoryService.SaveParameterHistory(
         dataRequset.id,
