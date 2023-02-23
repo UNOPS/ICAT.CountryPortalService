@@ -19,11 +19,9 @@ import { NdcSetService } from './master-data/ndc/ndc-set.service';
 import { NdcService } from './master-data/ndc/ndc.service';
 import { SectorModule } from './master-data/sector/sector.module';
 import { ProjectOwner } from './master-data/project-owner/projeect-owner.entity';
-
 import { FinancingSchemeController } from './master-data/financing-scheme/financing-scheme.controller';
 import { FinancingSchemeModule } from './master-data/financing-scheme/financing-scheme.module';
 import { DocumentModule } from './document/document.module';
-
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SectorController } from './master-data/sector/sector.controller';
@@ -40,8 +38,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { InstitutionModule } from './institution/institution.module';
-// import { UserController } from './user/user.controller';
-// import { UserService } from './user/user.service';
 import { InstitutionCategoryController } from './institution/institution-category.controller';
 import { InstitutionCategoryService } from './institution/institution-category.service';
 import { UserTypeModule } from './master-data/user-type/user-type.module';
@@ -139,19 +135,14 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
     }),
     MailerModule.forRoot({
       transport: {
-        // service: 'gmail',
         host: 'smtp.office365.com',
         port: 587,
         secure: false,
-        //  ignoreTLS: true,
 
         auth: {
           user: 'no-reply-icat-ca-tool@climatesi.com',
           pass: 'ICAT2022tool',
-          // user: "pradeep@climatesi.com",
-          // pass: "RPpkr95#",
         },
-        // 'smtp://janiya.rolfson49@ethereal.email:T8pnMS7xzzX7k3QSkM@ethereal.email',
       },
       defaults: {
         from: '"Admin" <no-reply-icat-ca-tool@climatesi.com>',
@@ -202,8 +193,6 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
 
     ApplicabilityController,
 
-    // MethodologyDataController,
-
     SubsectionController,
 
     ReportController,
@@ -213,8 +202,6 @@ import { MethodologyDataService } from './master-data/methodology-data/methodolo
     SubSectorController,
     TrackClimateController,
     CaActionHistoryController,
-    // InstitutionCategoryController,
-    // UserController,
   ],
 
   providers: [AppService, SubsectionService, TokenDetails],

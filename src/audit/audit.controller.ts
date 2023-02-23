@@ -69,18 +69,9 @@ export class AuditController implements CrudController<Audit> {
     @Query('action') action: string,
     @Query('editedOn') editedOn: string,
     @Query('filterText') filterText: string,
-    // @Query('insitutionId') institutionId: number,
   ): Promise<any> {
-    //let editedOnnew= moment(editedOn, "DD/MM/YYYY");
-
     const timestamp = Date.parse(editedOn);
     const dateObject = new Date(timestamp);
-
-    // console.log(
-    //   'jjjjjjfffff',
-    //   moment(editedOn, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-    // );
-    // console.log('hhh', editedOn);
 
     let role: string;
     let username: string;
@@ -116,7 +107,6 @@ export class AuditController implements CrudController<Audit> {
       countryIdFromTocken,
       sectorIdFromTocken,
       institutionIdFromTocken,
-      // institutionId
     );
   }
 }

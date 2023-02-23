@@ -30,9 +30,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
   }
 
   async saveDocument(doc: Documents) {
-    return await this.repo.save(doc).catch((error) => {
-      console.log(error);
-    });
+    return await this.repo.save(doc).catch((error) => {});
   }
 
   async deleteDocument(docId: number): Promise<any> {
@@ -42,25 +40,13 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
         id: docId,
       })
       .getOne();
-    console.log('document.....', document);
+
     if (document) {
-      console.log('document Deleted.....', document);
       const del = await this.repo.delete(document);
-      // console.log("document.....1",del)
+
       this.deleteFile(document.relativePath);
     }
 
-    // let doc = this.getDocument(docId).then((val) => {
-    //   return this.repo
-    //     .delete(val)
-    //     .then((res) => {
-    //       this.deleteFile(val.relativePath);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-
-    // });
     return document;
   }
 
@@ -73,37 +59,21 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       })
       .getOne();
 
-    // let document = await this.repo.findOne({
-    //   // relations: ['country'],
-    //   where: { id: docId, countryId: 0 },
-    // }); //this.getDocument(docId);
-    console.log('document.....', document);
     if (document) {
       const del = await this.repo.delete(document).catch((a) => {
         return a;
       });
-      // console.log("document.....1",del)
+
       this.deleteFile(document.relativePath);
     }
 
-    // let doc = this.getDocument(docId).then((val) => {
-    //   return this.repo
-    //     .delete(val)
-    //     .then((res) => {
-    //       this.deleteFile(val.relativePath);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-
-    // });
     return document;
   }
 
   deleteFile(filepath: string) {
     const rootPath = path.resolve('./');
     const fullfilePath = join(rootPath, statticFileLocation, filepath);
-    console.log(fullfilePath);
+
     if (fs.existsSync(fullfilePath)) {
       fs.unlinkSync(fullfilePath);
     }
@@ -127,10 +97,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
         country: { id: In([0, countryIdFromTocken]) },
       },
     });
-    console.log(documenst);
+
     const base = this.configService.get<string>('downloadbaseUrl');
     documenst.forEach((a) => {
-      // a.url = `${base}${a.relativePath}`;
       a.url = `https://icat-ca-tool.climatesi.com/web-api/document/downloadDocument/attachment/${a.id}`;
     });
 
@@ -146,10 +115,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     const documenst = await this.repo.find({
       where: { documentOwnerId: oid, country: country },
     });
-    console.log(documenst);
+
     const base = this.configService.get<string>('baseUrl');
     documenst.forEach((a) => {
-      // a.url = `${base}${a.relativePath}`;
       a.url = `${base}document/downloadDocument/attachment/${a.id}`;
     });
 

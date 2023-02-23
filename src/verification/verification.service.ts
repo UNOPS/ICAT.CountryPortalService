@@ -48,8 +48,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     VRstatusId: number,
     countryIdFromTocken: number,
   ): Promise<Pagination<AssessmentYear>> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-    //console.log("222222222222222222222222222222222222222222222")
     let filter = `ae.verificationStatus is not null`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
@@ -60,37 +58,32 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
     }
-    console.log(
-      '222222222222222222222222222222222222222222222',
-      VRstatusId,
-      filterText,
-    );
+
     const data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',   //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id',
       )
-      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
+      .innerJoinAndMapOne(
+        'as.project',
+        Project,
+        'p',
+        `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`,
+      )
 
       .where(filter, {
         filterText: `%${filterText}%`,
         VRstatusId,
       })
-      // .groupBy('ae.Assessmentid')
-      // .groupBy('ae.AssessmentYear')
+
       .orderBy('ae.qaDeadline', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    console.log('PPPPPPPP', data.getQuery());
 
     const resualt = await paginate(data, options);
 
     if (resualt) {
-      console.log('result is...', resualt);
       return resualt;
     }
   }
@@ -102,10 +95,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     countryIdFromTocken: number,
     userNameFromTocken: any,
   ): Promise<Pagination<AssessmentYear>> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-    //console.log("222222222222222222222222222222222222222222222")
     let filter = `ae.verificationStatus is not null`;
-    let user = await this.userRepo.findOne({
+    const user = await this.userRepo.findOne({
       where: { username: userNameFromTocken },
     });
 
@@ -117,39 +108,34 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
     }
-    console.log(
-      '222222222222222222222222222222222222222222222',
-      VRstatusId,
-      filterText,
-    );
     const data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',   //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id',
       )
-      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
+      .innerJoinAndMapOne(
+        'as.project',
+        Project,
+        'p',
+        `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`,
+      )
 
-      .where(filter + " AND (ae.verificationStatus !=7 AND ae.verificationStatus !=6 AND ae.verificationUser ="+user.id+" )" ,{
-        filterText: `%${filterText}%`,
-        VRstatusId,
-      });
-    // .groupBy('ae.Assessmentid')
-    // .groupBy('ae.AssessmentYear')
-    // .orderBy('ae.qaDeadline', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    console.log('PPPPPPPP', data.getQuery());
-
-    // data.
-
+      .where(
+        filter +
+          ' AND (ae.verificationStatus !=7 AND ae.verificationStatus !=6 AND ae.verificationUser =' +
+          user.id +
+          ' )',
+        {
+          filterText: `%${filterText}%`,
+          VRstatusId,
+        },
+      );
     const resualt = await paginate(data, options);
 
     if (resualt) {
-      console.log('result is...', resualt);
       return resualt;
     }
   }
@@ -159,27 +145,33 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       this.verificationDetailRepo.save(verificationDetail);
 
       const ass = verificationDetail[0].assessmentYear.id;
-      console.log('asseYa', verificationDetail);
-      const asseYa = await this.assessmentYearRepo.findOne({ where: { id: ass }})
-      const assesment = await this.assesmentservice.findOne({ where: { id: verificationDetail[0].assessmentId }})
-      console.log('asseYa', asseYa);
+
+      const asseYa = await this.assessmentYearRepo.findOne({
+        where: { id: ass },
+      });
+      const assesment = await this.assesmentservice.findOne({
+        where: { id: verificationDetail[0].assessmentId },
+      });
+
       let user: User[];
       const inscon = assesment.project.country;
-      const insSec = assesment.project.sector
-      const ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
+      const insSec = assesment.project.sector;
+      const ins = await this.institutionRepo.findOne({
+        where: { country: inscon, sector: insSec, type: 2 },
+      });
       user = await this.userRepo.find({
         where: { country: inscon, userType: 5, institution: ins },
       });
 
       user.forEach((ab) => {
         const template =
-        'Dear ' +
-        ab.username + ' ' +
-        '<br/>Data request with following information has shared with you.' +
-        ' <br/> Accepted Verifir value' +
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value +
-        '<br> project -: ' + asseYa.assessment.project.climateActionName;
+          'Dear ' +
+          ab.username +
+          ' ' +
+          '<br/>Data request with following information has shared with you.' +
+          ' <br/> Accepted Verifir value' +
+          '<br> project -: ' +
+          asseYa.assessment.project.climateActionName;
 
         this.emaiService.sendMail(ab.email, 'Accepted parameter', '', template);
       });
@@ -200,7 +192,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             }
           }
 
-          let data = this.ParameterRequestRepo.createQueryBuilder(
+          const data = this.ParameterRequestRepo.createQueryBuilder(
             'paraReq',
           ).innerJoinAndMapOne(
             'paraReq.parameter',
@@ -208,25 +200,14 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             'para',
             `paraReq.ParameterId = para.id and para.id = ${a.parameter.id}`,
           );
-          //.where('paraHis.id = dataReqestId')
 
           const result1 = await data.getOne();
-          console.log('my parameter111..', result1);
-
-          // this.parameterHistoryService.SaveParameterHistory(
-          //   result1.id,
-          //   ParameterHistoryAction.Verifier,
-          //   description,
-          //   comment,
-          //   a.verificationStatus.toString(),
-          //   '',
-          // );
 
           if (a.id == undefined && a.isDataRequested == true) {
             const dataRequest = await this.ParameterRequestRepo.findOne({
               where: { parameter: a.parameter },
             });
-            console.log(dataRequest);
+
             dataRequest.dataRequestStatus =
               DataRequestStatus.Verifier_Data_Request;
             await this.ParameterRequestRepo.save(dataRequest);
@@ -241,8 +222,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
   async GetVerificationDetails(
     assessmentYearId: number,
   ): Promise<VerificationDetail[]> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-
     const data = this.verificationDetailRepo
       .createQueryBuilder('vd')
       .leftJoinAndMapOne(
@@ -252,9 +231,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         'vd.parameterId = p.id',
       )
       .where('vd.assessmentYearId = :assessmentYearId', { assessmentYearId });
-
-    // console.log('lllllllllllllllllllllllllllllll');
-    // console.log(data.getQuery());
 
     const resualt = data.getMany();
 

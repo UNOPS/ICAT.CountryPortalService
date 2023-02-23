@@ -20,15 +20,14 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
   }
 
   public async SaveParameterHistory(
-    dataReqestId: number, // daat requst ID
+    dataReqestId: number,
     action: ParameterHistoryAction,
     description: string,
     comment: string,
     status: string,
     statusPrevious: string | null,
   ) {
-    const datareqest = await this.parameterRequestRepo.findOne(dataReqestId); // let parametr
-    // console.log("my datarequest id ..",datareqest.id)
+    const datareqest = await this.parameterRequestRepo.findOne(dataReqestId);
 
     const data = this.parameterRequestRepo
       .createQueryBuilder('paraReq')
@@ -38,14 +37,8 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
         'para',
         `paraReq.ParameterId = para.id and paraReq.id = ${dataReqestId}`,
       );
-    //.where('paraHis.id = dataReqestId')
 
     const result1 = await data.getOne();
-    console.log('my parameter111..', result1);
-
-    // let parameter = await this.parameterRepo.findOne(datareqest.parameter.id);
-
-    // console.log("my parameter..",parameter.name)
 
     const parameterHistory = new ParameterHistory();
     parameterHistory.description = description;
@@ -74,8 +67,6 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
       })
       .orderBy('as.createdOn', 'DESC');
 
-    // console.log('data.....',data)
-    //console.log('query...', data.getQueryAndParameters());
     return await data.getMany();
   }
 }

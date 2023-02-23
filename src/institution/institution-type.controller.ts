@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Crud, CrudController } from '@nestjsx/crud';
-// import { request } from 'express';
+
 import { Repository } from 'typeorm-next';
 import { InstitutionTypeService } from './institution-type.service';
 import { InstitutionType } from './institution.type.entity';
@@ -27,19 +27,6 @@ export class InstitutionTypeController
     @InjectRepository(InstitutionType)
     private readonly institutionTypeRepository: Repository<InstitutionType>,
   ) {}
-
-  // @Get('allInstitutionTypes')
-  // async findAllTypesByUserType(
-  //     @Request() request,
-  //     @Query('userId') userTypeId: number,
-  // ): Promise<InstitutionType[]>{
-
-  //     let typeList = await this.institutionTypeRepository.find({
-  //         where: { loggedUserType:userTypeId }
-  //     });
-  //     return typeList;
-  // // }
-  // }
 
   @Get('institutionTypeByUserType')
   async findInstitutionTypeByUserType(

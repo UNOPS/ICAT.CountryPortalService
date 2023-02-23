@@ -27,7 +27,7 @@ export class TrackClimateController implements CrudController<TrackcaEntity> {
   constructor(
     public service: TrackClimateService,
     public climateservice: ProjectService,
-    private readonly tokenDetails: TokenDetails, // @InjectRepository(TrackcaEntity) // private readonly projectRepository: Repository<TrackcaEntity>, // public configService: ConfigService,
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<TrackcaEntity> {
@@ -37,9 +37,6 @@ export class TrackClimateController implements CrudController<TrackcaEntity> {
   @UseGuards(JwtAuthGuard)
   @Get('getTrackClimateActionDetails')
   async getTrackClimateActionDetails(@Request() request): Promise<any> {
-    // console.log(moment(editedOn).format('YYYY-MM-DD'))
-    console.log('11111111');
-
     let countryIdFromTocken: number;
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
@@ -54,8 +51,6 @@ export class TrackClimateController implements CrudController<TrackcaEntity> {
     projects.forEach((a) => {
       projectIdlist.push(a.id);
     });
-
-    console.log('projectId', projectIdlist);
 
     return this.service.find({
       where: {

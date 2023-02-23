@@ -65,32 +65,4 @@ export class Report extends BaseTrackingEntity {
       'https://act.campaign.gov.uk/wp-content/uploads/sites/25/2017/02/form_icon-1.jpg',
   })
   thumbnail: string;
-
-  // @ManyToMany((type) => Sector,{
-  //     eager: true,
-  //     cascade: false,
-  // })
-  // @JoinTable({ name: 'report_sector' })
-  // sector?: Sector[];
-
-  // @ManyToMany((type) => Ndc,{
-  //     eager: true,
-  //     cascade: false,
-  // })
-  // @JoinTable({ name: 'report_ndc' })
-  // ndc?: Ndc[];
-
-  // @ManyToMany((type) => Project,{
-  //     eager: true,
-  //     cascade: false,
-  // })
-  // @JoinTable({ name: 'report_climateaction' })
-  // climateaction?: Project[];
-
-  // @ManyToMany((type) => Assessment,{
-  //     eager: true,
-  //     cascade: false,
-  // })
-  // @JoinTable({ name: 'report_assessment' })
-  // assessment?: Assessment[];
 }

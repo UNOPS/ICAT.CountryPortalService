@@ -91,7 +91,7 @@ export class ProjectController implements CrudController<Project> {
     private readonly projectRepository: Repository<Project>,
     public configService: ConfigService,
     private readonly auditService: AuditService,
-    private readonly tokenDetails: TokenDetails, // @Inject(REQUEST) private request
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<Project> {
@@ -105,9 +105,6 @@ export class ProjectController implements CrudController<Project> {
     @ParsedBody() dto: Project,
   ) {
     try {
-      console.log(
-        '-----------------------------------------------------------',
-      );
       dto.createdBy = '-';
       dto.editedBy = '-';
 
@@ -125,29 +122,12 @@ export class ProjectController implements CrudController<Project> {
 
       dto.reportProject = null;
 
-      console.log(dto);
-
-      // await this.service.mail(dto);
       const newplData = await this.base.createOneBase(req, dto);
-      // let audit: AuditDto = new AuditDto();
-      // audit.action = dto.climateActionName + ' Created';
-      // audit.comment = dto.climateActionName + ' Created';
-      // audit.actionStatus = 'Created';
-
-      // this.auditService.create(audit);
-      console.log('Project Created');
-
-      console.log('new.....', newplData);
 
       return newplData;
     } catch (error) {
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log(error);
       throw error;
     }
-
-    // await this.service.ceateSelfConvertion(dto.unitOfMeasure);
-    // await this.service.ceateReverseConvertion(dto);
   }
   @UseGuards(JwtAuthGuard)
   @Get(
@@ -163,9 +143,6 @@ export class ProjectController implements CrudController<Project> {
     @Query('editedOn') editedOn: string,
     @Query('filterText') filterText: string,
   ): Promise<any> {
-    // console.log(moment(editedOn).format('YYYY-MM-DD'))
-    console.log('11111111');
-
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;
@@ -282,7 +259,7 @@ export class ProjectController implements CrudController<Project> {
     @Request() request,
     @Query('page') page: number,
     @Query('limit') limit: number,
-    // @Query('countryId') countryId: number,
+
     @Query('sectorId') sectorId: number,
     @Query('ndcId') ndcId: number,
     @Query('subndcId') subndcId: number,
@@ -325,7 +302,7 @@ export class ProjectController implements CrudController<Project> {
     @Query('projectStatusId') projectStatusId: number,
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
     @Query('assessmentStatusName') assessmentStatusName: string,
-    // @Query('countryId') countryId: number,
+
     @Query('sectorId') sectorId: number,
   ): Promise<any> {
     let countryIdFromTocken: number;
@@ -336,7 +313,6 @@ export class ProjectController implements CrudController<Project> {
       TokenReqestType.sectorId,
     ]);
 
-    // console.log("heelo controler");
     return await this.service.getAllCAList(
       {
         limit: limit,
@@ -346,7 +322,7 @@ export class ProjectController implements CrudController<Project> {
       projectStatusId,
       projectApprovalStatusId,
       assessmentStatusName,
-      // countryId,
+
       sectorId,
       countryIdFromTocken,
       sectorIdFromTocken,
@@ -374,8 +350,6 @@ export class ProjectController implements CrudController<Project> {
     @Query('sectorId') sectorId: number,
     @Query('asseType') asseType: string,
   ): Promise<any> {
-    // console.log("heelo controler");
-
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
@@ -393,7 +367,7 @@ export class ProjectController implements CrudController<Project> {
       projectStatus,
       projectApprovalStatusId,
       isProposal,
-      // countryId,
+
       sectorId,
       countryIdFromTocken,
       sectorIdFromTocken,
@@ -420,7 +394,7 @@ export class ProjectController implements CrudController<Project> {
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
     @Query('assessmentStatusName') assessmentStatusName: string,
     @Query('Active') Active: number,
-    // @Query('countryId') countryId: number,
+
     @Query('sectorId') sectorId: number,
   ): Promise<any> {
     let countryIdFromTocken: number;
@@ -450,9 +424,6 @@ export class ProjectController implements CrudController<Project> {
   @Put('update-project-anonymous')
   async updateProjectAnonymous(@Body() dto: Project) {
     let newplData: any;
-    console.log('update-project-anonymous', dto);
-
-    //await this.service.mail(dto);
 
     const existingProject = await this.projectRepository.findOne({
       where: { id: dto.id, projectApprovalStatus: null },
@@ -460,13 +431,7 @@ export class ProjectController implements CrudController<Project> {
     if (existingProject) {
       newplData = await this.projectRepository.save(dto);
     }
-    // let audit: AuditDto = new AuditDto();
-    // audit.action = dto.climateActionName + ' Created';
-    // audit.comment = dto.climateActionName + ' Created';
-    // audit.actionStatus = 'Created';
 
-    // this.auditService.create(audit);
-    console.log('Project Created');
     if (newplData) {
       this.service.mail(newplData);
       return true;
@@ -489,7 +454,6 @@ export class ProjectController implements CrudController<Project> {
     const updateData = await this.base.updateOneBase(req, dto);
     const audit: AuditDto = new AuditDto();
     const baseurl = this.configService.get<string>('ClientURl');
-    //console.log("client url...",baseurl);
 
     if (
       dto.projectApprovalStatus &&
@@ -619,7 +583,6 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    console.log('countryIdFromTocken', countryIdFromTocken);
     const resault = await this.service.getProjectsForCountryAndSectorAdmins(
       {
         limit: limit,
@@ -693,7 +656,6 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    console.log('countryIdFromTocken', countryIdFromTocken);
     const resault =
       await this.service.getProjectsForCountryAndSectorAdminsprojectApprovalStatusWise(
         {
@@ -733,7 +695,6 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    console.log('countryIdFromTocken', countryIdFromTocken);
     const resault = await this.service.getProjectsForCountrySectorInstitution(
       {
         limit: limit,

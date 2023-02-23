@@ -43,15 +43,9 @@ export class SectorController implements CrudController<Sector> {
   ): Promise<GetManyDefaultResponse<Sector> | Sector[]> {
     try {
       const res = await this.base.getManyBase(req);
-      // console.log('*********************************************');
-      // console.log(res);
-      // console.log('*********************************************');
-      // console.log(req);
+
       return res;
-    } catch (error) {
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   @Get('sector/sectorinfo/:page/:limit/:filterText')
@@ -61,7 +55,6 @@ export class SectorController implements CrudController<Sector> {
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
   ): Promise<any> {
-    // console.log(moment(editedOn).format('YYYY-MM-DD'))
     return await this.service.getSectorDetails(
       {
         limit: limit,
@@ -76,10 +69,6 @@ export class SectorController implements CrudController<Sector> {
     @Request() request,
     @Query('countryId') countryId: number,
   ): Promise<any> {
-    console.log(
-      '+++++++++++++++++++++++++++',
-      await this.service.getCountrySector(countryId),
-    );
     return await this.service.getCountrySector(countryId);
   }
 }

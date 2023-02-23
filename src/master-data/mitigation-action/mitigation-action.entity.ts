@@ -11,11 +11,6 @@ import {
 
 @Entity('mitigationActionType')
 export class MitigationActionType extends MasterData {
-  // @PrimaryGeneratedColumn()
-  // id: number;
-  // @Column()
-  // name: string;
-
   @OneToMany(
     () => Methodology,
     (methodology) => methodology.mitigationActionType,

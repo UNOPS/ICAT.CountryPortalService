@@ -26,9 +26,6 @@ import {
 
 @Entity({ name: 'climateAction' })
 export class Project extends BaseTrackingEntity {
-  /**
-   *
-   */
   constructor() {
     super();
     this.createdBy = '';
@@ -109,16 +106,16 @@ export class Project extends BaseTrackingEntity {
   proposeDateofCommence: Date;
 
   @Column({ default: 0 })
-  duration: number; // project life (project scenario)
+  duration: number;
 
   @Column({ default: 0 })
-  baseScenarioProjectLife: number; // project life (baseline scenario)
+  baseScenarioProjectLife: number;
 
   @Column({ default: 0 })
-  projectScenarioTotalInvestment: number; // total investement (project scenario)
+  projectScenarioTotalInvestment: number;
 
   @Column({ default: 0 })
-  baseScenarioTotalInvestment: number; // total investement (baseline scenario)
+  baseScenarioTotalInvestment: number;
 
   @Column({ length: 500, default: null, nullable: true })
   objective: string;
@@ -209,8 +206,6 @@ export class Project extends BaseTrackingEntity {
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
   expectedRecurrentExpenditure;
-
-  //For mistgation actions - related to climate action table in future
 
   @ManyToOne((type) => MitigationActionType, { cascade: false })
   @JoinColumn()

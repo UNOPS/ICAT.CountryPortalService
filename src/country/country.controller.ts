@@ -27,6 +27,4 @@ export class CountryController implements CrudController<Country> {
   get base(): CrudController<Country> {
     return this;
   }
-
-  // @UseGuards(JwtAuthGuard)
 }

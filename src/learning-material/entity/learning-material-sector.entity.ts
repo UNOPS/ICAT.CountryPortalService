@@ -25,21 +25,4 @@ export class LearningMaterialSector extends BaseTrackingEntity {
 
   @ManyToOne(() => Sector, (sector) => sector.learningMaterialsector)
   public sector!: Sector;
-
-  /*
-    @ManyToMany((type) => UserType, {
-      eager: true,
-      cascade: false,
-    })
-
-
-    @ManyToMany(() => UserType, userType => userType.learningmaterils)
-    @JoinTable()
-    userTypes?: UserType[];
-
-    @ManyToMany(() => Sector, sector => sector.learningmaterils)
-    @JoinTable()
-    sectors?: Sector[];
-
-*/
 }

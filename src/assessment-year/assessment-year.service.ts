@@ -34,8 +34,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     @InjectRepository(AssessmentYear) repo,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
-    // @InjectRepository(User)
-    // public userRepo: Repository<User>,
+
     private readonly parameterHistoryService: ParameterHistoryService,
     private readonly userService: UsersService,
     private readonly emaiService: EmailNotificationService,
@@ -54,7 +53,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
       .select('ay.assessmentYear as assessmentYear')
       .where('p.id=' + projectId)
       .orderBy('ay.assessmentYear', 'DESC');
@@ -69,7 +67,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       relations: ['assessment'],
     });
     const inscon = dataRequestItem.assessment.project.country;
-    // console.log( "inscon",dataRequestItem.assessment.project.country)
+
     const insSec = dataRequestItem.assessment.project.sector;
     let user: User[];
 
@@ -85,20 +83,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         ab.username +
         ' ' +
         ' <br/> Data request with following information has shared with you.';
-      // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-      // '<br/> value -:' + dataRequestItem.parameter.value +
-      // '<br> comment -: ' + updateDataRequestDto.comment;
 
       this.emaiService.sendMail(ab.email, 'Accepted QC', '', template);
     });
-    console.log('insSec', ins);
   }
 
   async getAssessmentByYearId(yearId: number, userName: string): Promise<any> {
     const userItem = await this.userService.findByUserName(userName);
-    console.log('userItem', userItem);
+
     const institutionId = userItem.institution ? userItem.institution.id : 0;
-    // Institution ID is not being used in the Query
 
     const data = this.repo
       .createQueryBuilder('ay')
@@ -124,12 +117,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .leftJoinAndMapOne('a.ndc', Ndc, 'ndc', 'ndc.id = a.ndcId')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-      /// .select('ay.assessmentYear as assessmentYear')
       .where('ay.id=' + yearId);
-    //  .orderBy('ay.assessmentYear', 'DESC');
+
     const result = await data.getOne();
-    console.log('result', result);
+
     return result;
   }
 
@@ -138,11 +129,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     assessTypes: string,
     yearIds: string,
   ): Promise<any> {
-    // let userItem = await this.userService.findByUserName(userName);
-    // console.log('userItem', userItem);
-    // let institutionId = userItem.institution ? userItem.institution.id : 0;
-    // Institution ID is not being used in the Query
-
     const data = this.repo
       .createQueryBuilder('ay')
       .leftJoinAndMapOne(
@@ -163,17 +149,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pa',
         'a.id = pa.assessmentId',
       )
-      // .leftJoinAndMapOne(
-      //   'pa.institution',
-      //   Institution,
-      //   'in',
-      //   'in.id = pa.institutionId',
-      // )
+
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
       .leftJoinAndMapOne('p.ndc', Ndc, 'ndc', 'p.ndcId = ndc.Id')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
       .select(
         'distinct ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type  , ar.totalEmission as Result , ar.macResult as MACResult',
       )
@@ -191,10 +171,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .orderBy('p.climateActionName', 'ASC')
       .orderBy('ndc.name', 'ASC');
 
-    // .orderBy('p.climateActionName', 'DESC');
-
-    console.log('Report', data.getSql());
-    //  .orderBy('ay.assessmentYear', 'DESC');
     const result = await data.execute();
     return result;
   }
@@ -205,10 +181,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     yearIds: string,
     macAssesmentType: string,
   ): Promise<any> {
-    // let userItem = await this.userService.findByUserName(userName);
-    // console.log('userItem', userItem);
-    // let institutionId = userItem.institution ? userItem.institution.id : 0;
-    // Institution ID is not being used in the Query
     if (macAssesmentType.length == 0) {
       macAssesmentType = `''`;
     }
@@ -225,12 +197,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'a',
         'a.id = ay.assessmentId',
       )
-      // .leftJoinAndMapOne(
-      //   'a.id',
-      //   AssessmentResault,
-      //   'ar',
-      //   'a.id = ar.assementId',
-      // )
+
       .leftJoinAndMapOne(
         'a.id',
         AssessmentResault,
@@ -243,12 +210,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pa',
         'a.id = pa.assessmentId',
       )
-      // .leftJoinAndMapOne(
-      //   'pa.institution',
-      //   Institution,
-      //   'in',
-      //   'in.id = pa.institutionId',
-      // )
+
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
       .leftJoinAndMapOne(
         'a.methodology',
@@ -277,29 +239,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'p.projectStatusId = pstatus.id',
       )
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
       .select(
         `distinct a.id as assesmentId,a.isProposal as isProposal, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, sndc.name as SNDC, p.institution as Institution, powner.name as ProjectOwner, p.objective as Objective, p.projectScope as ProjectScope, p.outcome as OutCome, p.directSDBenefit as DirectB, p.indirectSDBenefit as IndreactB, pstatus.name as ProjectStatus `,
       )
 
       .where(
-        // (
-        //   `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
-        //   yearIds +
-        //   ' ) AND a.assessmentType IN(' +
-        //   assessTypes +
-        //   ') AND p.id IN(' + projIds +
-        //   ')'
-        // ) +
-        // ' OR '
-        // +
-        //   (
-        //     `ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` + yearIds +
-        //     ') AND a.ghgAssessTypeForMac IN (' + macAssesmentType +
-        //     ') AND p.id IN (' + projIds + ')'
-        //   )
-
-        //filter from project ID is useless year id taken from those project
         `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
           yearIds +
           ' ) AND a.assessmentType IN(' +
@@ -312,20 +256,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
             macAssesmentType +
             ') '),
       )
-      //.groupBy('ay.assessmentYear')
-      //.groupBy('a.assessmentType')
-      // .groupBy('p.climateActionName')
-      // .groupBy('ndc.name')
-      //.groupBy('a.ghgAssessTypeForMac')
       .orderBy('a.assessmentType', 'ASC')
       .orderBy('ay.assessmentYear', 'ASC')
       .orderBy('p.climateActionName', 'ASC')
       .orderBy('ndc.name', 'ASC');
 
-    // .orderBy('p.climateActionName', 'DESC');
-
-    console.log('Report', data.getSql());
-    //  .orderBy('ay.assessmentYear', 'DESC');
     const result = await data.execute();
     return result;
   }
@@ -336,10 +271,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     yearIds: string,
     macAssesmentType: string,
   ): Promise<any> {
-    // let userItem = await this.userService.findByUserName(userName);
-    // console.log('userItem', userItem);
-    // let institutionId = userItem.institution ? userItem.institution.id : 0;
-    // Institution ID is not being used in the Query
     if (macAssesmentType.length == 0) {
       macAssesmentType = `''`;
     }
@@ -368,12 +299,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pa',
         'a.id = pa.assessmentId',
       )
-      // .leftJoinAndMapOne(
-      //   'pa.institution',
-      //   Institution,
-      //   'in',
-      //   'in.id = pa.institutionId',
-      // )
+
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
       .leftJoinAndMapOne(
         'a.methodology',
@@ -390,10 +316,9 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .leftJoinAndMapOne('p.ndc', Ndc, 'ndc', 'p.ndcId = ndc.Id')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
       .select(
         `distinct a.id as assesmentId, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, CASE    WHEN pa.isBaseline THEN 'Baseline'    WHEN pa.isProject THEN 'Project'    WHEN pa.isLekage THEN 'Lekage'   END AS ParaType,pa.name as KeyIndicator, pa.value as ParaValue, pa.uomDataRequest as ParaUnit`,
-      ) //pa.name as KeyIndicator, pa.value as ParaValue, pa.uomDataRequest as ParaUnit',
+      )
 
       .where(
         `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
@@ -412,20 +337,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
             projIds +
             ')'),
       )
-      //.groupBy('ay.assessmentYear')
-      //.groupBy('a.assessmentType')
-      // .groupBy('p.climateActionName')
-      // .groupBy('ndc.name')
-      //.groupBy('a.ghgAssessTypeForMac')
       .orderBy('a.assessmentType', 'ASC')
       .orderBy('ay.assessmentYear', 'ASC')
       .orderBy('p.climateActionName', 'ASC')
       .orderBy('ndc.name', 'ASC');
 
-    // .orderBy('p.climateActionName', 'DESC');
-
-    console.log('Report', data.getSql());
-    //  .orderBy('ay.assessmentYear', 'DESC');
     const result = await data.execute();
     return result;
   }
@@ -473,26 +389,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .orderBy('ay.verificationDeadline', 'DESC')
       .groupBy('ay.id');
 
-    console.log('AssessmentFor Verifier', data.getSql());
-
     const result = await paginate(data, options);
     return result;
   }
 
   async getAllYearsByAssessmentId(assesmentId: number): Promise<any> {
-    console.log(assesmentId);
-
     const data = this.repo
       .createQueryBuilder('ay')
-      // .leftJoinAndMapOne(
-      //   'ay.assessment',
-      //   Assessment,
-      //   'a',
-      //   'a.id = ay.assessmentId',
-      // )
-      .where('ay.assessmentId = ' + assesmentId);
 
-    console.log(data.getQueryAndParameters());
+      .where('ay.assessmentId = ' + assesmentId);
 
     const result = await data.getRawMany();
 
@@ -502,20 +407,18 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
   async acceptDataVerifiersForIds(
     updateDataRequestDto: DataVerifierDto,
   ): Promise<boolean> {
-    // let dataRequestItemList = new Array<ParameterRequest>();
-
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
       const originalStatus = dataRequestItem.verificationStatus;
-      // dataRequestItem.verificationStatus = updateDataRequestDto.status;
+
       dataRequestItem.verificationDeadline = updateDataRequestDto.deadline;
       dataRequestItem.verificationUser = updateDataRequestDto.userId;
 
       const user = await this.userService.findOne({
         where: { id: updateDataRequestDto.userId },
       });
-      // let user = await this.userRepo.findOne({where:{id:updateDataRequestDto.userId}})
+
       var template: any;
       template =
         'Dear ' +
@@ -523,32 +426,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         ' ' +
         user.lastName +
         ' <br/> Data request with following information has shared with you.' +
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value +
-        // '<br> comment -: ' + updateDataRequestDto.comment;
-
         this.emaiService.sendMail(user.email, 'Assign verifier', '', template);
-      // dataRequestItemList.push(dataRequestItem);
-      this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
-        // this.parameterHistoryService.SaveParameterHistory(
-        //   res.id,
-        //   ParameterHistoryAction.AssignVerifier,
-        //   'AssignVerifier',
-        //   '',
-        //   res.verificationStatus.toString(),
-        //   originalStatus.toString(),
-        // );
-      });
-    }
 
-    // this.repo.save(dataRequestItemList);
+      this.repo.save(dataRequestItem).then((res) => {});
+    }
 
     return true;
   }
 
   async acceptQC(updateDataRequestDto: DataVerifierDto): Promise<boolean> {
-    // let dataRequestItemList = new Array<ParameterRequest>();
     let insSec: any;
     let inscon: any;
 
@@ -558,27 +444,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         where: { id: id },
         relations: ['assessment'],
       });
-      console.log('dataRequestItem', dataRequestItem);
+
       const originalStatus = dataRequestItem.qaStatus;
       dataRequestItem.qaStatus = updateDataRequestDto.status;
 
       inscon = dataRequestItem.assessment.project.country;
-      console.log('inscon', dataRequestItem.assessment.project.country);
-      insSec = dataRequestItem.assessment.project.sector;
-      console.log('insSec', insSec);
 
-      // dataRequestItemList.push(dataRequestItem);
-      this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
-        // this.parameterHistoryService.SaveParameterHistory(
-        //   res.id,
-        //   ParameterHistoryAction.QC,
-        //   'QC',
-        //   '',
-        //   res.qaStatus.toString(),
-        //   originalStatus.toString(),
-        // );
-      });
+      insSec = dataRequestItem.assessment.project.sector;
+
+      this.repo.save(dataRequestItem).then((res) => {});
     }
     let user: User[];
     const ins = await this.institutionRepo.findOne({
@@ -588,7 +462,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       where: { country: inscon, userType: 7, institution: ins },
     });
     user.forEach((ab) => {
-      console.log('=========', ins);
       let template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
@@ -596,8 +469,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
           ab.username +
           ' ' +
           ' <br/> Data request with following information has shared with you.' +
-          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-          // '<br/> value -:' + dataRequestItem.parameter.value +
           '<br> comment -: ' +
           updateDataRequestDto.comment;
       } else {
@@ -606,14 +477,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
           ab.username +
           ' ' +
           ' <br/>Data request with following information has shared with you.';
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value;
       }
 
       this.emaiService.sendMail(ab.email, 'Please verify', '', template);
     });
-
-    // this.repo.save(dataRequestItemList);
 
     return true;
   }
@@ -624,14 +491,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
   ): Promise<any> {
     const filter =
       'ass.id = :assessmentId and assYear.assessmentYear = :assementYear';
-
-    // if (
-    //   assementYear != undefined &&
-    //   assementYear != null &&
-    //   assementYear != ''
-    // ) {
-    //   filter = filter + ' and pa.AssessmentYear = :assementYear';
-    // }
 
     const data = this.repo
       .createQueryBuilder('assYear')
@@ -653,37 +512,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pr',
         'pr.id = vrd.parameterId',
       )
-
-      /*
-      .leftJoinAndMapOne(
-        'pa.institution',
-        Institution,
-        'in',
-        'in.id = pa.institutionId',
-      )
-      .leftJoinAndMapOne(
-        'pa.parameterRequest',
-        ParameterRequest,
-        'par',
-        'par.ParameterId = pa.id',
-      )
-      .leftJoinAndMapOne('as.ndc', Ndc, 'ndc', 'ndc.id = as.ndcId')
-      .leftJoinAndMapOne('as.subNdc', SubNdc, 'sndc', 'sndc.id = as.subNdcId')
-      .leftJoinAndMapOne(
-        'as.methodology',
-        Methodology,
-        'me',
-        'me.id = as.methodologyId',
-      )
-      .leftJoinAndMapOne('as.project', Project, 'pr', 'pr.id = as.projectId')
-*/
       .where(filter, {
         assessmentId,
         assementYear,
       });
 
-    // console.log('data.....',data)
-    // console.log('query...', data.getQueryAndParameters());
     return await data.getMany();
   }
 
@@ -695,14 +528,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     const filter =
       'ass.assessmentType = :assessmentType and assYear.assessmentYear = :assementYear and pr.climateActionName = :climateActionName';
 
-    // if (
-    //   assementYear != undefined &&
-    //   assementYear != null &&
-    //   assementYear != ''
-    // ) {
-    //   filter = filter + ' and pa.AssessmentYear = :assementYear';
-    // }
-
     const data = this.repo
       .createQueryBuilder('assYear')
       .leftJoinAndMapOne(
@@ -712,44 +537,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'ass.id = assYear.assessmentId',
       )
       .leftJoinAndMapOne('ass.project', Project, 'pr', 'pr.id = ass.projectId')
-
-      /*
-      .leftJoinAndMapOne(
-        'pa.institution',
-        Institution,
-        'in',
-        'in.id = pa.institutionId',
-      )
-      .leftJoinAndMapOne(
-        'pa.parameterRequest',
-        ParameterRequest,
-        'par',
-        'par.ParameterId = pa.id',
-      )
-      .leftJoinAndMapOne('as.ndc', Ndc, 'ndc', 'ndc.id = as.ndcId')
-      .leftJoinAndMapOne('as.subNdc', SubNdc, 'sndc', 'sndc.id = as.subNdcId')
-      .leftJoinAndMapOne(
-        'as.methodology',
-        Methodology,
-        'me',
-        'me.id = as.methodologyId',
-      )
-      .leftJoinAndMapOne('as.project', Project, 'pr', 'pr.id = as.projectId')
-*/
       .where(filter, {
         assessmentType,
         assementYear,
         climateActionName,
       });
-
-    // console.log('data.....',data)
-    //console.log('query...', data.getQueryAndParameters());
     return await data.getOne();
   }
 
   async getYearListByAssessmentId(id: number): Promise<AssessmentYear[]> {
-    console.log(id);
-
     const assement = new Assessment();
     assement.id = id;
     return await this.repo.find({ where: { assessment: assement } });
@@ -762,18 +558,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<any> {
-    // let filter: string = 'asse.isProposal = 0 ';
     let filter = '';
 
     if (isPost == 0) {
-      console.log('ispost1', isPost);
       if (filter) {
         filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-post' `;
       } else {
         filter = `asse.ghgAssessTypeForMac = 'ex-post' `;
       }
     } else {
-      // console.log('ispost2',isPost)
       if (filter) {
         filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-ante'`;
       } else {
@@ -781,7 +574,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       }
     }
 
-    console.log('context', countryIdFromTocken);
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and pro.countryId = :countryIdFromTocken`;
@@ -791,7 +583,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and pro.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -800,10 +591,8 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and pro.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `pro.sectorId = :sectorId`;
         }
       }
@@ -823,12 +612,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pro',
         'asse.projectId = pro.id',
       )
-      //  .leftJoinAndMapOne(
-      //   'asseYr.assessmentResault',
-      //   AssessmentResault,
-      //   'asseRslt',
-      //   'asseYr.id= asseRslt.assessmentYearId',
-      // )
 
       .select([
         'asseYr.assessmentYear',
@@ -837,21 +620,18 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'asse.macValue',
         'pro.climateActionName',
         'asse.ghgAssessTypeForMac',
-        // 'asseRslt.macResult',
-        // 'asseRslt.totalEmission'
       ])
       .where(filter, {
         countryIdFromTocken,
         sectorIdFromTocken,
         sectorId,
       })
-      // .groupBy('asse.ghgAssessTypeForMac')
+
       .orderBy('asseYr.createdOn', 'ASC');
-    // console.log('quer',data.getSql())
+
     const result = await paginate(data, options);
 
     if (result) {
-      // console.log("resu",result);
       return result;
     }
   }
@@ -866,40 +646,20 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     assementType: string[],
     projectId: string[],
   ): Promise<any> {
-    // let filter: string = 'asse.isProposal = 0 ';
     let filter = '';
     if (isPost == 0) {
-      console.log('ispost1', isPost);
       if (filter) {
         filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-post' `;
       } else {
         filter = `asse.ghgAssessTypeForMac = 'ex-post' `;
       }
     } else {
-      // console.log('ispost2',isPost)
       if (filter) {
         filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-ante'`;
       } else {
         filter = `asse.ghgAssessTypeForMac = 'ex-ante'`;
       }
     }
-
-    // if (isPost==true) {
-    //   // console.log('ispost1',isPost)
-    //   if (filter) {
-    //     filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-post' `;
-    //   } else {
-    //     filter = `asse.ghgAssessTypeForMac = 'ex-post' `;
-    //   }
-    // }else{
-    //   // console.log('ispost2',isPost)
-    //   if (filter) {
-    //     filter = `${filter}  and asse.ghgAssessTypeForMac = 'ex-ante'`;
-    //   } else {
-    //     filter = `asse.ghgAssessTypeForMac = 'ex-ante'`;
-    //   }
-
-    // }
 
     if (assementYears && assementYears.length > 0) {
       if (filter) {
@@ -923,7 +683,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       }
     }
 
-    console.log('context', countryIdFromTocken);
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and pro.countryId = :countryIdFromTocken`;
@@ -933,7 +692,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and pro.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -942,10 +700,8 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and pro.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `pro.sectorId = :sectorId`;
         }
       }
@@ -965,12 +721,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pro',
         'asse.projectId = pro.id',
       )
-      // .leftJoinAndMapOne(
-      //   'asseYr.assessmentResault',
-      //   AssessmentResault,
-      //   'asseRslt',
-      //   'asseYr.id= asseRslt.assessmentYearId',
-      // )
 
       .select([
         'asseYr.assessmentYear',
@@ -978,8 +728,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'asse.emmisionReductionValue',
         'asse.macValue',
         'pro.climateActionName',
-        // 'asseRslt.macResult',
-        // 'asseRslt.totalEmission'
       ])
       .where(filter, {
         countryIdFromTocken,
@@ -989,13 +737,12 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         assementType,
         projectId,
       })
-      // .groupBy('asseYr.assessmentYear')
+
       .orderBy('asseYr.createdOn', 'ASC');
-    // console.log('quer',data.getSql())
+
     const result = await paginate(data, options);
 
     if (result) {
-      // console.log("resu",result);
       return result;
     }
   }
@@ -1037,10 +784,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     filterText: string,
     projectStatusId: number,
     projectApprovalStatusId: number,
-    // assessmentStatusName: string,
-    // Active: number,
-    // countryId: number,
-    //sectorId: number,
     isProposal: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
@@ -1048,7 +791,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
-        // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR para.AssessmentYear LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
         '(proj.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR assesYr.assessmentYear LIKE :filterText)';
     }
     if (isProposal != undefined) {
@@ -1074,14 +816,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         filter = `proj.projectApprovalStatusId = :projectApprovalStatusId`;
       }
     }
-
-    // if (countryId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and proj.countryId = :countryId`;
-    //   } else {
-    //     filter = `proj.countryId = :countryId`;
-    //   }
-    // }
 
     if (sectorIdFromTocken != 0) {
       if (filter) {
@@ -1120,23 +854,14 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         isProposal,
         projectStatusId,
         projectApprovalStatusId,
-        // assessmentStatusName,
-        // Active,
-        //  countryId,
-        // sectorId,
+
         sectorIdFromTocken,
       })
       .orderBy('asse.createdOn', 'DESC');
 
-    console.log(
-      '=====================================================================',
-    );
-
-    // console.log("query",data.getQuery())
     const resualt = await paginate(data, options);
-    // console.log('my result...', resualt);
+
     if (resualt) {
-      console.log('results for manage..', resualt);
       return resualt;
     }
   }
@@ -1158,13 +883,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pro',
         `ass.projectId = pro.id and pro.countryId = ${countryIdFromTocken}`,
       );
-    // .leftJoinAndMapOne(
-    //   'para.DataRequest',
-    //   ParameterRequest,
-    //   'paraReq',
-    //   'para.id = paraReq.ParameterId',  //and paraReq.dataRequestStatus = 2
-    // )
-    // .where('paraReq.dataRequestStatus = ' + 6);
 
     const result = await data.getMany();
 

@@ -2,7 +2,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssesmentModule } from 'src/assesment/assesment.module';
-import { AssesmentService } from 'src/assesment/assesment.service';
 import { Assessment } from 'src/assesment/entity/assesment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { AuditService } from 'src/audit/audit.service';

@@ -5,8 +5,6 @@ import { Sector } from 'src/master-data/sector/sector.entity';
 import { Project } from 'src/project/entity/project.entity';
 
 export class GetReportDto {
-  // sector: Sector[];
-  // ndcList: Ndc[];
   project: Project[];
   assessmentTypeList: any[];
   assessmentYrList: string[];

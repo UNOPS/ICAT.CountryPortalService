@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { JwtService } from '@nestjs/jwt';
+
 import {
   Crud,
   CrudController,
@@ -57,14 +57,9 @@ export class EmissionReductionDraftdataController
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: EmissionReductioDraftDataEntity,
   ): Promise<EmissionReductioDraftDataEntity> {
-    console.log('dto', dto);
-
     if (!dto.sector) {
-      console.log('dtoass1');
       dto.sector = null;
     }
-    //  dto.sector=null;
-    console.log('dtoass', dto);
 
     return await this.base.createOneBase(req, dto);
   }
@@ -82,7 +77,6 @@ export class EmissionReductionDraftdataController
       TokenReqestType.sectorId,
     ]);
 
-    // console.log("rrrrrr",request.headers)
     return await this.service.getEmissionEeductionDraftDataForCountry(
       countryIdFromTocken,
       sectorIdFromTocken,
@@ -103,7 +97,6 @@ export class EmissionReductionDraftdataController
       TokenReqestType.sectorId,
     ]);
 
-    // console.log("rrrrrr",request.headers)
     return await this.service.getEmissionReductionDraftDataForReport(
       sectorId,
       countryIdFromTocken,

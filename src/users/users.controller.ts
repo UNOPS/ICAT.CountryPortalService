@@ -32,7 +32,6 @@ import { Institution } from 'src/institution/institution.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { getConnection, Repository } from 'typeorm';
 
-// import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 
@@ -52,13 +51,6 @@ import { UsersService } from './users.service';
         eager: true,
       },
     },
-
-    // this works
-    // filter: {
-    //   id: {
-    //     $eq: 1,
-    //   }
-    // }
   },
 })
 @Controller('users')
@@ -89,19 +81,12 @@ export class UsersController implements CrudController<User> {
       await queryRunner.commitTransaction();
       return user;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
       await queryRunner.release();
     }
   }
-
-  // @Get()
-  // findAll(): Promise<User[]> {
-  //   return this.service.findAll();
-  // }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<User> {
@@ -130,9 +115,6 @@ export class UsersController implements CrudController<User> {
 
   @Get('findUserByUserName/:userName')
   async findUserByUserName(@Param('userName') userName: string): Promise<any> {
-    console.log(userName);
-
-    console.log('test', this.service.findByUserName(userName));
     return await this.service.findUserByUserName(userName);
   }
 
@@ -155,25 +137,6 @@ export class UsersController implements CrudController<User> {
 
   @Override()
   async getMany(@ParsedRequest() req: CrudRequest, @Request() req2) {
-    // let userEmail = req2.user.email;
-
-    // let currentDBUser = await this.usersRepository.findOne({ where: { email: userEmail } });
-
-    // if (currentDBUser.userType.id != 1) {
-    //   // not ccs admin , linit data for the users' institution
-    //   if (currentDBUser.userType.id == 4) {
-    //     /// doe
-    //     req.parsed.search['$and'].push({ 'id': (currentDBUser).id });
-
-    //   }
-    //   else {
-    //     req.parsed.search['$and'].push({ 'institution.id': (currentDBUser).institution.id });
-
-    //   }
-    // }
-    console.log('yyyyyyyyyyyyyyyyyyyyyyyy');
-    console.log(req.parsed.filter.length, req.parsed.search['$and'][0]);
-
     const userList = this.base.getManyBase(req);
 
     return userList;
@@ -200,7 +163,6 @@ export class UsersController implements CrudController<User> {
         TokenReqestType.role,
       ]);
 
-    console.log('incontroler...');
     return await this.service.getUserDetails(
       {
         limit: limit,
@@ -226,7 +188,6 @@ export class UsersController implements CrudController<User> {
     @Query('userTypeId') userTypeId: number,
     @Query('userName') userName: string,
   ): Promise<any> {
-    console.log('incontroler...');
     return await this.service.getUserDetailsByInstitution(
       {
         limit: limit,

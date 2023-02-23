@@ -10,7 +10,7 @@ import { REQUEST } from '@nestjs/core';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
-//import { request } from 'http';
+
 import { LearningMaterial } from './entity/learning-material.entity';
 import { LearningMaterialService } from './learning-material.service';
 
@@ -51,8 +51,7 @@ export class LearningMaterialController
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
-    // @Query('typeId') typeId: number,
-    // @Query('sectorId') sectorId: number,
+
     @Query('sortOrder') sortOrder: number,
     @Query('sortType') sortType: number,
   ): Promise<any> {
@@ -79,8 +78,7 @@ export class LearningMaterialController
         page: page,
       },
       filterText,
-      // typeId,
-      // sectorId,
+
       sortOrder,
       sortType,
       countryIdFromTocken,

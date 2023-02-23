@@ -4,9 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { AxiosResponse } from 'axios';
-//import e from 'express';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
-import e, { json } from 'express';
 import { Observable } from 'rxjs';
 import { AssesmentService } from 'src/assesment/assesment.service';
 import { Assessment } from 'src/assesment/entity/assesment.entity';
@@ -19,7 +17,6 @@ import { Repository } from 'typeorm';
 import { AssessmentResault } from './entity/assessment-resault.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
 import { VerificationStatus } from 'src/verification/entity/verification-status.entity';
-import { url } from 'inspector';
 import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { User } from 'src/users/user.entity';
@@ -35,8 +32,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
 
-    // @InjectRepository(User)
-    // public userRepo: Repository<User>,
     @InjectRepository(ProjectionResault)
     private readonly projectionResaultRepo: Repository<ProjectionResault>,
     private httpService: HttpService,
@@ -54,13 +49,11 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentYearId: number,
     isCalculate: boolean,
   ): Promise<any> {
-    console.log('qastatus..1');
     const assement = new Assessment();
     assement.id = assesmentId;
 
     let assesmentYear = new AssessmentYear();
     assesmentYear.id = assesmentYearId;
-    console.log('AID-----', assesmentYear.id);
 
     const assessmentResault = await this.repo.findOne({
       where: { assement: assement, assessmentYear: assesmentYear },
@@ -75,7 +68,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       const asseDetail = await this.assesmentRepo.findOne(assesmentId);
 
       if (asseDetail.isProposal) {
-        console.log('asse details..id ', asseDetail.id);
         var assesment = await this.assesmentservice.getAssessmentDetails(
           assesmentId,
           assesmentYear.assessmentYear,
@@ -88,7 +80,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       }
 
       if (!assesment.isProposal) {
-        console.log('qastatus..2');
         const result = assesment.parameters.find((m) =>
           m.parameterRequest
             ? m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass
@@ -99,26 +90,20 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           await this.getAssesmentResultFromEngine(
             assesment.parameters,
           ).subscribe(async (a) => {
-            console.log('Calcuclation Responce 123', a.data);
             const saveEntity = await this.saveAssesmentResult(
               a.data,
               assesmentId,
               assesmentYearId,
             );
-            console.log('ddddddddddddddddd');
-            console.log(saveEntity);
+
             return saveEntity;
           });
         } else {
-          //cannot call calculation engine parameters  not ready
-          console.log('cannot call calculation engine parameters  not ready');
           return null;
         }
       } else {
-        console.log('lemgth of para..', assesment.parameters.length);
         await this.getAssesmentResultFromEngine(assesment.parameters).subscribe(
           (a) => {
-            console.log('Calcuclation Responce....', a.data);
             return this.saveAssesmentResult(
               a.data,
               assesmentId,
@@ -204,19 +189,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
   async checkAllQCApprovmentAssessmentResult(
     assRsltId: number,
   ): Promise<boolean> {
-    // this.repo.findOne({  where: {
-    //   id: assRsltId,
-    //   qcStatusBaselineResult:4,
-    //   qcStatuProjectResult:4,
-    //   qcStatusLekageResult:4,
-    //   qcStatusTotalEmission:4,
-    //   qcStatusmacResult:4,
-    //   qcStatuscostDifference:4,
-    //   qcStatuspsTotalAnnualCost:4,
-    //   qcStatusbsTotalAnnualCost:4,
-
-    // }});
-
     const result = await this.repo
       .createQueryBuilder('dr')
 
@@ -227,8 +199,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         },
       )
       .getOne();
-    console.log('checkAllQCApprovmentAssessmentResult', assRsltId);
-    console.log('checkAllQCApprovmentAssessmentResult', result);
+
     if (result) {
       return true;
     }
@@ -243,7 +214,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assessmentResultType: AssessmentResultType,
     comment: string,
   ) {
-    console.log('qastatus..3');
     const result = await this.repo.findOne(id);
     result.qcComment = comment;
 
@@ -263,7 +233,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       user = await this.userService.find({
         where: { country: country, userType: 5, institution: ins },
       });
-      console.log('=========', ins);
+
       user.forEach((ab) => {
         if (comment != undefined) {
           template =
@@ -276,8 +246,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         } else {
           template =
             'Dear ' + ab.username + ' ' + ' <br/> Accepted reviw value ';
-          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-          // '<br/> value -:' + dataRequestItem.parameter.value;
         }
 
         this.emaiService.sendMail(ab.email, 'Pass QC', '', template);
@@ -289,7 +257,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       user = await this.userService.find({
         where: { country: country, userType: 6, institution: ins },
       });
-      // console.log("=========", ins)
+
       user.forEach((ab) => {
         if (comment != undefined) {
           template =
@@ -299,13 +267,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             ' <br/> Reject QC' +
             '<br/> parameter name -: ' +
             re.assement.project.climateActionName +
-            // '<br/> value -:' + dataRequestItem.parameter.value +
             '<br> comment -: ' +
             comment;
         } else {
           template = 'Dear ' + ab.username + ' ' + ' <br/> Reject QC ';
-          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-          // '<br/> value -:' + dataRequestItem.parameter.value;
         }
         this.emaiService.sendMail(ab.email, 'Reject QC', '', template);
       });
@@ -353,7 +318,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentyearId: number,
     qcStatus: QuAlityCheckStatus,
   ) {
-    console.log('qastatus..4');
     const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
 
     assementYear.qaStatus = qcStatus;
@@ -376,14 +340,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     parametrs: Parameter[],
   ): Observable<AxiosResponse<any>> {
     try {
-      console.log('tttttteeee');
-
       const baseurl = this.configService.get<string>('calculationEngineUrl');
       const fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
-      // let fullUrl =  'http://localhost:3600/methodology/calculation';
 
       const content_ = JSON.stringify(parametrs);
-      //console.log("json obj,...",content_);
       const options_ = <RequestInit>{
         body: content_,
         method: 'post',
@@ -392,20 +352,15 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           Accept: 'application/json',
         },
       };
-      // options_.headers = headersRequest;
 
       const bodyParser = require('body-parser');
-      console.log('ppppppppppppppppppppppppppppppppppppppppppppppp');
 
       return this.httpService.post(
         fullUrl,
         { body: content_ },
         { headers: { 'api-key': '1234' } },
       );
-      //return this.httpService.post(fullUrl,{headers:{'api-key':'1234'}});
-    } catch (e) {
-      console.log('calculation Engine error', e);
-    }
+    } catch (e) {}
   }
 
   async updateQCStatusBaslineResult(
@@ -455,18 +410,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         'ass.id = dr.assementId',
       )
       .leftJoinAndMapOne('ass.project', Project, 'pr', 'pr.id = ass.projectId')
-
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-
       .where(filter, {
         AssessmentYearId,
       })
       .orderBy('dr.id', 'ASC');
-    console.log(
-      '=====================================================================',
-    );
-
-    console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
 
@@ -486,8 +433,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       )
       .where('asse.id = ' + id);
 
-    // console.log(data.getQueryAndParameters());
-
     const result = await data.getMany();
 
     return result;
@@ -497,7 +442,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
     moduleLevelsFromTocken: number[],
-    // institutionIdFromTocken: number
   ): Promise<any> {
     let filter = '';
 
@@ -533,7 +477,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and proj.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -566,10 +509,8 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         sectorIdFromTocken,
       });
 
-    // console.log(data.getQueryAndParameters());
-    // console.log(data.getQuery());
     const result = await data.getMany();
-    // console.log(result);
+
     return result;
   }
 }

@@ -23,15 +23,6 @@ export class AssessmentObjective extends BaseTrackingEntity {
   @Column()
   objective: string;
 
-  // @ManyToOne(() => Assessment, (assessment) => assessment.assessmentObjective, {
-  //   nullable: true,
-  //   cascade: false,
-  //   onDelete: 'RESTRICT',
-  //   onUpdate: 'RESTRICT',
-  // })
-  // // @JoinColumn()
-  // assessment?: Assessment;
-
   @Column({ nullable: true })
   assessmentId: number;
 }

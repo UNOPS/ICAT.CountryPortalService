@@ -50,8 +50,7 @@ export class ProjectionResaultController
     audit.comment = 'QC Status Updated';
     audit.actionStatus = 'Updated';
     this.auditService.create(audit);
-    console.log('QC Status Updated');
-    console.log('*******************');
+
     return await this.service.updateQCStatus(
       resultId,
       yearId,
@@ -69,10 +68,7 @@ export class ProjectionResaultController
       AssessmentId,
       ProjectionYear,
     );
-    // console.log('dddddddddddddddddddddddddddddddddd');
-    console.log('AssessmentId-----', AssessmentId);
-    console.log('ProjectionYear-----', ProjectionYear);
-    console.log('projection-resault-----', restult);
+
     return restult;
   }
 }

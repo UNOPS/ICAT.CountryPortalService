@@ -26,7 +26,6 @@ export class User extends BaseTrackingEntity {
     this.status = 0;
     this.password = '';
     this.resetToken = '';
-    //  this.abc = this.firstName + this.lastName;
   }
 
   @PrimaryGeneratedColumn()
@@ -67,9 +66,6 @@ export class User extends BaseTrackingEntity {
   @Column({ nullable: true })
   designation: string;
 
-  // @Column({ name: 'countryId' })
-  // countryId: number;
-
   @ManyToOne((type) => Country, { eager: true })
   @JoinColumn()
   country: Country;
@@ -101,8 +97,6 @@ export class User extends BaseTrackingEntity {
     this.fullName = this.firstName + (this.lastName ? ' ' + this.lastName : '');
   }
 
-  // abc: string = ()=>{  this.firstName + this.lastName};
-
   get fullname2() {
     return this.firstName;
   }
@@ -119,7 +113,6 @@ export class User extends BaseTrackingEntity {
   async validatePassword(password: string): Promise<boolean> {
     const hashPassword = await bcript.hash(password, this.salt);
     return hashPassword === this.password;
-    // return true;
   }
 
   async validateResetToken(token: string): Promise<boolean> {

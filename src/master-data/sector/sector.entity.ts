@@ -16,8 +16,6 @@ import {
 } from 'typeorm';
 import { SubSector } from '../sub-sector/entity/sub-sector.entity';
 
-//import { ClimateChangeDataCategory } from '../cimate-change-data-category/climate.change.data.category.entity';
-
 @Entity({ name: 'sector' })
 export class Sector extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()

@@ -21,8 +21,7 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
   async getlearningmaterialdetails(
     options: IPaginationOptions,
     filterText: string,
-    // typeId: number,
-    // sectorId: number,
+
     sortOrder: number,
     sortType: number,
     countryIdFromTocken: number,
@@ -31,14 +30,13 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
     userRole: string,
   ): Promise<Pagination<LearningMaterial>> {
     let filter = '';
-    console.log('+++++++++++++++++++', userRole, institutionIdFromTocken);
+
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
         '(lm.documentType LIKE :filterText OR lm.documentName LIKE :filterText OR lm.editedOn LIKE :filterText)';
     }
 
     if (userRole == 'MRV Admin') {
-      console.log('institution');
       if (filter) {
         filter = `${filter}  and lmu.userTypeId = 4   `;
       } else {
@@ -94,43 +92,6 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
       }
     }
 
-    //  if (institutionIdFromTocken != 0) {
-    //   console.log('institution')
-    //       if (filter) {
-    //         filter = `${filter}  and lmu.userTypeId = 8   `;
-    //       } else {
-    //         filter = `lmu.userTypeId = 8   ` ;
-    //       }
-    //     }
-    // else if (sectorIdFromTocken != 0) {
-    //   console.log('sector')
-    //   if (filter) {
-    //     filter = `${filter}  and lmu.userTypeId = 3 `;
-    //   } else {
-    //     filter = `lmu.userTypeId = 3  `;
-    //   }
-    // }else{
-    //   console.log('country')
-    //   if (filter) {
-    //     filter = `${filter}  and lmu.userTypeId = 1 `;
-    //   } else {
-    //     filter = `lmu.userTypeId = 1`;
-    //   }
-
-    // }
-
-    // let ltype = 'ASC';
-
-    // if(sortOrder == 0)
-    // {
-    //   if(sortType == 0)
-    //   {
-    //     var val = 'lm.editedOn';
-    //   }
-    //   else
-    //   {
-    //     var val = 'lm.documentName';
-    //   }
     const data = this.repo
       .createQueryBuilder('lm')
       .select([
@@ -145,55 +106,24 @@ export class LearningMaterialService extends TypeOrmCrudService<LearningMaterial
         'lmu',
         'lmu.learningMaterialId = lm.id',
       )
-      // .leftJoinAndMapMany('lm.userType', UserType, 'ut', 'lmu.userTypeId = ut.Id')
+
       .leftJoinAndMapMany(
         'lm.learningMaterialSector',
         LearningMaterialSector,
         'lms',
         'lms.learningMaterial2Id = lm.id',
       )
-      // .leftJoinAndMapOne('lm.sector', Sector, 'st', 'lms.sectorId = st.Id')
-      // .leftJoinAndMapMany('lm.institution', Institution, 'ins', 'lms.sectorId =ins.sectorId')
+
       .where(filter, {
         filterText: `%${filterText}%`,
-        // sectorIdFromTocken,
-        // institutionIdFromTocken
       })
-      //.orderBy('lm.documentName', 'ASC'); DESC
       .orderBy(
         sortType == 0 ? 'lm.editedOn' : 'lm.documentName',
         sortOrder == 0 ? 'DESC' : 'ASC',
       );
-    // }
-    // else
-    // {
-    //   if(sortType == 0)
-    //   {
-    //     var val = 'lm.editedOn';
-    //   }
-    //   else
-    //   {
-    //     var val = 'lm.documentName';
-    //   }
-    //   var data = this.repo
-    //   .createQueryBuilder('lm')
-    //   .leftJoinAndMapMany('lm.learningMaterialUserType', LearningMaterialUserType, 'lmu', 'lmu.learningMaterialId = lm.Id')
-    //   .leftJoinAndMapMany('lm.userType', UserType, 'ut', 'lmu.userTypeId = ut.Id')
-    //   .leftJoinAndMapMany('lm.learningMaterialSector', LearningMaterialSector, 'lms', 'lms.learningMaterial2Id = lm.Id')
-    //   .leftJoinAndMapMany('lm.sector', Sector, 'st', 'lms.sectorId = st.Id')
-    //   .where(filter, {
-    //       filterText: `%${filterText}%`,
-
-    //   })
-    //   //.orderBy('lm.documentName', 'ASC'); DESC
-    //   .orderBy(val, 'ASC');
-
-    // }
-
-    // console.log('query',data.getQuery())
 
     const resualt = await paginate(data, options);
-    console.log('++++', resualt);
+
     if (resualt) {
       return resualt;
     }

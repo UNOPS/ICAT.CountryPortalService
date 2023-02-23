@@ -70,10 +70,7 @@ export class ReportController implements CrudController<Report> {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(
-    // 'report/reportinfo/:page/:limit/:filterText/:countryId/:sectorId/:ndcId/:projectId/:assessmentType',
-    'report/reportinfo/:page/:limit/:filterText/:sectorId',
-  )
+  @Get('report/reportinfo/:page/:limit/:filterText/:sectorId')
   async getReportInfo(
     @Request() request,
     @Query('page') page: number,
@@ -86,7 +83,6 @@ export class ReportController implements CrudController<Report> {
     @Query('assessmentType') assessmentType: string,
   ): Promise<any> {
     let countryIdFromTocken: number;
-    // let sectorIdFromTocken: number;
 
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
@@ -114,10 +110,7 @@ export class ReportController implements CrudController<Report> {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(
-    // 'report/reportinfo/:page/:limit/:filterText/:countryId/:sectorId/:ndcId/:projectId/:assessmentType',
-    'reportPDF',
-  )
+  @Post('reportPDF')
   async getReportPDF(@Body() reportData: ReportDataPDF): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
@@ -137,7 +130,6 @@ export class ReportController implements CrudController<Report> {
   @Post('reportPdfFileData')
   async getReportPdfFileData(@Body() dto: ReportPdfInsert): Promise<any> {
     const res = await this.service.savePdfFileData(dto);
-    // console.log("====== res ++++++",res);
 
     return res;
   }
@@ -150,7 +142,6 @@ export class ReportController implements CrudController<Report> {
     @Query('reportName') reportName: string,
   ) {
     let countryIdFromTocken: number;
-    // let sectorIdFromTocken: number;
 
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
@@ -180,10 +171,10 @@ export class ReportController implements CrudController<Report> {
   @Get('chartData/:years/:projIds/:assessType/:chartName')
   async getChartDownlordData(
     @Res({ passthrough: true }) res,
-    // @Query('years') years: number[],
+
     @Query('projIds') projIds: string[],
     @Query('assessType') assessType: string[],
-    // @Query('macAssessType') macAssessType: string[],
+
     @Query('yearsId') yearsId: number[],
     @Query('selectAllSectors') selectAllSectors: boolean,
     @Query('sectorIds') sectorIds: number[],
@@ -197,7 +188,6 @@ export class ReportController implements CrudController<Report> {
     ]);
 
     const imageName = await this.service.generateChartForDownlord(
-      // years,
       projIds,
       assessType,
       selectAllSectors,
@@ -225,76 +215,6 @@ export class ReportController implements CrudController<Report> {
     return new StreamableFile(file);
   }
 
-  // @Post('newReportInfo')
-  // async getNewReportInfor(
-  //     @Body() getReportDto: GetReportDto,
-  //     @Res() response: any,
-  // ): Promise<any>{
-
-  //     var finalReport = new ReportResponseDto();
-  //     let assesment = new Assessment();
-  //     let project = new Project();
-  //     let parameter: Parameter[] = [];
-  //     let assemenntIdList: number[] = new Array();
-  //     let yr: AssessmentYear[] = [];
-  //     let resault: AssessmentResault[] = [];
-
-  //     console.log('new project infor API request==================',getReportDto.project[0].climateActionName)
-
-  //    try{
-
-  //     for(var a=0; a<getReportDto.project.length;a++){
-
-  //         //all projects, sectors and ndc based on selection
-  //         project = getReportDto.project[a];
-  //         finalReport.project.push(project);
-  //         finalReport.sector.push(project.sector);
-  //         finalReport.ndc.push(project.ndc);
-
-  //         for(var b=0;b<getReportDto.project[a].assessments.length;b++){
-  //             assesment = getReportDto.project[a].assessments[b];
-
-  //             //get assessments based on selected assessment type
-  //             if(getReportDto.assessmentTypeList.includes(assesment.assessmentType)){
-  //                 finalReport.assessment.push(assesment);
-  //                 assemenntIdList.push(assesment.id);
-  //             }
-  //         }
-
-  //         // selected yrs by user
-
-  //         for(var a=0; a<assemenntIdList.length; a++){
-
-  //             //all yrs for selected assessments
-  //             yr = await this.yrService.getYearListByAssessmentId(assemenntIdList[a]);
-  //             // console.log('all yrs for selected assessments',yr);
-  //         }
-  //         for(const a of yr){
-  //             if(getReportDto.assessmentYrList.includes(a.assessmentYear)){
-  //                 // console.log('trueeeeeeee');
-  //                 finalReport.assessmentYr.push(a);
-  //             }
-  //         }
-  //     }
-  //     for(var a=0; a<assemenntIdList.length; a++){
-  //         //get parameters for selected assessments
-  //         parameter = (await this.paraService.getParameterByAssesment(assemenntIdList[a]));
-  //         for(const a of parameter){
-  //             finalReport.assessmentParamater.push(a);
-  //         }
-  //     }
-  //     console.log('new assessment infor final object -------------------',finalReport.assessment[0].baselineScenario);
-  //     return finalReport;
-  //     // console.log('new assessment infor final object 11111111111111111111111',finalReport.assessment[0].baselineScenario)
-
-  //    } catch(error){
-  //        console.log('catch errororoooo',error)
-  //    }
-
-  // }
-
-  ///......................START..........................///
-
   @Post('newReportInfo')
   async getFinalReportDetails(
     @Body() getReportDto: GetReportDto,
@@ -308,11 +228,8 @@ export class ReportController implements CrudController<Report> {
     const res: AssessmentResault[] = [];
     const resault: AssessmentResault[] = [];
 
-    // console.log('new project infor API request==================',getReportDto.project[0].climateActionName)
-
     try {
       for (var a = 0; a < getReportDto.project.length; a++) {
-        //all projects, sectors and ndc based on selection
         project = getReportDto.project[a];
         finalReport.project.push(project);
         finalReport.sector.push(project.sector);
@@ -321,7 +238,6 @@ export class ReportController implements CrudController<Report> {
         for (let b = 0; b < getReportDto.project[a].assessments.length; b++) {
           assesment = getReportDto.project[a].assessments[b];
 
-          //get assessments based on selected assessment type
           if (
             getReportDto.assessmentTypeList.includes(assesment.assessmentType)
           ) {
@@ -330,25 +246,18 @@ export class ReportController implements CrudController<Report> {
           }
         }
 
-        // selected yrs by user
-
         for (var a = 0; a < assemenntIdList.length; a++) {
-          //all yrs for selected assessments
           yr = await this.yrService.getYearListByAssessmentId(
             assemenntIdList[a],
           );
-          // console.log('all yrs for selected assessments',yr);
         }
         for (const a of yr) {
           if (getReportDto.assessmentYrList.includes(a.assessmentYear)) {
-            // console.log('trueeeeeeee');
             finalReport.assessmentYr.push(a);
           }
         }
       }
       for (var a = 0; a < assemenntIdList.length; a++) {
-        //get parameters for selected assessments
-        // console.log('id list........',assemenntIdList)
         parameter = await this.paraService.getParameterByAssesment(
           assemenntIdList[a],
         );
@@ -358,13 +267,10 @@ export class ReportController implements CrudController<Report> {
       }
 
       for (const a of assemenntIdList) {
-        // console.log('resault==========',a, b.id, await this.resaultService.GetAssesmentResult(a,b.id,false));
         for (const b of finalReport.assessmentYr)
           res.push(
             await this.resaultService.GetAssesmentResult(a, b.id, false),
           );
-        // console.log('resault.......==========',res);
-        // finalReport.resault.push(await this.resaultService.GetAssesmentResult(a,b,false))
       }
       for (const r of res) {
         finalReport.resault.push(r);
@@ -373,10 +279,6 @@ export class ReportController implements CrudController<Report> {
       finalReport.reportName = getReportDto.reportName;
 
       return finalReport;
-    } catch (error) {
-      console.log('catch errororoooo', error);
-    }
+    } catch (error) {}
   }
-
-  ///......................END..........................///
 }

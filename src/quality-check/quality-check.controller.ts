@@ -36,7 +36,6 @@ export class QualityCheckController
     @Query('subNdcId') subNdcId: number,
     @Query('ctAction') ctAction: string,
   ): Promise<any> {
-    // console.log(moment(editedOn).format('YYYY-MM-DD'))
     let countryIdFromTocken: number;
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,

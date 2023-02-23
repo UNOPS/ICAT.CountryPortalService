@@ -85,7 +85,6 @@ export class AssessmentYearController
 
   @Get('email')
   async email(@Query('yearId') yearId: number) {
-    console.log('yearId', yearId);
     this.service.mail(yearId);
   }
 
@@ -102,7 +101,6 @@ export class AssessmentYearController
     audit.comment = 'Report Generated';
     audit.actionStatus = 'Generated';
     this.auditService.create(audit);
-    console.log('Generated Report');
 
     return await this.service.getDataForReport(projIds, assessTypes, yearIds);
   }
@@ -121,7 +119,6 @@ export class AssessmentYearController
     audit.comment = 'Report Generated';
     audit.actionStatus = 'Generated';
     this.auditService.create(audit);
-    console.log('Generated Report');
 
     return await this.service.getDataForReportNew(
       projIds,
@@ -147,7 +144,6 @@ export class AssessmentYearController
     audit.comment = 'Report Generated';
     audit.actionStatus = 'Generated';
     this.auditService.create(audit);
-    console.log('Generated Report');
 
     return await this.service.getDataForParameterReportNew(
       projIds,
@@ -191,9 +187,7 @@ export class AssessmentYearController
     @Request() request,
     @Query('assessmentId') assessmentId: number,
   ): Promise<any> {
-    console.log(assessmentId);
     return await this.service.getAllYearsByAssessmentId(assessmentId);
-    //return [{ data: { id: 21 } }];
   }
 
   @UseGuards(JwtAuthGuard)
@@ -207,7 +201,7 @@ export class AssessmentYearController
       const audit: AuditDto = new AuditDto();
       const paeameter =
         this.service.acceptDataVerifiersForIds(updateDeadlineDto);
-      console.log(updateDeadlineDto);
+
       audit.action = 'Verifier Deadline Created';
       audit.comment = 'Verifier Deadline Created';
       audit.actionStatus = 'Created';
@@ -215,8 +209,6 @@ export class AssessmentYearController
       await queryRunner.commitTransaction();
       return paeameter;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
@@ -232,7 +224,7 @@ export class AssessmentYearController
     try {
       const audit: AuditDto = new AuditDto();
       const paeameter = this.service.acceptQC(updateDeadlineDto);
-      console.log(updateDeadlineDto);
+
       audit.action = 'Quality Check Added';
       audit.comment = 'Quality Check Added';
       audit.actionStatus = 'Added';
@@ -240,8 +232,6 @@ export class AssessmentYearController
       await queryRunner.commitTransaction();
       return paeameter;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
@@ -297,7 +287,7 @@ export class AssessmentYearController
     await queryRunner.startTransaction();
     try {
       const updateData = await queryRunner.manager.save(AssessmentYear, dto);
-      // let updateData = await this.base.updateOneBase(req, dto);
+
       const audit: AuditDto = new AuditDto();
 
       audit.action = updateData.assessment.assessmentType + ' Updated';
@@ -307,8 +297,6 @@ export class AssessmentYearController
       this.auditService.create(audit);
       await queryRunner.commitTransaction();
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
@@ -334,7 +322,6 @@ export class AssessmentYearController
       TokenReqestType.InstitutionId,
     ]);
 
-    console.log('countryIdFromTocken', countryIdFromTocken);
     const resault =
       await this.service.getAssessmentYearsForCountryAndSectorAdmins(
         {
@@ -358,18 +345,14 @@ export class AssessmentYearController
       }
     });
 
-    // console.log('assementYearWiseList',resault );
     const graphsYearWise = [];
     const graphsData = new Map();
     assementYearWiseList.forEach(async function (value, key) {
       const projects: string[] = [];
       const ers: number[] = [];
       const macs: number[] = [];
-      // console.log(key + " = " + value);
+
       for (const assYr of value) {
-        //  console.log('prject',assYr.assessment.project.climateActionName);
-        // console.log('assessment', assYr.assessment);
-        //  console.log('macs',assYr.assessmentResault?assYr.assessmentResault.macResult?assYr.assessmentResault.macResult:0:0);
         if (
           !projects.includes(assYr.assessment.project.climateActionName) &&
           assYr.assessment &&
@@ -390,28 +373,16 @@ export class AssessmentYearController
           macs: macs,
         });
       }
-
-      // console.log(projects);
-      // console.log(ers);
-      // console.log(macs);
     });
-    console.log(typeof graphsData);
+
     for (const gr of graphsData) {
-      // console.log('gr',gr[1])
       await axios
         .post('http://localhost:8000/image', gr[1])
         .then((res) => {
-          // console.log(res.data)
           graphsYearWise.push([gr[0], res.data]);
-
-          // console.log('graphsYearWise',graphsYearWise)
         })
-        .catch((err) => {
-          // console.log(err)
-        });
+        .catch((err) => {});
     }
-
-    // console.log('resault',graphsYearWise)
 
     return graphsYearWise;
   }
@@ -441,10 +412,7 @@ export class AssessmentYearController
     @Query('filterText') filterText: string,
     @Query('projectStatusId') projectStatusId: number,
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
-    // @Query('assessmentStatusName') assessmentStatusName: string,
-    // @Query('Active') Active: number,
-    // @Query('countryId') countryId: number,
-    // @Query('sectorId') sectorId: number,
+
     @Query('isProposal') isProposal: number,
   ): Promise<any> {
     let countryIdFromTocken: number;
@@ -463,10 +431,7 @@ export class AssessmentYearController
       filterText,
       projectStatusId,
       projectApprovalStatusId,
-      // assessmentStatusName,
-      // Active,
-      // countryId,
-      // sectorId,
+
       isProposal,
       countryIdFromTocken,
       sectorIdFromTocken,

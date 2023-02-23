@@ -45,7 +45,6 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     countryIdFromTocken: number,
     ctAction: string,
   ): Promise<Pagination<AssessmentYear>> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
     let filter = `ae.qaStatus is not null`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
@@ -58,7 +57,6 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     }
     if (ctAction != null && ctAction != undefined && ctAction != '') {
       filter = `${filter}  and p.climateActionName = '${ctAction}'`;
-      console.log('+++++++++++++', filter);
     }
     if (NDCId != 0) {
       filter = `${filter}  and as.ndcId = :NDCId`;
@@ -66,7 +64,6 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     if (SubNdcId != 0) {
       filter = `${filter}  and as.subNdcId = :SubNdcId`;
     }
-    console.log('+++++++++++++', ctAction);
 
     const data = this.assessmentYearRepo
       .createQueryBuilder('ae')
@@ -74,7 +71,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id', //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id',
       )
       .innerJoinAndMapOne(
         'as.project',
@@ -89,13 +86,8 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         NDCId,
         SubNdcId,
       })
-      // .groupBy('ae.Assessmentid')
-      //  .groupBy('ae.AssessmentYear')
+
       .orderBy('as.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    // console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
 
@@ -112,9 +104,6 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     userQc: string,
   ) {
     try {
-      // let userObj = await this.userRepo.findOne({ }userQc);
-      // console.log("my user...",userObj);
-
       const assementYear = await this.assessmentYearRepo.findOne(
         assementYearId,
         {

@@ -26,10 +26,7 @@ export class ApplicabilityController
   }
 
   @Get('appplicability/byMitigationActions')
-  async getApplicability(
-    @Request() request,
-    //  @Query('id') id: number,
-  ): Promise<any> {
+  async getApplicability(@Request() request): Promise<any> {
     return await this.service.getApplicability();
   }
 }

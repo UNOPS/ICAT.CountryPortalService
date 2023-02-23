@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Header,
   Post,
   Query,
   Request,
@@ -83,8 +82,7 @@ export class AssesmentResaultController
       AssessmentYearId,
       calculate,
     );
-    // console.log('dddddddddddddddddddddddddddddddddd');
-    console.log('reeeee-----', restult);
+
     return restult;
   }
 
@@ -101,8 +99,7 @@ export class AssesmentResaultController
       },
       AssessmentYearId,
     );
-    // console.log('dddddddddddddddddddddddddddddddddd');
-    // console.log(restult);
+
     return restult;
   }
 
@@ -123,8 +120,6 @@ export class AssesmentResaultController
     audit.actionStatus = 'Updated';
 
     this.auditService.create(audit);
-    console.log('QC Status Assesment Result Updated');
-    console.log('*******************');
 
     return await this.service.updateQCStatus(
       resultId,
@@ -163,28 +158,20 @@ export class AssesmentResaultController
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: AssessmentResault,
   ): Promise<AssessmentResault> {
-    //console.log("came to inside...",dto);
-    // console.log('req1----', dto);
-
-    //console.log(asr);
-
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
 
     try {
       const asr = await queryRunner.manager.save(AssessmentResault, dto);
-      // let asr = await this.base.createOneBase(req, dto);
+
       const assement = await this.assesmentRepo.findOne(asr.assement.id);
       assement.macValue = asr.macResult;
 
       await queryRunner.manager.save(Assessment, assement);
-      // this.assesmentRepo.save(assement);
 
       await queryRunner.commitTransaction();
       return asr;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
@@ -205,7 +192,6 @@ export class AssesmentResaultController
     @Request() request,
     @Query('assesYear') assesYear: number,
   ): Promise<any> {
-    // console.log("work")
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;

@@ -229,7 +229,7 @@ export class ParameterRequestController
     audit.comment = 'Deadline Updated';
     audit.actionStatus = 'Updated';
     this.auditService.create(audit);
-    console.log(updateDeadlineDto);
+
     return this.service.updateDeadlineForIds(updateDeadlineDto);
   }
 
@@ -243,7 +243,7 @@ export class ParameterRequestController
     audit.comment = updateDeadlineDto.comment + ' Updated';
     audit.actionStatus = 'Updated';
     this.auditService.create(audit);
-    console.log(updateDeadlineDto);
+
     return this.service.updateDataEntryDeadlineForIds(updateDeadlineDto);
   }
 
@@ -258,7 +258,7 @@ export class ParameterRequestController
     audit.actionStatus = 'Approved';
 
     this.auditService.create(audit);
-    console.log('================', updateDeadlineDto);
+
     return this.service.acceptReviewDataForIds(updateDeadlineDto);
   }
 
@@ -273,7 +273,7 @@ export class ParameterRequestController
     audit.actionStatus = 'Rejected';
 
     this.auditService.create(audit);
-    console.log('==========', updateDeadlineDto);
+
     return this.service.rejectReviewDataForIds(updateDeadlineDto);
   }
 
@@ -288,7 +288,7 @@ export class ParameterRequestController
     audit.actionStatus = 'Rejected';
 
     this.auditService.create(audit);
-    console.log('==========', updateDeadlineDto);
+
     return this.service.rejectEnterDataForIds(updateDeadlineDto);
   }
 

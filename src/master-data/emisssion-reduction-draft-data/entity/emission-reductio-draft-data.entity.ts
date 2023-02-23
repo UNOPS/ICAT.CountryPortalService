@@ -10,7 +10,6 @@ export class EmissionReductioDraftDataEntity extends MasterData {
   country: Country;
 
   @ManyToOne((type) => Sector, { cascade: false, nullable: true })
-  // @JoinColumn()
   sector?: Sector;
 
   @Column()

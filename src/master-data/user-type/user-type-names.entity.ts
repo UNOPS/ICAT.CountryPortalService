@@ -9,15 +9,3 @@ export enum UserTypeNames {
   InstitutionAdmin = 8,
   DataEntryOperator = 9,
 }
-//   export enum SectorLevel {
-
-//     Projection = 4,
-//     TotalEmission = 5,
-//   }
-//   export enum InstitutionLevel {
-//     Baseline = 1,
-//     Project = 2,
-//     Leakage = 3,
-//     Projection = 4,
-//     TotalEmission = 5,
-//   }

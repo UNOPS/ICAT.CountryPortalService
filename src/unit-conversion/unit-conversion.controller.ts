@@ -15,7 +15,6 @@ export class UnitConversionController
 
   @Get('getUnitTypes/:toUnit')
   async getUnitTypes(@Query('toUnit') toUnit: string): Promise<any> {
-    console.log('wwwwwwwwwwwwwwwwwwww');
     return await this.service.findAll(toUnit);
   }
 }

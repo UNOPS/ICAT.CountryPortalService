@@ -35,7 +35,6 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -44,10 +43,8 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     } else {
       if (sectorIds && sectorIds.length > 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId  IN  (:...sectorIds) `;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId IN  (:...sectorIds) `;
         }
       }
@@ -64,7 +61,7 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       .orderBy('dr.createdOn', 'ASC');
 
     const resualt = await paginate(data, options);
-    console.log(resualt);
+
     if (resualt) {
       return resualt;
     }
@@ -87,7 +84,6 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -96,10 +92,8 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
@@ -117,7 +111,7 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       .orderBy('dr.createdOn', 'ASC');
 
     const resualt = await paginate(data, options);
-    console.log(resualt);
+
     if (resualt) {
       return resualt;
     }
@@ -164,7 +158,6 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and proj.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -173,10 +166,8 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
     } else {
       if (sectorId && sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and proj.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `proj.sectorId = :sectorId`;
         }
       }
@@ -218,7 +209,6 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       .orderBy('ndc.createdOn', 'ASC');
 
     const resualt = await paginate(data, options);
-    // let resualt = await data.getMany();
 
     if (resualt) {
       return resualt;

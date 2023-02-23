@@ -30,11 +30,9 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
   }
 
   async sendDefaultValue(defaultDto: defaultValueDtos): Promise<any> {
-    console.log('defaultDto...', defaultDto['year']);
     const recievedYeras = defaultDto['year'];
 
     for (const x of recievedYeras) {
-      //console.log('year..',x)
       const defaultvalObject = await this.repo.findOne(defaultDto.parentId);
       const instituition = await this.insRepo.findOne(defaultDto.source['id']);
 
@@ -73,7 +71,6 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
   }
 
   async createValue(def: DefaultValue) {
-    console.log('++++++++++', def);
     return await this.repo.save(def);
   }
 
@@ -116,7 +113,6 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
     }
 
     if (status != null && status != undefined && status != '') {
-      console.log('my status..', status);
       if (filter) {
         if (status == 'Pending') {
           filter = `${filter}  and dv.value IS NULL`;
@@ -125,7 +121,6 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
           filter = `${filter}  and dv.value IS NOT NULL`;
         }
       } else {
-        console.log('my status..222', status);
         if (status == 'Pending') {
           filter = `dv.value IS NULL`;
         }
@@ -146,13 +141,8 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
       })
       .orderBy('dv.createdOn', 'ASC');
 
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
-
     const result = await paginate(data, options);
-    console.log('myresults..', result);
+
     if (result) {
       return result;
     }

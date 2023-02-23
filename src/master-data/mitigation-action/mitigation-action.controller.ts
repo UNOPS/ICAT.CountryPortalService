@@ -20,8 +20,4 @@ export class MitigationActionController
   implements CrudController<MitigationActionType>
 {
   constructor(public service: MitigationActionService) {}
-
-  // get base(): CrudController<MitigationAction> {
-  //   return this;
-  // }
 }

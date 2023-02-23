@@ -7,15 +7,6 @@ import { Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity()
 export class UserType extends MasterData {
-  // @Column()
-  // userRoleIdIdentity : string;
-
-  // @Column()
-  // userRoleNameIdentity : string;
-
-  //@ManyToMany(() =>LearningMaterial, learningMaterial => learningMaterial.userTypes)
-  //learningmaterils?:LearningMaterial[];
-
   @OneToMany(
     () => LearningMaterialUserType,
     (learningMaterialUserType) => learningMaterialUserType.userType,

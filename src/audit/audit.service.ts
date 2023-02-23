@@ -42,10 +42,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
         newAudit.userType = user.userType.name;
         var newaudit = await this.repo.save(newAudit);
       }
-      // console.log('user',user)
     } else {
-      // console.log('============contextUser========', contextUser);
-      //To-do get user from context
       const user = await this.userRepo.findOne({
         where: { email: contextUser.username },
       });
@@ -56,12 +53,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
       newAudit.action = auditDto.action;
       newAudit.actionStatus = auditDto.actionStatus;
       newAudit.comment = auditDto.comment;
-      // newAudit.createdBy = auditDto.createdBy;
-      // newAudit.createdOn = auditDto.createdOn;
-      // newAudit.editedBy = auditDto.editedBy;
-      // newAudit.editedOn = auditDto.editedOn;
-      // newAudit.id = auditDto.id;
-      // newAudit.status= auditDto.status;
+
       newAudit.user = user;
       newAudit.userName = user.fullName;
 
@@ -70,21 +62,11 @@ export class AuditService extends TypeOrmCrudService<Audit> {
     }
   }
   async createAnonymous(auditDto: AuditDto) {
-    // console.log('user',user)
-
     const newAudit = new Audit();
     newAudit.action = auditDto.action;
     newAudit.actionStatus = auditDto.actionStatus;
     newAudit.comment = auditDto.comment;
-    // newAudit.createdBy = auditDto.createdBy;
-    // newAudit.createdOn = auditDto.createdOn;
-    // newAudit.editedBy = auditDto.editedBy;
-    // newAudit.editedOn = auditDto.editedOn;
-    // newAudit.id = auditDto.id;
-    // newAudit.status= auditDto.status;
-    // let user:User=new User()
-    // user.id=0;
-    // newAudit.user = user;
+
     newAudit.userName = 'anonymous';
 
     newAudit.userType = 'anonymous';
@@ -102,14 +84,11 @@ export class AuditService extends TypeOrmCrudService<Audit> {
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
     institutionIdFromTocken: number,
-    // institutionId:number
   ): Promise<Pagination<Audit>> {
     let filter = '';
-    // let fDate = `${editedOn.getFullYear()}-${editedOn.getMonth()+1}-${editedOn.getDate()}`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
-        // '(dr.climateActionName LIKE :filterText OR dr.description LIKE :filterText)';
         '(dr.userName LIKE :filterText OR dr.action LIKE :filterText OR dr.actionStatus LIKE :filterText OR dr.editedOn LIKE :filterText)';
     }
 
@@ -122,9 +101,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
     }
     if (editedOn != null && editedOn != undefined && editedOn != '') {
       if (filter) {
-        filter =
-          // '(dr.climateActionName LIKE :filterText OR dr.description LIKE :filterText)';
-          `${filter}  and(  dr.editedOn LIKE :editedOn)`;
+        filter = `${filter}  and(  dr.editedOn LIKE :editedOn)`;
       } else filter = '( dr.editedOn LIKE :editedOn)';
     }
 
@@ -159,21 +136,18 @@ export class AuditService extends TypeOrmCrudService<Audit> {
     }
 
     if (['Country Admin', 'Verifier', 'Data Entry Operator'].includes(role)) {
-      console.log('Country Admin', 'Verifier', 'Data Entry Operator');
       if (filter) {
         filter = `${filter}  and usr.username = :username`;
       } else {
         filter = `usr.username = :username`;
       }
     } else if ('Sector Admin' == role) {
-      console.log('Sector Admin');
       if (filter) {
         filter = `${filter}  and dr.userType in ('Sector Admin','MRV Admin','Technical Team','Data Collection Team','QC Team') `;
       } else {
         filter = `dr.userType  in ('Sector Admin','MRV Admin','Technical Team','Data Collection Team','QC Team')`;
       }
     } else if ('MRV Admin' == role) {
-      console.log('MRV Admin');
       if (filter) {
         filter = `${filter}  and dr.userType in ('MRV Admin','Technical Team','Data Collection Team','QC Team') `;
       } else {
@@ -189,24 +163,6 @@ export class AuditService extends TypeOrmCrudService<Audit> {
       }
     }
 
-    // if (editedOn != null && editedOn != undefined && editedOn != '') {
-    //     if (filter) {
-    //      let editdate = `dr.editedOn`;
-    //      console.log('mmm','dr.editedOn')
-    //       filter = `${filter}  and (dr.editedOn LIKE :editedOn)`;
-    //     } else {
-    //       filter = `dr.editedOn = :editedOn`;
-    //     }
-    //   }
-
-    // if (institutionId != null && institutionId != undefined  ) {
-    //   if (filter) {
-    //     filter = `${filter}  and usr.institutionId= :institutionId`;
-    //   } else {
-    //     filter = `usr.institutionId = :institutionId`;
-    //   }
-    // }
-
     const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne('dr.user', User, 'usr', 'usr.id = dr.userId')
@@ -216,7 +172,6 @@ export class AuditService extends TypeOrmCrudService<Audit> {
         'ins',
         'usr.institutionId = ins.id',
       )
-      // .innerJoinAndMapOne('dr.country', Country, 'coun', 'dr.countryId = coun.id')
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -227,15 +182,11 @@ export class AuditService extends TypeOrmCrudService<Audit> {
         countryIdFromTocken,
         sectorIdFromTocken,
         institutionIdFromTocken,
-        // institutionId
       })
       .orderBy('dr.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
 
     const resualt = await paginate(data, options);
-    console.log(`resualt`, resualt);
+
     if (resualt) {
       return resualt;
     }

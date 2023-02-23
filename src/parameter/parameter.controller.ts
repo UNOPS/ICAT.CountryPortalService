@@ -88,19 +88,13 @@ export class ParameterController implements CrudController<Parameter> {
   @UseGuards(JwtAuthGuard)
   @Get('parameter/ia')
   async GetParameterForIaDash(): Promise<Parameter[]> {
-    // let countryIdFromTocken:number;
-    // let sectorIdFromTocken:number ;
     let institutionIdFromTocken: number;
 
     [institutionIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.InstitutionId,
     ]);
 
-    return await this.service.GetParameterForIaDash(
-      // countryIdFromTocken,
-      // sectorIdFromTocken,
-      institutionIdFromTocken,
-    );
+    return await this.service.GetParameterForIaDash(institutionIdFromTocken);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -114,7 +108,7 @@ export class ParameterController implements CrudController<Parameter> {
     audit.actionStatus = 'Updated';
 
     this.auditService.create(audit);
-    console.log(updateValueDto);
+
     return this.service.updateEnterDataValue(updateValueDto);
   }
 
@@ -122,7 +116,6 @@ export class ParameterController implements CrudController<Parameter> {
   updateInstitution(
     @Body() updateValueDto: UpdateValueEnterData,
   ): Promise<boolean> {
-    console.log('++++++++++++++++++++++++++++++++++++', updateValueDto);
     return this.service.updateInstitution(updateValueDto);
   }
 
@@ -145,7 +138,6 @@ export class ParameterController implements CrudController<Parameter> {
     }),
   )
   async uploadFileExcel(@UploadedFile() file) {
-    console.log('====file++++', file);
     const newSavedfile = file.filename;
     await this.service.uplaodFileUpload(newSavedfile);
   }

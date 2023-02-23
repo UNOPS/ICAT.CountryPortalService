@@ -70,8 +70,6 @@ export class VerificationController
       TokenReqestType.username,
     ]);
 
-    // let userId =
-
     return await this.service.GetVerifierParameters(
       {
         limit: limit,

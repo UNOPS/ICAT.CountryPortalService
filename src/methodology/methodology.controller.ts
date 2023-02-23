@@ -69,9 +69,6 @@ export class MethodologyController implements CrudController<Methodology> {
       TokenReqestType.sectorId,
     ]);
 
-    console.log('countryIdFromTocken==', countryIdFromTocken);
-    console.log('sectorIdFromTocken==', sectorIdFromTocken);
-
     return await this.service.getMethodologyDetails(
       {
         limit: limit,

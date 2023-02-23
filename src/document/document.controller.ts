@@ -35,7 +35,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/project/entity/project.entity';
 import { Repository } from 'typeorm';
 const multer = require('multer');
-//var upload = multer({ dest: './public/data/uploads/' })
 
 @Crud({
   model: {
@@ -53,9 +52,7 @@ export class DocumentController implements CrudController<Documents> {
   ) {}
 
   @Post('upload')
-  uploadFile(@Body() file: Documents) {
-    console.log('********upload*********');
-  }
+  uploadFile(@Body() file: Documents) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('upload2/:oid/:owner')
@@ -81,8 +78,7 @@ export class DocumentController implements CrudController<Documents> {
     doc.fileName = file.originalname;
     doc.mimeType = file.mimetype;
     doc.relativePath = path;
-    // `${docowner}/${oid}/${file.originalname}`;
-    console.log('********upload2*********');
+
     const audit: AuditDto = new AuditDto();
     audit.action = file.originalname + ' Uploaded';
     audit.comment = 'Document Uploaded';
@@ -129,8 +125,7 @@ export class DocumentController implements CrudController<Documents> {
       doc.fileName = file.originalname;
       doc.mimeType = file.mimetype;
       doc.relativePath = path;
-      // `${docowner}/${oid}/${file.originalname}`;
-      console.log('********upload2*********');
+
       const audit: AuditDto = new AuditDto();
       audit.action = file.originalname + ' Uploaded';
       audit.comment = 'Document Uploaded';
@@ -146,14 +141,11 @@ export class DocumentController implements CrudController<Documents> {
 
   @Post('upload3/:oid')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile3(@UploadedFile() file, @Param('oid') oid) {
-    console.log('********upload3*********');
-  }
+  uploadFile3(@UploadedFile() file, @Param('oid') oid) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('delete/:docId')
   async deleteDoc(@Param('docId') docId: number): Promise<any> {
-    console.log('********delete*********');
     const audit: AuditDto = new AuditDto();
     audit.action = 'Document Deleted';
     audit.comment = 'Document Deleted';
@@ -166,7 +158,6 @@ export class DocumentController implements CrudController<Documents> {
 
   @Post('anonymousDelete/:docId')
   async deleteDocAnonymous(@Param('docId') docId: number): Promise<any> {
-    console.log('********anonymousDelete*********');
     const audit: AuditDto = new AuditDto();
     audit.action = 'Anonymous Document Deleted';
     audit.comment = 'Anonymous Document Deleted';
@@ -206,7 +197,6 @@ export class DocumentController implements CrudController<Documents> {
   @UseGuards(JwtAuthGuard)
   @Get('getDocumentsForViweCountry')
   async getDocumentsForViweCountry(@Query('oid') oid: number) {
-    console.log('work', oid);
     let countryIdFromTocken: number;
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
@@ -224,8 +214,6 @@ export class DocumentController implements CrudController<Documents> {
     @Param('state') state: string,
   ): Promise<StreamableFile> {
     const doc: Documents = await this.service.getDocument(did);
-
-    //   state must be inline or attachment
 
     res.set({
       'Content-Type': `${doc.mimeType}`,

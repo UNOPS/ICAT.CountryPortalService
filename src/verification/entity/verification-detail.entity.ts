@@ -82,11 +82,6 @@ export class VerificationDetail extends BaseTrackingEntity {
   @Column({ nullable: true })
   userVerifier?: number;
 
-  // @Column({ nullable: true })
-  // verifierName?: string;
-
-  // @Column({ nullable: true })
-  // institutionName?: string;
   @Column({ nullable: true })
   isAssumption: boolean;
 

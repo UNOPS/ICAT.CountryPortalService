@@ -17,11 +17,7 @@ import { ProjectStatusService } from './project-status.service';
     type: ProjectStatus,
   },
   query: {
-    join: {
-      //   subNdc: {
-      //     eager: true,
-      //   },
-    },
+    join: {},
   },
 })
 @Controller('project-status')
@@ -31,23 +27,4 @@ export class ProjectStatusController implements CrudController<ProjectStatus> {
   get base(): CrudController<ProjectStatus> {
     return this;
   }
-
-  //   @Override()
-  //   async getMany(
-  //     @ParsedRequest() req: CrudRequest,
-  //     @Request() req2,
-  //   ): Promise<GetManyDefaultResponse<Ndc> | Ndc[]> {
-  //     try {
-  //       console.log('*********************************************');
-  //       console.log(req);
-
-  //       let res = await this.base.getManyBase(req);
-  //       console.log('*********************************************');
-  //       console.log(res);
-  //       return res;
-  //     } catch (error) {
-  //       console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-  //       console.log(error);
-  //     }
-  //   }
 }

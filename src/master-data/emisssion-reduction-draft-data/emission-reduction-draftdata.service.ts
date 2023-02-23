@@ -19,7 +19,7 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
   constructor(
     @InjectRepository(EmissionReductioDraftDataEntity)
     repo: Repository<EmissionReductioDraftDataEntity>,
-    // @Inject(REQUEST) private request,
+
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {
     super(repo);
@@ -29,14 +29,8 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<EmissionReductioDraftDataEntity> {
-    // console.log("user11111",this.request.user)
-
-    // const countryId = this.request.user.user.countryId;
-    // console.log("context",countryId)
-
     let filter = '';
     if (countryIdFromTocken != 0) {
-      // console.log('countryIdFromTocken1111',countryIdFromTocken)
       if (filter) {
         filter = `${filter}  and ert.countryId = :countryIdFromTocken`;
       } else {
@@ -45,7 +39,6 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken111',sectorIdFromTocken)
       if (filter) {
         filter = `${filter}  and ert.sectorId = :sectorIdFromTocken`;
       } else {
@@ -69,12 +62,6 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       )
       .leftJoinAndMapOne('ert.sector', Sector, 'sec', 'sec.id = ert.sectorId')
       .where(filter, { countryIdFromTocken, sectorIdFromTocken });
-    // .orderBy('id', 'ASC');
-
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
     const resualt = await data.getOne();
 
     if (sectorIdFromTocken && !resualt) {
@@ -84,10 +71,7 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       );
     }
 
-    // let resualt = await this.repo.findOne(countryIdFromTocken);
-    // console.log("emission",resualt)
     if (resualt) {
-      // console.log("emission",resualt)
       return resualt;
     }
   }
@@ -97,14 +81,8 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<EmissionReductioDraftDataEntity> {
-    // console.log("user11111",this.request.user)
-
-    // const countryId = this.request.user.user.countryId;
-    // console.log("context",countryId)
-
     let filter = '';
     if (countryIdFromTocken != 0) {
-      // console.log('countryIdFromTocken1111',countryIdFromTocken)
       if (filter) {
         filter = `${filter}  and ert.countryId = :countryIdFromTocken`;
       } else {
@@ -113,7 +91,6 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken111',sectorIdFromTocken)
       if (filter) {
         filter = `${filter}  and ert.sectorId = :sectorIdFromTocken`;
       } else {
@@ -138,10 +115,6 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       .where(filter, { countryIdFromTocken, sectorIdFromTocken, sectorId })
       .orderBy('id', 'ASC');
 
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
     const resualt = await data.getOne();
 
     if (sectorIdFromTocken && !resualt) {
@@ -152,10 +125,7 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       );
     }
 
-    // let resualt = await this.repo.findOne(countryIdFromTocken);
-    // console.log("emission",resualt)
     if (resualt) {
-      // console.log("emission",resualt)
       return resualt;
     }
   }

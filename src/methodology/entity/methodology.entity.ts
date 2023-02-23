@@ -104,11 +104,6 @@ export class Methodology extends BaseTrackingEntity {
   @JoinColumn({ name: 'applicabilityId' })
   applicability: ApplicabilityEntity;
 
-  // @ManyToOne(() => ApplicabilityEntity, (applicabilityEntity) => applicabilityEntity.methodologies, {
-  //   cascade: false,})
-  // @JoinColumn({ name: 'applicabilityId' })
-  // applicability?: ApplicabilityEntity;
-
   @ManyToMany((type) => Ndc, {
     eager: true,
     cascade: false,

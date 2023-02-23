@@ -39,14 +39,12 @@ export class DefaultValueController implements CrudController<DefaultValue> {
 
   @Post('defaultValuex')
   async sendDefaultValue(@Body() defaultDto: defaultValueDtos): Promise<any> {
-    //console.log("my default  values...",defaultDto)
     const res = await this.service.sendDefaultValue(defaultDto);
     return res;
   }
 
   @Post('update')
   async createValue(@Body() val: DefaultValue): Promise<any> {
-    console.log('++++++++++++', val);
     const def = new DefaultValue();
     def.parameterName = val.parameterName;
     def.unit = val.unit;
@@ -70,10 +68,7 @@ export class DefaultValueController implements CrudController<DefaultValue> {
     @Query('year') year: string,
     @Query('status') status: string,
   ): Promise<any> {
-    // console.log("heelo controler");
-
     let countryIdFromTocken: number;
-    // let sectorIdFromTocken:number;
 
     [countryIdFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,

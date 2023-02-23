@@ -8,14 +8,8 @@ export class TokenDetails {
   constructor(@Inject(REQUEST) private request) {}
 
   getDetails(reqDetails: TokenReqestType[]): any[] {
-    // console.log("Inside the userToken====")
-
-    // console.log("reqqqqq====",this.request.user)
-
     const details: any[] = [];
     const user: any = this.request.user.user;
-
-    // console.log("userToken====",user)
 
     for (const det of reqDetails) {
       switch (det) {

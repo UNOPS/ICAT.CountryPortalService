@@ -37,7 +37,7 @@ export class Country extends BaseTrackingEntity {
   sortOrder: number;
 
   @Column()
-  submissions: string; // add as string for document upload
+  submissions: string;
 
   @Column({ default: null })
   emissionSummary: string;
@@ -57,10 +57,7 @@ export class Country extends BaseTrackingEntity {
   @Column({ default: null })
   isMember: boolean;
 
-  // @Column({ default: null })
-  // isRegister: boolean;
-
-  @Column({ default: null }) // enum
+  @Column({ default: null })
   countryStatus: countryStatus;
 
   @Column({ default: null })
@@ -95,10 +92,4 @@ export class Country extends BaseTrackingEntity {
   })
   @JoinColumn()
   countrysector: CountrySector[];
-  // @ManyToMany((type) => Sector, {
-  //   eager: true,
-  //   cascade: false,
-  // })
-  // @JoinTable({ name: 'country_sector' })
-  // Sector?: Sector[];
 }

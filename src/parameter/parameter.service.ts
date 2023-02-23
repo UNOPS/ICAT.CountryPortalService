@@ -57,12 +57,8 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
   }
 
   async GetParameterForIaDash(
-    //  countryIdFromTocken:number,
-    //  sectorIdFromTocken:number ,
     institutionIdFromTocken: number,
   ): Promise<Parameter[]> {
-    console.log('para1234', institutionIdFromTocken);
-
     const data = this.repo
       .createQueryBuilder('par')
       .innerJoinAndMapOne(
@@ -71,21 +67,21 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
         'p',
         'p.ParameterId = par.id and p.dataRequestStatus not in( -1,30,9,11,1,6)',
       )
-      .where('par.institutionId = :institutionIdFromTocken', { institutionIdFromTocken });
-    let result = await data.getMany();
+      .where('par.institutionId = :institutionIdFromTocken', {
+        institutionIdFromTocken,
+      });
+    const result = await data.getMany();
 
-    //  console.log('para1234',result)
     return result;
   }
 
   async updateEnterDataValue(
-    /// Unit Conversion Applied
     updateValueDto: UpdateValueEnterData,
   ): Promise<boolean> {
     const dataEnterItem = await this.repo.findOne({
       where: { id: updateValueDto.id },
     });
-    // console.log('dataEnterItem+++',dataEnterItem)
+
     if (dataEnterItem) {
       dataEnterItem.value = updateValueDto.value;
       if (updateValueDto.assumptionParameter != null) {
@@ -117,24 +113,25 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
     updateValueDto: UpdateValueEnterData,
   ): Promise<boolean> {
     const institutionItem = await this.institutionRepository.findOne({
-      where: { id: updateValueDto.institutionId }
+      where: { id: updateValueDto.institutionId },
     });
-    let data = this.parameterRequestRepository.findOne({
+    const data = this.parameterRequestRepository.findOne({
       where: { id: updateValueDto.id },
     });
     const dataEnterItem = await this.repo.findOne({
-      where: { id: (await data).parameter.id }
+      where: { id: (await data).parameter.id },
     });
-    // dataEnterItem.value = updateValueDto.value;  // not comming value
+
     dataEnterItem.institution = institutionItem;
-    console.log('updateValueDto', updateValueDto);
-    console.log('institutionItem', institutionItem);
+
     this.repo.save(dataEnterItem);
 
-    const template = 'Dear ' +
-    institutionItem.name + ' '  +
-    '<br/>Data request with following information has shared with you.'+
-    ' <br/> We are assign  Data entry' ;
+    const template =
+      'Dear ' +
+      institutionItem.name +
+      ' ' +
+      '<br/>Data request with following information has shared with you.' +
+      ' <br/> We are assign  Data entry';
 
     this.emaiService.sendMail(
       institutionItem.email,
@@ -166,22 +163,30 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
         'p',
         'p.ParameterId = par.id',
       )
-      .where('par.name = :name and p.qaStatus = 4 and pro.countryId= :countryIdFromTocken', { name,countryIdFromTocken });
+      .where(
+        'par.name = :name and p.qaStatus = 4 and pro.countryId= :countryIdFromTocken',
+        { name, countryIdFromTocken },
+      );
 
     return data.getMany();
   }
 
   async updateParameterAlternative(parameters: Parameter[]) {
-    const parentPara = parameters.filter(para => (para.isAlternative == false && para.isEnabledAlternative == true))
+    const parentPara = parameters.filter(
+      (para) =>
+        para.isAlternative == false && para.isEnabledAlternative == true,
+    );
 
-    const childPara = parameters.filter(para => (para.isAlternative == true && para.isEnabledAlternative == true));
+    const childPara = parameters.filter(
+      (para) => para.isAlternative == true && para.isEnabledAlternative == true,
+    );
 
     for (const para of childPara) {
-      const data= await this.parameterRequestRepository.findOne({
-        where: { parameter: {id: parentPara[0].id} }
+      const data = await this.parameterRequestRepository.findOne({
+        where: { parameter: { id: parentPara[0].id } },
       });
-      const cdata= await this.parameterRequestRepository.findOne({
-        where: { parameter: {id: para.id} }
+      const cdata = await this.parameterRequestRepository.findOne({
+        where: { parameter: { id: para.id } },
       });
       const paraReq = new ParameterRequest();
       if (cdata === undefined) {
@@ -198,8 +203,8 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
       }
     }
 
-    let result = this.repo.save(parameters);
-    // console.log('result',result)
+    const result = this.repo.save(parameters);
+
     return true;
   }
 
@@ -207,26 +212,21 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
     this.readXlsxFile('./uploads/' + fileName, { schema }).then(
       ({ rows, errors }) => {
         rows.forEach(async (key) => {
-          let dataEnterItem = await this.repo.findOne({
+          const dataEnterItem = await this.repo.findOne({
             where: { id: key.id },
           });
 
           const dataStatusItem = await this.parameterRequestRepository.find({
-          where: { parameter: key.id }
-        })
-
-          console.log(' key name =====', key);
-          console.log(' dataEnterItem  +++ =====', dataEnterItem);
-          console.log('dataStatusItem=====+++', dataStatusItem);
+            where: { parameter: key.id },
+          });
 
           dataStatusItem.forEach(async (e) => {
-            console.log('++++++++eeeee=======', e.dataRequestStatus);
             if (e.dataRequestStatus === 4 || e.dataRequestStatus === 5) {
               dataEnterItem.value = key.value;
               dataEnterItem.uomDataEntry = key.unit;
 
               if (dataEnterItem.uomDataEntry != dataEnterItem.uomDataRequest) {
-                let ratioItem = await this.unitConversionRepository.findOne({
+                const ratioItem = await this.unitConversionRepository.findOne({
                   where: {
                     fromUnit: key.unit,
                     toUnit: dataEnterItem.uomDataRequest,

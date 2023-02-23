@@ -20,7 +20,7 @@ import {
 } from '@nestjsx/crud';
 import { Institution } from './institution.entity';
 import { InstitutionService } from './institution.service';
-// import { Request, Post, UseGuards } from '@nestjs/common';
+
 import { basename } from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
@@ -75,7 +75,7 @@ export class InstitutionController implements CrudController<Institution> {
   constructor(
     public service: InstitutionService,
     private readonly auditService: AuditService,
-    private readonly tokenDetails: TokenDetails, // @Inject(REQUEST) private request
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<Institution> {
@@ -92,12 +92,11 @@ export class InstitutionController implements CrudController<Institution> {
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
     @Query('userId') userId: number,
-    // @Query('status') status: string
   ): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let userTypeFromTocken: string;
-    let institutionTypeId: number; //instypeId
+    let institutionTypeId: number;
 
     [countryIdFromTocken, sectorIdFromTocken, userTypeFromTocken] =
       this.tokenDetails.getDetails([
@@ -105,8 +104,6 @@ export class InstitutionController implements CrudController<Institution> {
         TokenReqestType.sectorId,
         TokenReqestType.role,
       ]);
-
-    console.log('userTypeFromTocken==', userTypeFromTocken);
 
     return await this.service.getInstitutionDetails(
       {
@@ -119,7 +116,6 @@ export class InstitutionController implements CrudController<Institution> {
       sectorIdFromTocken,
       institutionTypeId,
       'Technical Team',
-      // status
     );
   }
 
@@ -131,12 +127,11 @@ export class InstitutionController implements CrudController<Institution> {
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
     @Query('userId') userId: number,
-    // @Query('status') status: string
   ): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let userTypeFromTocken: string;
-    let institutionTypeId: number; //instypeId
+    let institutionTypeId: number;
 
     [countryIdFromTocken, sectorIdFromTocken, userTypeFromTocken] =
       this.tokenDetails.getDetails([
@@ -144,8 +139,6 @@ export class InstitutionController implements CrudController<Institution> {
         TokenReqestType.sectorId,
         TokenReqestType.role,
       ]);
-
-    console.log('userTypeFromTocken==', userTypeFromTocken);
 
     return await this.service.getInstitutionDetails(
       {
@@ -158,7 +151,6 @@ export class InstitutionController implements CrudController<Institution> {
       sectorIdFromTocken,
       institutionTypeId,
       userTypeFromTocken,
-      // status
     );
   }
 
@@ -168,12 +160,11 @@ export class InstitutionController implements CrudController<Institution> {
     @Request() request,
     @Query('filterText') filterText: string,
     @Query('userId') userId: number,
-    // @Query('status') status: string
   ): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let userTypeFromTocken: string;
-    let institutionTypeId: number; //instypeId
+    let institutionTypeId: number;
 
     [countryIdFromTocken, sectorIdFromTocken, userTypeFromTocken] =
       this.tokenDetails.getDetails([
@@ -182,14 +173,11 @@ export class InstitutionController implements CrudController<Institution> {
         TokenReqestType.role,
       ]);
 
-    console.log('userTypeFromTocken==', userTypeFromTocken);
-
     return await this.service.getInsDetails(
       filterText,
       countryIdFromTocken,
       sectorIdFromTocken,
       userTypeFromTocken,
-      // status
     );
   }
 
@@ -201,14 +189,13 @@ export class InstitutionController implements CrudController<Institution> {
     audit.comment = 'Institution Deactivated';
     audit.actionStatus = 'Deactivated';
     this.auditService.create(audit);
-    console.log('Institution Deactivated');
+
     return await this.service.softDelete(instiId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('getInstitutionforAssesment')
   async getInstitutionforAssesment(): Promise<any> {
-    console.log('wwwwwwwwwwwwwwwwwwww');
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
@@ -236,29 +223,6 @@ export class InstitutionController implements CrudController<Institution> {
       sectorIdFromTocken,
     );
   }
-  // @Override()
-  // //@UseInterceptors(InstitutionFilterInterceptor, CrudRequestInterceptor)
-  // async getMany(@ParsedRequest() req: CrudRequest, @Request() req2 ) :  Promise<GetManyDefaultResponse<Institution> | Institution[]>  {
-
-  //   let userEmail =  req2.user.email;
-
-  //   let currentDBUser = await this.usersRepository.findOne({where : {email : userEmail }});
-
-  //   if(currentDBUser.userType.id != 1){
-  //     // not ccs admin , linit data for the users' institution
-  //     req.parsed.search['$and'].push({ 'id': (currentDBUser).institution.id });
-  //   }
-
-  //   return this.base.getManyBase(req);
-  // }
-
-  // @Override()
-  // async deleteOne(@ParsedRequest() req: CrudRequest) {
-  //   const id = req.parsed.paramsFilter
-  //     .find(f => f.field === 'id' && f.operator === '$eq').value;
-  //   const res = await this.service.softDelete(id);
-  //   return res;
-  // }
 
   @UseGuards(JwtAuthGuard)
   @Override()
@@ -270,59 +234,37 @@ export class InstitutionController implements CrudController<Institution> {
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
     try {
-      console.log(
-        '-----------------------------------------------------------',
-      );
       dto.createdBy = '-';
       dto.editedBy = '-';
 
       dto.parentInstitution = null;
-      // dto.country = null;
-      if (dto.type != undefined) {
-        console.log('type have', dto.type);
-      }
-      // dto.type =null;
-      if (dto.category != undefined) {
-        console.log('cat have', dto.category);
-      }
-      // dto.category =null;
-      if (dto.sector != undefined) {
-        console.log('sec have', dto.sector);
-      }
-      // else{
-      // dto.sector = null;
-      // }
-      // dto.sector = null;
 
-      console.log(dto);
+      if (dto.type != undefined) {
+      }
+
+      if (dto.category != undefined) {
+      }
+
+      if (dto.sector != undefined) {
+      }
+
       const newInstitution = await queryRunner.manager.save(Institution, dto);
-      // let newInstitution = await this.base.createOneBase(req, dto);
 
       const audit: AuditDto = new AuditDto();
       audit.action = newInstitution.name + ' Created';
       audit.comment = newInstitution.name + ' Created';
       audit.actionStatus = 'Created';
-      // await queryRunner.manager.save(AuditDto ,audit);
+
       this.auditService.create(audit);
-      console.log('Institution created');
 
       await queryRunner.commitTransaction();
       return newInstitution;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
       await queryRunner.release();
     }
-    // try {
-
-    // } catch (error) {
-    //   console.log('ssssssssssssaaaaaaaaaaaaaaaaaaa');
-    //   console.log('error');
-    //   throw error;
-    // }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -341,42 +283,23 @@ export class InstitutionController implements CrudController<Institution> {
         Institution,
         dto,
       );
-      // let updateInstitution = await this.base.updateOneBase(req, dto);
+
       if (updateInstitution.status == 0) {
         const audit: AuditDto = new AuditDto();
         audit.action = updateInstitution.name + ' Institution Updated';
         audit.comment = 'Institution Updated';
         audit.actionStatus = 'Updated';
         this.auditService.create(audit);
-        console.log('Institution Updated');
       }
       await queryRunner.commitTransaction();
       return updateInstitution;
     } catch (err) {
-      console.log('worktran2');
-      console.log(err);
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
       await queryRunner.release();
     }
   }
-  // @Override()
-  // async getMany(
-  //   @ParsedRequest() req: CrudRequest,
-  // ): Promise<GetManyDefaultResponse<Institution> | Institution[]> {
-  //   try {
-  //     let res = await this.base.getManyBase(req);
-  //     console.log('*********************************************');
-  //     console.log(res);
-  //     console.log('*********************************************');
-  //     console.log(req);
-  //     return res;
-  //   } catch (error) {
-  //     console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-  //     console.log(error);
-  //   }
-  // }
 
   @UseGuards(JwtAuthGuard)
   @Get('getInstitutionForManageUsers')
@@ -397,11 +320,6 @@ export class InstitutionController implements CrudController<Institution> {
         TokenReqestType.InstitutionId,
         TokenReqestType.role,
       ]);
-
-    console.log('countryIdFromTocken====', countryIdFromTocken);
-    console.log('sectorIdFromTocken====', sectorIdFromTocken);
-
-    console.log('InstitutionIdFromTocken====', InstitutionIdFromTocken);
 
     const resault = await this.service.getInstitutionForManageUsers(
       {

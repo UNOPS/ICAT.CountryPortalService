@@ -91,8 +91,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         : '')
     ).replace(/AND $/, '');
 
-    console.log(whereCond);
-
     const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
@@ -114,7 +112,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'cou',
         `p.countryId = cou.id and p.countryId = ${countryIdFromTocken}`,
       )
-      // .innerJoinAndMapOne('p.Sector', Sector, 'sec', `p.sectorId = sec.id and p.sectorId = ${sectorIdFromTocken}`)
+
       .leftJoinAndMapOne(
         'a.AssessmentYear',
         AssessmentYear,
@@ -128,35 +126,12 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'i.id = para.institutionId',
       )
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-      // .select([
-      //   'p.climateActionName as climateAction',
-      //   'a.assessmentType as assessmentType',
-      //   'para.isAlternative as isAlternative',
-      //   'para.isBaseline as isBaseline',
-      //   'para.isProject as isProject',
-      //   'para.isLekage as isLekage',
-      //   'para.isProjection as isProjection',
-      //   'i.name as dataProvider',
-      //   'ay.assessmentYear as year',
-      //   'para.name as parameter',
-      //   'dr.deadline as deadline',
-      //   'dr.status as status',
-      //   'dr.id as id',
-      // ])
       .where(whereCond)
       .orderBy('dr.createdOn', 'DESC')
       .groupBy('dr.id');
-    console.log(options);
+
     const result = await paginate(data, options);
 
-    // let pageResult = data
-    //   .skip((options.limit as number) * ((options.page as number) - 1))
-    //   .take(options.limit as number);
-    //console.log('data2', data);
-
-    // let result = await data.execute();
-    //   console.log('result2', result2);
     if (result) {
       return result;
     }
@@ -185,8 +160,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         : '')
     ).replace(/AND $/, '');
 
-    console.log(whereCond);
-
     const data = this.repo
       .createQueryBuilder('dr')
       .select(['dr.id', 'para.id ', 'a.id as aid', 'p.id as pid'])
@@ -209,7 +182,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'cou',
         `p.countryId = cou.id and p.countryId = ${countryIdFromTocken}`,
       )
-      // .innerJoinAndMapOne('p.Sector', Sector, 'sec', `p.sectorId = sec.id and p.sectorId = ${sectorIdFromTocken}`)
+
       .leftJoinAndMapOne(
         'a.AssessmentYear',
         AssessmentYear,
@@ -225,12 +198,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       .where(whereCond)
       .orderBy('dr.createdOn', 'DESC')
       .groupBy('dr.id');
-    console.log(options);
+
     const result = await paginate(data, options);
 
     if (result) {
-      // console.log(result);
-      console.log('resulthhhhh====', result);
       return result;
     }
   }
@@ -266,7 +237,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'a.id = ay.assessmentId',
       )
       .leftJoinAndMapMany('a.Prject', Project, 'p', 'p.id = a.projectId')
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
+
       .select([
         'p.climateActionName as climateAction',
         'para.AssessmentYear as year',
@@ -279,7 +250,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       })
       .orderBy('dr.createdOn', 'DESC');
     const result = await data.execute();
-    //   console.log('result2', result2);
+
     if (result) {
       return result;
     }
@@ -322,18 +293,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .leftJoinAndMapOne('a.User', User, 'u', 'u.id = dr.UserDataEntry')
       .leftJoinAndMapOne('a.Prject', Project, 'p', 'p.id = a.projectId')
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-      // .select([
-      //   'p.climateActionName as climateAction',
-      //   'para.name as parameter',
-      //   'para.AssessmentYear as year',
-      //   'dr.deadline as deadline',
-      //   'dr.deadlineDataEntry as deadlineDEO',
-      //   'u.username as userName',
-      //   'dr.id as id',
-      //   'dr.status as status',
-      //   'u.id as userId',
-      // ])
+
       .where(
         (
           (institutionId != 0 ? `i.id=${institutionId} AND ` : '') +
@@ -348,15 +308,8 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       .orderBy('dr.createdOn', 'DESC')
       .groupBy('dr.id');
 
-    // let result = await paginate(data, options);
-
-    // let pageResult = data
-    //   .skip((options.limit as number) * ((options.page as number) - 1))
-    //   .take(options.limit as number);
-    //console.log('data2', data);
     const result = await paginate(data, options);
-    //let result = await data.execute();
-    //   console.log('result2', result2);
+
     if (result) {
       return result;
     }
@@ -370,7 +323,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     userName: string,
   ): Promise<Pagination<any>> {
     const userItem = await this.userService.findByUserName(userName);
-    // console.log("userItem..",userItem.institution.id)
+
     const userId = userItem ? userItem.id : 0;
     const insId = userItem ? userItem.institution.id : 0;
 
@@ -473,7 +426,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     type: string,
     userName: string,
   ): Promise<Pagination<any>> {
-    console.log('userName', userName);
     const userItem = await this.userService.findByUserName(userName);
     const institutionId = userItem.institution ? userItem.institution.id : 0;
 
@@ -505,22 +457,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .leftJoinAndMapOne('a.User', User, 'u', 'u.id = dr.UserDataEntry')
       .leftJoinAndMapOne('a.Prject', Project, 'p', 'p.id = a.projectId')
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-      // .select([
-      //   'p.climateActionName as climateAction',
-      //   'a.assessmentType as assessmentType',
-      //   'para.isAlternative as isAlternative',
-      //   'para.isBaseline as isBaseline',
-      //   'para.isProject as isProject',
-      //   'para.isLekage as isLekage',
-      //   'para.isProjection as isProjection',
-      //   'i.name as dataProvider',
-      //   'ay.assessmentYear as year',
-      //   'para.name as parameter',
-      //   'dr.deadline as deadline',
-      //   'dr.status as status',
-      //   'dr.id as id',
-      // ])
+
       .where(
         (
           (institutionId != 0 ? `i.id=${institutionId} AND ` : '') +
@@ -538,13 +475,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     const result = await paginate(data, options);
 
-    // let pageResult = data
-    //   .skip((options.limit as number) * ((options.page as number) - 1))
-    //   .take(options.limit as number);
-    //console.log('data2', data);
-
-    // let result = await data.execute();
-    //   console.log('result2', result2);
     if (result) {
       return result;
     }
@@ -553,9 +483,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   async updateDeadlineForIds(
     updateDataRequestDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    //let dataRequestItemList = new Array<ParameterRequest>();
-    console.log('updateDataRequestDto', updateDataRequestDto);
-
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
@@ -564,7 +491,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         dataRequestItem.parameter.id,
       ]);
       if (ss[0].institution != null) {
-        console.log('sssssss', ss);
         const template =
           'Dear ' +
           ss[0].institution.name +
@@ -585,10 +511,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       const originalStatus = dataRequestItem.dataRequestStatus;
       dataRequestItem.deadline = updateDataRequestDto.deadline;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
-      //dataRequestItemList.push(dataRequestItem);
       this.repo.save(dataRequestItem).then((res) => {
-        // console.log('res', res);
-        console.log('res id....', res.id);
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.DataRequest,
@@ -606,12 +529,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   async updateDataEntryDeadlineForIds(
     updateDataRequestDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    //let dataRequestItemList = new Array<ParameterRequest>();
-
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      console.log('updateDataRequestDto', updateDataRequestDto);
+
       const user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
 
       const originalStatus = dataRequestItem.dataRequestStatus;
@@ -638,9 +559,8 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         '',
         template,
       );
-      // dataRequestItemList.push(dataRequestItem);
+
       this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.AssignDataRequest,
@@ -652,16 +572,12 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       });
     }
 
-    //this.repo.save(dataRequestItemList);
-
     return true;
   }
 
   async acceptReviewDataForIds(
     updateDataRequestDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    // let dataRequestItemList = new Array<ParameterRequest>();
-
     let insSec: any;
     let inscon: any;
 
@@ -678,15 +594,11 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       ) {
         dataRequestItem.qaStatus = null;
       }
-      // let parm =await this.paramterRepo.findByIds([id]);
 
       inscon = dataRequestItem.parameter.institution.country;
       insSec = dataRequestItem.parameter.institution.sector;
 
-      // dataRequestItemList.push(dataRequestItem);
-      // console.log('dataRequestItem', dataRequestItem);
       this.repo.save(dataRequestItem).then((res) => {
-        //console.log('res', res);
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.EnterData,
@@ -709,17 +621,14 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         )
         .where(filter, { id });
       const result = await data.getOne();
-      // console.log("data...",result)
 
       const paraId = result.parameter.id;
-      console.log('paraid', paraId);
+
       const parameterItem = await this.paramterRepo.findOne({
         where: { id: paraId },
       });
       if (parameterItem.isDefault == true) {
         const defaultVal = parameterItem.value;
-        // console.log("defaultVal",defaultVal)
-        // let defaultValId = parameterItem.defaultValue.id;
 
         let filter = '';
         filter = `pr.id = :paraId`;
@@ -733,16 +642,14 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           )
           .where(filter, { paraId });
         const result2 = await data2.getOne();
-        //  console.log("result2",result2)
 
         const defaultValId = result2.id;
-        // console.log("defaultValId",defaultValId)
+
         const defaultValObject = await this.defaultValRepo.findOne({
           where: { id: defaultValId },
         });
         defaultValObject.value = defaultVal;
         const savedObject = await this.defaultValRepo.save(defaultValObject);
-        // console.log("defaultValObject...",defaultValObject)
       }
     }
     let user: User[];
@@ -753,7 +660,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       where: { country: inscon, userType: 6, institution: ins },
     });
     user.forEach((ab) => {
-      console.log('=========', ins);
       let template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
@@ -762,8 +668,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           ' ' +
           '<br/>Data request with following information has shared with you.' +
           ' <br/> Accepted reviw value' +
-          // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-          // '<br/> value -:' + dataRequestItem.parameter.value +
           '<br> comment -: ' +
           updateDataRequestDto.comment;
       } else {
@@ -773,14 +677,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           ' ' +
           '<br/>Data request with following information has shared with you.' +
           ' <br/> Accepted reviw value ';
-        // '<br/> parameter name -: ' + dataRequestItem.parameter.name +
-        // '<br/> value -:' + dataRequestItem.parameter.value;
       }
 
       this.emaiService.sendMail(ab.email, 'Accepted parameter', '', template);
     });
-
-    // this.repo.save(dataRequestItemList);
 
     return true;
   }
@@ -788,8 +688,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   async rejectEnterDataForIds(
     updateDataRequestDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    // let dataRequestItemList = new Array<ParameterRequest>();
-
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
@@ -825,7 +723,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       this.emaiService.sendMail(email, 'Reject enterd value', '', template);
 
       this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.EnterData,
@@ -835,10 +732,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           originalStatus.toString(),
         );
       });
-      //  dataRequestItemList.push(dataRequestItem);
     }
-
-    //this.repo.save(dataRequestItemList);
 
     return true;
   }
@@ -846,8 +740,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   async rejectReviewDataForIds(
     updateDataRequestDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    // let dataRequestItemList = new Array<ParameterRequest>();
-
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
@@ -917,7 +809,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
       dataRequestItem.UserDataEntry = updateDataRequestDto.userId;
       this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.ReviewData,
@@ -927,7 +818,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           originalStatus.toString(),
         );
       });
-      //  dataRequestItemList.push(dataRequestItem);
     }
 
     return true;
@@ -951,7 +841,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'para.DataRequest',
         ParameterRequest,
         'paraReq',
-        'para.id = paraReq.ParameterId', //and paraReq.dataRequestStatus = 2
+        'para.id = paraReq.ParameterId',
       )
       .where('paraReq.dataRequestStatus = ' + 2);
 
@@ -978,7 +868,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'para.DataRequest',
         ParameterRequest,
         'paraReq',
-        'para.id = paraReq.ParameterId', //and paraReq.dataRequestStatus = 2
+        'para.id = paraReq.ParameterId',
       )
       .where('paraReq.dataRequestStatus = ' + 6);
 

@@ -31,8 +31,6 @@ export class MethodologyService extends TypeOrmCrudService<Methodology> {
     }
 
     if (countryIdFromTocken != 0) {
-      console.log('countryIdFromTocken');
-
       if (filter) {
         filter = `${filter}  and me.countryId = :countryIdFromTocken`;
       } else {
@@ -41,7 +39,6 @@ export class MethodologyService extends TypeOrmCrudService<Methodology> {
     }
 
     if (sectorIdFromTocken) {
-      console.log('sectorIdFromTocken');
       if (filter) {
         filter = `${filter}  and me.sectorId = :sectorIdFromTocken`;
       } else {

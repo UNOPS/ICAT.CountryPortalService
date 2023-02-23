@@ -41,13 +41,6 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ default: false })
   isEnabledAlternative: boolean;
 
-  // @ManyToOne((type) => Parameter, {
-  //   cascade: false,
-  //   onDelete: 'RESTRICT',
-  //   onUpdate: 'RESTRICT',
-  //   nullable: true,
-  // })
-  // @JoinColumn({ name: 'ParentParameterId' })
   ParentParameter?: Parameter;
 
   @Column({ nullable: true })
@@ -153,7 +146,6 @@ export class Parameter extends BaseTrackingEntity {
     nullable: true,
     eager: true,
   })
-  // @JoinColumn({ name: 'institutionId' })
   institution?: Institution;
 
   @ManyToOne(() => Assessment, (assessment) => assessment.parameters, {
@@ -171,11 +163,8 @@ export class Parameter extends BaseTrackingEntity {
     nullable: true,
     eager: true,
   })
-  // @JoinColumn({ name: 'AssessmentId' })
   defaultValue?: DefaultValue;
 
-  // @OneToOne((type) => Parameter, { cascade: false, onUpdate: 'RESTRICT' })
-  // @JoinColumn()
   parameterRequest?: ParameterRequest;
 
   @OneToMany(
@@ -183,13 +172,6 @@ export class Parameter extends BaseTrackingEntity {
     (verificationDetail) => verificationDetail.parameter,
   )
   public verificationDetail: VerificationDetail[];
-
-  // @OneToOne((type) => DefaultValue,{ nullable: true })
-  // @JoinColumn()
-  // defaultValue?: DefaultValue
-
-  // @Column({ nullable: true })
-  // defaultValueId: number;
 
   @Column({ default: false })
   hasChild: boolean;

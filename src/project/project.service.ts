@@ -45,11 +45,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     institutionIdFromTocken: number,
   ): Promise<Pagination<Project>> {
     let filter = '';
-    // let fDate = `${editedOn.getFullYear()}-${editedOn.getMonth()+1}-${editedOn.getDate()}`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
-        // '(dr.climateActionName LIKE :filterText OR dr.description LIKE :filterText)';
         '(dr.climateActionName LIKE :filterText OR dr.contactPersoFullName LIKE :filterText OR sec.name LIKE :filterText OR mit.name LIKE :filterText OR pst.name LIKE :filterText OR dr.editedOn LIKE :filterText)';
     }
 
@@ -62,7 +60,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken`;
       } else {
@@ -77,22 +74,12 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
     }
-
-    // if (sectorId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.sectorId = :sectorId`;
-    //   } else {
-    //     filter = `dr.sectorId = :sectorId`;
-    //   }
-    // }
 
     if (statusId != 0) {
       if (filter) {
@@ -138,7 +125,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'past',
         'dr.projectApprovalStatusId = past.id',
       )
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -151,20 +137,15 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         institutionIdFromTocken,
       })
       .orderBy('dr.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    // console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
-    console.log('resualt..', resualt);
+
     if (resualt) {
       return resualt;
     }
   }
 
   async mail(dto: Project) {
-    console.log('mail-----------------', dto);
     const template =
       'Dear ' +
       dto.contactPersoFullName +
@@ -237,8 +218,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       )
       .leftJoinAndMapMany('dr.subNdc', SubNdc, 'sub', 'sub.id = dr.subNdcId')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-
       .where(filter, {
         sectorId,
         ndcId,
@@ -247,11 +226,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         projectApprovalStatusId,
       })
       .orderBy('dr.id', 'ASC');
-
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
 
@@ -304,21 +278,15 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       }
     }
 
-    // if active = 0 ---> whole climateactions list
-    // if active = 1 ---> all climate actions
-    // if active = 2 ---> active climate actions
-
     if (Active == 1) {
-      // console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id != 4 `; // no proposed CA s all climate
+        filter = `${filter}  and pas.id != 4 `;
       } else {
         filter = `pas.id != 4`;
       }
     } else if (Active == 2) {
-      //console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id = 5 `; // only active CA s
+        filter = `${filter}  and pas.id = 5 `;
       } else {
         filter = `pas.id = 5 `;
       }
@@ -360,14 +328,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'asse',
         'asse.projectId = dr.id',
       )
-      // .leftJoinAndMapMany(
-      //   'asse.parameter',
-      //   Parameter,
-      //   'para',
-      //   'para.assessmentId = asse.id',
-      // )
-
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -379,10 +339,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         sectorId,
       })
       .orderBy('dr.createdOn', 'ASC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    // console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
 
@@ -404,7 +360,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
-        // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR para.AssessmentYear LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
         '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
     }
 
@@ -436,21 +391,15 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       }
     }
 
-    // if active = 0 ---> whole climateactions list
-    // if active = 1 ---> all climate actions
-    // if active = 2 ---> active climate actions
-
     if (Active == 1) {
-      // console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id != 4 `; // no proposed CA s all climate
+        filter = `${filter}  and pas.id != 4 `;
       } else {
         filter = `pas.id != 4`;
       }
     } else if (Active == 2) {
-      //console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id = 5 `; // only active CA s
+        filter = `${filter}  and pas.id = 5 `;
       } else {
         filter = `pas.id = 5 `;
       }
@@ -492,16 +441,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'asse',
         'asse.projectId = dr.id',
       )
-      /* 
-        .leftJoinAndMapMany(
-          'asse.parameter',
-          Parameter,
-          'para',
-          'para.assessmentId = asse.id',
-        )
-       */
-
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -514,15 +453,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
-
     const resualt = await paginate(data, options);
-    //console.log('my result...',resualt)
+
     if (resualt) {
-      //  console.log("results for manage..",resualt)
       return resualt;
     }
   }
@@ -534,12 +467,11 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     projectApprovalStatusId: number,
     assessmentStatusName: string,
     Active: number,
-    // countryId: number,
+
     sectorId: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<Pagination<Project>> {
-    // console.log("hiii...")
     let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -555,7 +487,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken`;
       } else {
@@ -564,10 +495,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId `;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId `;
         }
       }
@@ -601,41 +530,19 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       }
     }
 
-    // if active = 0 ---> whole climateactions list
-    // if active = 1 ---> all climate actions
-    // if active = 2 ---> active climate actions
-
     if (Active == 1) {
-      // console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id != 4 `; // no proposed CA s all climate
+        filter = `${filter}  and pas.id != 4 `;
       } else {
         filter = `pas.id != 4`;
       }
     } else if (Active == 2) {
-      //console.log(Active);
       if (filter) {
-        filter = `${filter}  and pas.id = 5 `; // only active CA s
+        filter = `${filter}  and pas.id = 5 `;
       } else {
         filter = `pas.id = 5 `;
       }
     }
-
-    // if (countryId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.countryId = :countryId`;
-    //   } else {
-    //     filter = `dr.countryId = :countryId`;
-    //   }
-    // }
-
-    // if (sectorId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.sectorId = :sectorId`;
-    //   } else {
-    //     filter = `dr.sectorId = :sectorId`;
-    //   }
-    // }
 
     const data = this.repo
       .createQueryBuilder('dr')
@@ -662,31 +569,22 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       )
       .leftJoinAndMapOne('dr.sector', Sector, 'sct', 'dr.sectorId = sct.id')
 
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
-
       .where(filter, {
         filterText: `%${filterText}%`,
         projectStatusId,
         projectApprovalStatusId,
         assessmentStatusName,
         Active,
-        // countryId,
+
         sectorId,
         countryIdFromTocken,
         sectorIdFromTocken,
       })
       .orderBy('dr.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    // console.log(data.getQuery());
 
     const resualt = await paginate(data, options);
 
     if (resualt) {
-      //console.log("my result....");
-      //console.log(resualt.items);
-      //console.log(resualt.items.length);
       return resualt;
     }
   }
@@ -712,7 +610,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       )
       .leftJoinAndMapMany('a', Parameter, 'p', 'p.assessmentId = a.id')
       .leftJoinAndMapMany('p', ParameterRequest, 'pr', 'pr.ParameterId = p.id')
-      //   .innerJoinAndMapOne('dr.user', User, 'u', 'dr.userId = u.id')
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -725,14 +622,13 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
   }
 
-  // All climate action
   async getAllCAList(
     options: IPaginationOptions,
     filterText: string,
     projectStatusId: number,
     projectApprovalStatusId: number,
     assessmentStatusName: string,
-    // countryId: number,
+
     sectorId: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
@@ -740,7 +636,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
-        // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText  OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
         '(dr.climateActionName LIKE :filterText  OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
     }
 
@@ -753,7 +648,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken`;
       } else {
@@ -762,16 +656,13 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
     }
 
-    // console.log("hello");
     if (projectStatusId != 0) {
       if (filter) {
         filter = `${filter}  and dr.projectStatusId = :projectStatusId`;
@@ -794,22 +685,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       filter = `(pas.id =1 or pas.id =5)`;
     }
 
-    // if (countryId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.countryId = :countryId`;
-    //   } else {
-    //     filter = `dr.countryId = :countryId`;
-    //   }
-    // }
-
-    // if (sectorId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.sectorId = :sectorId`;
-    //   } else {
-    //     filter = `dr.sectorId = :sectorId`;
-    //   }
-    // }
-
     const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
@@ -824,45 +699,33 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'pas',
         'pas.id = dr.projectApprovalStatusId',
       )
-      // .leftJoinAndMapMany(
-      //   'dr.assessement',
-      //   Assessment,
-      //   'asse',
-      //   'asse.projectId = dr.id',
-      // )
 
       .where(filter, {
         filterText: `%${filterText}%`,
         projectStatusId,
         projectApprovalStatusId,
         assessmentStatusName,
-        // countryId,
+
         sectorId,
         countryIdFromTocken,
         sectorIdFromTocken,
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
-
     const result = await paginate(data, options);
-    // console.log("all CA results..",result);
+
     if (result) {
       return result;
     }
   }
 
-  // Active climate actions
   async getActCAList(
     options: IPaginationOptions,
     filterText: string,
     projectStatus: number,
     projectApprovalStatusId: number,
     isProposal: number,
-    // countryId: number,
+
     sectorId: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
@@ -883,7 +746,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken`;
       } else {
@@ -892,16 +754,12 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
     }
-
-    console.log('asse tupe,...', asseType);
 
     if (asseType != '') {
       if (filter) {
@@ -911,7 +769,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       }
     }
 
-    // find active projects which have done proprose assements and active assessments
     if (isProposal != -1) {
       if (filter) {
         filter = `${filter}  and asse.isProposal = :isProposal`;
@@ -937,26 +794,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (filter) {
-      filter = `${filter}  and pas.id = 5 `; // only active climate actions
+      filter = `${filter}  and pas.id = 5 `;
     } else {
       filter = `pas.id = 5`;
     }
-
-    // if (countryId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.countryId = :countryId`;
-    //   } else {
-    //     filter = `dr.countryId = :countryId`;
-    //   }
-    // }
-
-    // if (sectorId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.sectorId = :sectorId`;
-    //   } else {
-    //     filter = `dr.sectorId = :sectorId`;
-    //   }
-    // }
 
     const data = this.repo
       .createQueryBuilder('dr')
@@ -985,7 +826,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         projectApprovalStatusId,
         projectStatus,
         isProposal,
-        // countryId,
+
         sectorId,
         countryIdFromTocken,
         sectorIdFromTocken,
@@ -993,13 +834,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       .orderBy('dr.createdOn', 'ASC')
       .groupBy('dr.id');
 
-    console.log(
-      '=====================================================================',
-    );
-    // console.log(data.getQuery());
-
     const result = await paginate(data, options);
-    console.log('results..', result);
+
     if (result) {
       return result;
     }
@@ -1017,7 +853,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
   ): Promise<Pagination<Project>> {
     let filter = '';
 
-    // console.log("context",sectorIdFromTocken)
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and dr.countryId = :countryIdFromTocken`;
@@ -1027,28 +862,16 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken  `;
       } else {
         filter = `dr.sectorId = :sectorIdFromTocken`;
       }
-    }
-    // else if(institutionIdFromTocken){
-    //   if (filter) {
-    //     filter = `${filter}  and dr.mappedInstitutionId = :institutionIdFromTocken`;
-    //   } else {
-    //     filter = `dr.mappedInstitutionId = :institutionIdFromTocken`;
-    // }
-
-    //}
-    else {
+    } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
@@ -1113,7 +936,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     const result = await paginate(data, options);
 
     if (result) {
-      console.log('resul===============================', result);
       return result;
     }
   }
@@ -1130,7 +952,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
   ): Promise<Pagination<Project>> {
     let filter = '';
 
-    // console.log("context",sectorIdFromTocken)
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and dr.countryId = :countryIdFromTocken`;
@@ -1140,7 +961,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -1155,10 +975,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId && sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
@@ -1222,7 +1040,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     const result = await paginate(data, options);
 
     if (result) {
-      // console.log("resu",result);
       return result;
     }
   }
@@ -1243,7 +1060,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     return result;
   }
 
-  // Track climate actions
   async getTrackClimateActionsDetails(
     options: IPaginationOptions,
     filterText: string,
@@ -1255,11 +1071,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
 
     const ndcIDArry: number[] = selectedNdcIds.split(',').map(Number);
 
-    // let ndcIDArry = selectedNdcIds.split(",")
-    console.log('filterText..', filterText);
-    console.log('year..', year);
-    console.log('final id ..', ndcIDArry);
-
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and dr.countryId = :countryIdFromTocken`;
@@ -1267,16 +1078,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         filter = `dr.countryId = :countryIdFromTocken`;
       }
     }
-
-    // find active projects which have done proprose assements and active assessments
-
-    // if (projectApprovalStatusId != 0) {
-    //   if (filter) {
-    //     filter = `${filter}  and dr.projectApprovalStatusId = :projectApprovalStatusId`;
-    //   } else {
-    //     filter = `dr.projectApprovalStatusId = :projectApprovalStatusId`;
-    //   }
-    // }
 
     if (year != null) {
       if (filter) {
@@ -1289,7 +1090,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     if (selectedNdcIds != '') {
       if (filter) {
         filter = `${filter}  and nd.id in(` + ndcIDArry.toString() + `) `;
-        //filter = `${filter}  and nd.id in("+x.toStirng()+") `;
       } else {
         filter = `nd.id in(` + ndcIDArry.toString() + `)`;
       }
@@ -1331,13 +1131,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'DESC');
 
-    console.log(
-      '=====================================================================',
-    );
-    //console.log(data.getQuery());
-
     const result = await paginate(data, options);
-    console.log('results..', result);
+
     if (result) {
       return result;
     }
@@ -1355,7 +1150,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
   ): Promise<Pagination<Project>> {
     let filter = '';
 
-    // console.log("context",sectorIdFromTocken)
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and dr.countryId = :countryIdFromTocken`;
@@ -1365,7 +1159,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     }
 
     if (sectorIdFromTocken) {
-      // console.log('sectorIdFromTocken')
       if (filter) {
         filter = `${filter}  and dr.sectorId = :sectorIdFromTocken  `;
       } else {
@@ -1380,10 +1173,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     } else {
       if (sectorId != 0) {
         if (filter) {
-          // console.log('sectorId1',sectorId)
           filter = `${filter}  and dr.sectorId = :sectorId`;
         } else {
-          // console.log('sectorId2',sectorId)
           filter = `dr.sectorId = :sectorId`;
         }
       }
@@ -1428,7 +1219,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     const result = await paginate(data, options);
 
     if (result) {
-      // console.log("resu",result);
       return result;
     }
   }

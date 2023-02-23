@@ -26,9 +26,6 @@ export class AuthController {
 
   @Post('auth/login')
   async login(@Body() authCredentialDto: AuthCredentialDto): Promise<any> {
-    //return req.user;
-    console.log('AppController.login');
-    console.log('AppController.login', authCredentialDto);
     const audit: AuditDto = new AuditDto();
     audit.userName = authCredentialDto.username;
     audit.action = authCredentialDto.username + ' Logged In';
@@ -44,23 +41,17 @@ export class AuthController {
     @Param('email') email: string,
     @Param('token') token: string,
   ): Promise<boolean> {
-    console.log('inside');
-
     return await this.usersService.validateResetPasswordRequest(email, token);
   }
 
   @Put('auth/reset-password')
   async resetPassword(@Body() resetPwd: ResetPassword): Promise<boolean> {
-    console.log('resetPwd', resetPwd);
-
     if (
       await this.usersService.validateResetPasswordRequest(
         resetPwd.email,
         resetPwd.token,
       )
     ) {
-      console.log('is valid');
-
       const res = await this.usersService.resetPassword(
         resetPwd.email,
         resetPwd.password,
@@ -76,10 +67,7 @@ export class AuthController {
     @Body() forgotparam: ForgotPasswordDto,
     @Res() response: any,
   ): Promise<any> {
-    //return req.user;
-    console.log('forgotPassword=========', forgotparam);
     let user = await this.usersService.findUserByEmail(forgotparam.email);
-    console.log('resultData=========', user);
 
     if (!user) {
       const errorResponse: any = {
@@ -96,8 +84,6 @@ export class AuthController {
       pwdRestToken,
     );
 
-    console.log('updateChnagePasswordToken user=========', user);
-
     let emailTemplate = '';
 
     emailTemplate = fs.readFileSync(
@@ -105,17 +91,13 @@ export class AuthController {
       'utf8',
     );
 
-    // get an environment variable
     const resetPwdUrl = this.configService.get<string>('PWD_RESET_URL');
-
-    console.log('PWD_RESET_URL', resetPwdUrl);
 
     emailTemplate = emailTemplate.replace(
       '[RESER_PWD_URL]',
       resetPwdUrl + '?token=' + pwdRestToken + '&email=' + forgotparam.email,
     );
 
-    // sned email with new password
     this.emailService.sendMail(
       user.email,
       'Reset your ncc-dsn login password',

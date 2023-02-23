@@ -49,10 +49,6 @@ export class TrackcaEntity extends BaseTrackingEntity {
   @Column({ default: null })
   expected: number;
 
-  // @OneToOne(() => Project)
-  // @JoinColumn()
-  // climateAction: Project;
-
   @Column({ default: null })
   years: string;
 
@@ -60,7 +56,7 @@ export class TrackcaEntity extends BaseTrackingEntity {
   instrument: string;
 
   @Column({ default: null })
-  implementingEntities: string; //institution
+  implementingEntities: string;
 
   @Column({ default: null })
   flag: number;

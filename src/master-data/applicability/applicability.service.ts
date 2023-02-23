@@ -10,8 +10,7 @@ export class ApplicabilityService extends TypeOrmCrudService<ApplicabilityEntity
     super(repo);
   }
 
-  async getApplicability(): // id: number,
-  Promise<any> {
+  async getApplicability(): Promise<any> {
     const data = this.repo
       .createQueryBuilder('appli')
       .leftJoinAndMapMany(

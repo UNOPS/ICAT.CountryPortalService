@@ -57,15 +57,9 @@ export class NdcController implements CrudController<Ndc> {
   ): Promise<GetManyDefaultResponse<Ndc> | Ndc[]> {
     try {
       const res = await this.base.getManyBase(req);
-      // console.log('*********************************************');
-      // console.log(res);
-      // console.log('*********************************************');
-      // console.log(req);
+
       return res;
-    } catch (error) {
-      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      console.log(error);
-    }
+    } catch (error) {}
   }
   @UseGuards(JwtAuthGuard)
   @Get('ndc/ndcinfo/:page/:limit/:sectorIds')
@@ -75,7 +69,6 @@ export class NdcController implements CrudController<Ndc> {
     @Query('limit') limit: number,
     @Query('sectorIds') sectorIds: string[],
   ): Promise<any> {
-    console.log('sectorIds', sectorIds);
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
@@ -103,7 +96,6 @@ export class NdcController implements CrudController<Ndc> {
     @Query('limit') limit: number,
     @Query('sectorIds') sectorId: number,
   ): Promise<any> {
-    //  console.log('sectorIds',sectorIds)
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 

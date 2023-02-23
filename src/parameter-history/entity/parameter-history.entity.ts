@@ -43,7 +43,6 @@ export class ParameterHistory extends BaseTrackingEntity {
   @Column({ nullable: true })
   parameterStatusPrevious: string;
 
-  //new cols
   @Column({ nullable: true })
   deoAssumption: string;
 
