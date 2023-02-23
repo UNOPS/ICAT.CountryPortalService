@@ -1,15 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import {
-  Crud,
-  CrudController,
-  CrudRequest,
-  GetManyDefaultResponse,
-  Override,
-  ParsedRequest,
-} from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { UserType } from 'src/users/user.type.entity';
 import { UserTypeService } from './user.type.service';
-import { Request, Post, UseGuards } from '@nestjs/common';
+import { Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';

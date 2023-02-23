@@ -1,22 +1,16 @@
-import { AssessmentResault } from './../assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentResult } from '../assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { AssessmentYear } from './entity/assessment-year.entity';
 import { Project } from 'src/project/entity/project.entity';
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { User } from 'src/users/user.entity';
 import { DataVerifierDto } from './Dto/dataVerifier.dto';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
-import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-history-action-history.entity';
 import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
-import { Console } from 'console';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
 import { SubNdc } from 'src/master-data/ndc/sub-ndc.entity';
 import { UsersService } from 'src/users/users.service';
@@ -24,7 +18,7 @@ import { Institution } from 'src/institution/institution.entity';
 import { Repository } from 'typeorm';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { ProjectStatus } from 'src/master-data/project-status/project-status.entity';
 
@@ -67,14 +61,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       relations: ['assessment'],
     });
     const inscon = dataRequestItem.assessment.project.country;
-
     const insSec = dataRequestItem.assessment.project.sector;
-    let user: User[];
-
     const ins = await this.institutionRepo.findOne({
       where: { country: inscon, sector: insSec, type: 2 },
     });
-    user = await this.userService.find({
+    const user: User[] = await this.userService.find({
       where: { country: inscon, userType: 5, institution: ins },
     });
     user.forEach((ab) => {
@@ -90,9 +81,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
   async getAssessmentByYearId(yearId: number, userName: string): Promise<any> {
     const userItem = await this.userService.findByUserName(userName);
-
-    const institutionId = userItem.institution ? userItem.institution.id : 0;
-
     const data = this.repo
       .createQueryBuilder('ay')
       .leftJoinAndMapOne(
@@ -139,9 +127,9 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .leftJoinAndMapOne(
         'a.id',
-        AssessmentResault,
+        AssessmentResult,
         'ar',
-        'a.id = ar.assementId',
+        'a.id = ar.assessmentId',
       )
       .leftJoinAndMapMany(
         'a.parameters',
@@ -179,10 +167,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     projIds: string,
     assessTypes: string,
     yearIds: string,
-    macAssesmentType: string,
+    macAssessmentType: string,
   ): Promise<any> {
-    if (macAssesmentType.length == 0) {
-      macAssesmentType = `''`;
+    if (macAssessmentType.length == 0) {
+      macAssessmentType = `''`;
     }
 
     if (assessTypes.length == 0) {
@@ -200,7 +188,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
       .leftJoinAndMapOne(
         'a.id',
-        AssessmentResault,
+        AssessmentResult,
         'ar',
         'ay.id = ar.assessmentYearId',
       )
@@ -220,9 +208,9 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .leftJoinAndMapOne(
         'a.projectionResult',
-        ProjectionResault,
+        ProjectionResult,
         'projResult',
-        'projResult.assementId = a.id',
+        'projResult.assessmentId = a.id',
       )
       .leftJoinAndMapOne('p.ndc', Ndc, 'ndc', 'p.ndcId = ndc.Id')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
@@ -240,7 +228,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
 
       .select(
-        `distinct a.id as assesmentId,a.isProposal as isProposal, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, sndc.name as SNDC, p.institution as Institution, powner.name as ProjectOwner, p.objective as Objective, p.projectScope as ProjectScope, p.outcome as OutCome, p.directSDBenefit as DirectB, p.indirectSDBenefit as IndreactB, pstatus.name as ProjectStatus `,
+        `distinct a.id as assessmentId,a.isProposal as isProposal, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, sndc.name as SNDC, p.institution as Institution, powner.name as ProjectOwner, p.objective as Objective, p.projectScope as ProjectScope, p.outcome as OutCome, p.directSDBenefit as DirectB, p.indirectSDBenefit as IndreactB, pstatus.name as ProjectStatus `,
       )
 
       .where(
@@ -253,7 +241,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
           (`ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` +
             yearIds +
             ') AND a.ghgAssessTypeForMac IN (' +
-            macAssesmentType +
+            macAssessmentType +
             ') '),
       )
       .orderBy('a.assessmentType', 'ASC')
@@ -269,10 +257,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     projIds: string,
     assessTypes: string,
     yearIds: string,
-    macAssesmentType: string,
+    macAssessmentType: string,
   ): Promise<any> {
-    if (macAssesmentType.length == 0) {
-      macAssesmentType = `''`;
+    if (macAssessmentType.length == 0) {
+      macAssessmentType = `''`;
     }
 
     if (assessTypes.length == 0) {
@@ -289,9 +277,9 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .leftJoinAndMapOne(
         'a.id',
-        AssessmentResault,
+        AssessmentResult,
         'ar',
-        'a.id = ar.assementId',
+        'a.id = ar.assessmentId',
       )
       .leftJoinAndMapMany(
         'a.parameters',
@@ -309,15 +297,15 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .leftJoinAndMapOne(
         'a.projectionResult',
-        ProjectionResault,
+        ProjectionResult,
         'projResult',
-        'projResult.assementId = a.id',
+        'projResult.assessmentId = a.id',
       )
       .leftJoinAndMapOne('p.ndc', Ndc, 'ndc', 'p.ndcId = ndc.Id')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
 
       .select(
-        `distinct a.id as assesmentId, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, CASE    WHEN pa.isBaseline THEN 'Baseline'    WHEN pa.isProject THEN 'Project'    WHEN pa.isLekage THEN 'Lekage'   END AS ParaType,pa.name as KeyIndicator, pa.value as ParaValue, pa.uomDataRequest as ParaUnit`,
+        `distinct a.id as assessmentId, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, CASE    WHEN pa.isBaseline THEN 'Baseline'    WHEN pa.isProject THEN 'Project'    WHEN pa.isLekage THEN 'Lekage'   END AS ParaType,pa.name as KeyIndicator, pa.value as ParaValue, pa.uomDataRequest as ParaUnit`,
       )
 
       .where(
@@ -332,7 +320,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
           (`ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` +
             yearIds +
             ') AND a.ghgAssessTypeForMac IN (' +
-            macAssesmentType +
+            macAssessmentType +
             ') AND p.id IN (' +
             projIds +
             ')'),
@@ -393,11 +381,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     return result;
   }
 
-  async getAllYearsByAssessmentId(assesmentId: number): Promise<any> {
+  async getAllYearsByAssessmentId(assessmentId: number): Promise<any> {
     const data = this.repo
       .createQueryBuilder('ay')
 
-      .where('ay.assessmentId = ' + assesmentId);
+      .where('ay.assessmentId = ' + assessmentId);
 
     const result = await data.getRawMany();
 
@@ -410,8 +398,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      const originalStatus = dataRequestItem.verificationStatus;
-
       dataRequestItem.verificationDeadline = updateDataRequestDto.deadline;
       dataRequestItem.verificationUser = updateDataRequestDto.userId;
 
@@ -419,7 +405,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         where: { id: updateDataRequestDto.userId },
       });
 
-      var template: any;
+      let template: any;
       template =
         'Dear ' +
         user.firstName +
@@ -454,11 +440,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
       this.repo.save(dataRequestItem).then((res) => {});
     }
-    let user: User[];
     const ins = await this.institutionRepo.findOne({
       where: { country: inscon, sector: insSec, type: 2 },
     });
-    user = await this.userService.find({
+    const user: User[] = await this.userService.find({
       where: { country: inscon, userType: 7, institution: ins },
     });
     user.forEach((ab) => {
@@ -487,10 +472,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
   async getVerificationDetails(
     assessmentId: number,
-    assementYear: string,
+    assessmentYear: string,
   ): Promise<any> {
     const filter =
-      'ass.id = :assessmentId and assYear.assessmentYear = :assementYear';
+      'ass.id = :assessmentId and assYear.assessmentYear = :assessmentYear';
 
     const data = this.repo
       .createQueryBuilder('assYear')
@@ -514,7 +499,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .where(filter, {
         assessmentId,
-        assementYear,
+        assessmentYear,
       });
 
     return await data.getMany();
@@ -522,11 +507,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
   async getdetailsByAssessmentYearAndProjNameAndAsseType(
     assessmentType: string,
-    assementYear: string,
+    assessmentYear: string,
     climateActionName: string,
   ): Promise<any> {
     const filter =
-      'ass.assessmentType = :assessmentType and assYear.assessmentYear = :assementYear and pr.climateActionName = :climateActionName';
+      'ass.assessmentType = :assessmentType and assYear.assessmentYear = :assessmentYear and pr.climateActionName = :climateActionName';
 
     const data = this.repo
       .createQueryBuilder('assYear')
@@ -539,16 +524,16 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .leftJoinAndMapOne('ass.project', Project, 'pr', 'pr.id = ass.projectId')
       .where(filter, {
         assessmentType,
-        assementYear,
+        assessmentYear,
         climateActionName,
       });
     return await data.getOne();
   }
 
   async getYearListByAssessmentId(id: number): Promise<AssessmentYear[]> {
-    const assement = new Assessment();
-    assement.id = id;
-    return await this.repo.find({ where: { assessment: assement } });
+    const assessment = new Assessment();
+    assessment.id = id;
+    return await this.repo.find({ where: { assessment: assessment } });
   }
 
   async getAssessmentYearsForCountryAndSectorAdmins(
@@ -642,8 +627,8 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     sectorId: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
-    assementYears: number[],
-    assementType: string[],
+    assessmentYears: number[],
+    assessmentType: string[],
     projectId: string[],
   ): Promise<any> {
     let filter = '';
@@ -661,18 +646,18 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       }
     }
 
-    if (assementYears && assementYears.length > 0) {
+    if (assessmentYears && assessmentYears.length > 0) {
       if (filter) {
-        filter = `${filter}  and asseYr.assessmentYear IN (:...assementYears) `;
+        filter = `${filter}  and asseYr.assessmentYear IN (:...assessmentYears) `;
       } else {
-        filter = ' asseYr.assessmentYear IN (:...assementYears)  ';
+        filter = ' asseYr.assessmentYear IN (:...assessmentYears)  ';
       }
     }
-    if (assementType && assementType.length > 0) {
+    if (assessmentType && assessmentType.length > 0) {
       if (filter) {
-        filter = `${filter}  and asse.assessmentType IN (:...assementType) `;
+        filter = `${filter}  and asse.assessmentType IN (:...assessmentType) `;
       } else {
-        filter = ' asse.assessmentType IN (:...assementType)  ';
+        filter = ' asse.assessmentType IN (:...assessmentType)  ';
       }
     }
     if (projectId && projectId.length > 0) {
@@ -733,8 +718,8 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         countryIdFromTocken,
         sectorIdFromTocken,
         sectorId,
-        assementYears,
-        assementType,
+        assessmentYears,
+        assessmentType,
         projectId,
       })
 
@@ -824,13 +809,12 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         filter = `proj.sectorId = :sectorIdFromTocken`;
       }
     }
-    let select: string[];
 
     const data = this.repo
       .createQueryBuilder('assesYr')
 
       .leftJoinAndMapOne(
-        'assesYr.assesment',
+        'assesYr.assessment',
         Assessment,
         'asse',
         'asse.id = assesYr.assessmentId',

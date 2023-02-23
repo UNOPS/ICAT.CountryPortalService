@@ -40,7 +40,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
         newAudit.user = user;
         newAudit.userName = user.fullName;
         newAudit.userType = user.userType.name;
-        var newaudit = await this.repo.save(newAudit);
+        const newaudit = await this.repo.save(newAudit);
       }
     } else {
       const user = await this.userRepo.findOne({
@@ -58,7 +58,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
       newAudit.userName = user.fullName;
 
       newAudit.userType = contextUser.user.roles[0];
-      var newaudit = await this.repo.save(newAudit);
+      const newaudit = await this.repo.save(newAudit);
     }
   }
   async createAnonymous(auditDto: AuditDto) {

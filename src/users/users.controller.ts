@@ -3,35 +3,28 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Patch,
   Post,
-  Put,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import {
   Crud,
   CrudController,
   CrudRequest,
-  GetManyDefaultResponse,
   Override,
   ParsedRequest,
-  ParsedBody,
 } from '@nestjsx/crud';
-import { request } from 'http';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Institution } from 'src/institution/institution.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { getConnection, Repository } from 'typeorm';
-
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 

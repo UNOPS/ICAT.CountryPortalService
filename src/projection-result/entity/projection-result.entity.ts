@@ -1,5 +1,5 @@
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import {
@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'projectionResualt' })
-export class ProjectionResault extends BaseTrackingEntity {
+export class ProjectionResult extends BaseTrackingEntity {
   constructor() {
     super();
     this.createdBy = '';
@@ -49,11 +49,11 @@ export class ProjectionResault extends BaseTrackingEntity {
   emissionReductionUnit: string;
 
   @ManyToOne(
-    (type) => AssessmentResault,
-    (assesmentResult) => assesmentResult.projectionResult,
+    (type) => AssessmentResult,
+    (assessmentResult) => assessmentResult.projectionResult,
   )
   @JoinColumn()
-  assementResult: AssessmentResault;
+  assessmentResult: AssessmentResult;
 
   @Column({ default: null })
   qcStatus: QuAlityCheckStatus;
@@ -64,7 +64,7 @@ export class ProjectionResault extends BaseTrackingEntity {
   @Column()
   projectionResualt: number;
 
-  @ManyToOne((type) => Assessment, (assesment) => assesment.projectionResult)
+  @ManyToOne((type) => Assessment, (assessment) => assessment.projectionResult)
   @JoinColumn()
-  assement: Assessment;
+  assessment: Assessment;
 }

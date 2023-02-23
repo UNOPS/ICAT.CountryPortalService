@@ -1,14 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { Request, Post, UseGuards } from '@nestjs/common';
-import {
-  Crud,
-  CrudController,
-  Override,
-  ParsedBody,
-  ParsedRequest,
-  CrudRequest,
-  GetManyDefaultResponse,
-} from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { ProjectStatus } from './project-status.entity';
 import { ProjectStatusService } from './project-status.service';
 

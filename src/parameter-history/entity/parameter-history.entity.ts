@@ -1,9 +1,6 @@
-import {
-  BaseTrackingEntity,
-  RecordStatus,
-} from 'src/shared/entities/base.tracking.entity';
+import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ParameterHistoryAction } from './paeameter-history-action-history.entity';
+import { ParameterHistoryAction } from './parameter-history-action-history.entity';
 
 @Entity({ name: 'parameter_history' })
 export class ParameterHistory extends BaseTrackingEntity {

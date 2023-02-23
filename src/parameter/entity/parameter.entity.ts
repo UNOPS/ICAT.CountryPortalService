@@ -1,20 +1,15 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
-import { Country } from 'src/country/entity/country.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 

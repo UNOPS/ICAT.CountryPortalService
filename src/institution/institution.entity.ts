@@ -1,13 +1,10 @@
-import { type } from 'os';
 import { Country } from 'src/country/entity/country.entity';
 import { Sector } from 'src/master-data/sector/sector.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import { MasterData } from 'src/shared/entities/master.data.entity';
 import {
   Column,
   DeleteDateColumn,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,

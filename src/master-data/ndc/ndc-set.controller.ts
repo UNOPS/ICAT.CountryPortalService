@@ -1,12 +1,5 @@
 import { Controller } from '@nestjs/common';
-import {
-  CreateManyDto,
-  Crud,
-  CrudController,
-  CrudRequest,
-  CrudService,
-  GetManyDefaultResponse,
-} from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { NdcSet } from './ndc-set.entity';
 import { NdcSetService } from './ndc-set.service';
 

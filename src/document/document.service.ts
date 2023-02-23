@@ -1,19 +1,10 @@
 import { ConfigService } from '@nestjs/config';
-import { AppModule } from './../app.module';
 import { statticFileLocation } from './entity/file-upload.utils';
-import { promises } from 'fs';
 import { DocumentOwner } from './entity/document-owner.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import {
-  Injectable,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-  Module,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Documents } from './entity/document.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Country } from 'src/country/entity/country.entity';
 import { In } from 'typeorm';
@@ -43,7 +34,6 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
 
     if (document) {
       const del = await this.repo.delete(document);
-
       this.deleteFile(document.relativePath);
     }
 

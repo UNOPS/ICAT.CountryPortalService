@@ -1,7 +1,5 @@
 import { EmissionReductioDraftDataEntity } from './../master-data/emisssion-reduction-draft-data/entity/emission-reductio-draft-data.entity';
-import { promises } from 'fs';
-import { type } from 'os';
-import { Injectable, Options } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 
@@ -10,7 +8,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYearService } from 'src/assessment-year/assessment-year.service';
 import { Country } from 'src/country/entity/country.entity';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
@@ -22,23 +20,22 @@ import { ReportNdc } from './entity/report-ndc.entity';
 import { ReportProject } from './entity/report-project.entity';
 import { ReportSector } from './entity/report-sector.entity';
 import { Report } from './entity/report.entity';
-import { In, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ProjectService } from 'src/project/project.service';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import axios from 'axios';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
-import { AssesmentService } from 'src/assesment/assesment.service';
+import { AssessmentService } from 'src/assessment/assessment.service';
 const path = require('path');
 import { readdir } from 'fs/promises';
 import { ReportPdfInsert } from './dto/reportPdfInsert.dto';
 import { ReportPdfFileData } from './entity/report-pdfFile.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { UsersService } from 'src/users/users.service';
-import { async } from 'rxjs';
 import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 
@@ -48,7 +45,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     @InjectRepository(Report) repo,
     private readonly usersService: UsersService,
     private readonly assessmentYearService: AssessmentYearService,
-    private readonly assessmentService: AssesmentService,
+    private readonly assessmentService: AssessmentService,
     private readonly projectService: ProjectService,
     private readonly defaultValueService: DefaultValueService,
     private readonly emissionReductionDraftDataService: EmissionReductionDraftdataService,
@@ -57,9 +54,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly graphRepository: Repository<EmissionReductioDraftDataEntity>,
     @InjectRepository(Project) private readonly proRepo: Repository<Project>,
     @InjectRepository(Assessment)
-    private readonly assesment: Repository<Assessment>,
+    private readonly assessment: Repository<Assessment>,
     @InjectRepository(AssessmentYear)
-    private readonly assesmentYearResults: Repository<AssessmentYear>,
+    private readonly assessmentYearResults: Repository<AssessmentYear>,
     @InjectRepository(ReportPdfFileData)
     private readonly reportPdfFileData: Repository<ReportPdfFileData>,
     @InjectRepository(Ndc) private readonly ndc: Repository<Ndc>,
@@ -67,8 +64,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly parameter: Repository<Parameter>,
     @InjectRepository(ProjectOwner)
     private readonly projectOwner: Repository<ProjectOwner>,
-    @InjectRepository(AssessmentResault)
-    private readonly assResRepo: Repository<AssessmentResault>,
+    @InjectRepository(AssessmentResult)
+    private readonly assResRepo: Repository<AssessmentResult>,
   ) {
     super(repo);
   }
@@ -76,9 +73,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public ndcItemList: any;
   public ndcItemListActivity: any;
   public asesmentYears: any;
-  public assesmentMetholodgy: any;
-  public assesmentParameter: any;
-  public assesmentResult: any;
+  public assessmentMetholodgy: any;
+  public assessmentParameter: any;
+  public assessmentResult: any;
   public commenAssestment: any;
   public commenAssestmentActivity: any;
   public assestmentYerResult: any;
@@ -88,11 +85,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public projectResultConcat: any;
   public isCheckLekage: any;
 
-  public assementBaseLineResultYears: any[] = [];
-  public assementBaseLineResult: any[] = [];
+  public assessmentBaseLineResultYears: any[] = [];
+  public assessmentBaseLineResult: any[] = [];
 
-  public assementProjectResultYears: any[] = [];
-  public assementProjectResult: any[] = [];
+  public assessmentProjectResultYears: any[] = [];
+  public assessmentProjectResult: any[] = [];
 
   public projectionBaseLineResultYears: any[] = [];
   public projectionBaseLineResult: any[] = [];
@@ -101,7 +98,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public projectionProjectResult: any[] = [];
 
   public projectionBaseResul: any[] = [];
-  public assementProjectResultWithYears: any[] = [];
+  public assessmentProjectResultWithYears: any[] = [];
 
   async getReportDetails(
     options: IPaginationOptions,
@@ -236,7 +233,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
   async getPdfReportFiles() {
     try {
-      const dirpath = path.join(__dirname, './public');
       const files = await readdir('./public');
 
       const pdfFiles = [];
@@ -257,7 +253,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
     const ConditionalList: number[] = [];
     const UnConditionalList: number[] = [];
     const ActualList: number[] = [];
-    const assessmentListId: number[] = [];
     const currentYear: number = new Date().getFullYear();
 
     const ChartJSImage = require('chart.js-image');
@@ -270,9 +265,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
     ) {
       yrList.push(year);
     }
-
-    const yearlstLength = yrList.length;
-
     const unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
 
@@ -431,9 +423,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
     ) {
       yrList.push(year);
     }
-
-    const yearlstLength = yrList.length;
-
     const unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
 
@@ -549,38 +538,37 @@ export class ReportService extends TypeOrmCrudService<Report> {
   }
 
   async generateProjectionEmmisionGrpah(id: number, projectId: number) {
-    const assesementDataResults = await this.assesment
-      .createQueryBuilder('assesment')
-      .innerJoinAndSelect('assesment.assessmentYear', 'assessmentYear')
-      .innerJoinAndSelect('assesment.assessmentResult', 'assessmentResult')
+    const assesementDataResults = await this.assessment
+      .createQueryBuilder('assessment')
+      .innerJoinAndSelect('assessment.assessmentYear', 'assessmentYear')
+      .innerJoinAndSelect('assessment.assessmentResult', 'assessmentResult')
       .select(
-        'assesment.projectId, assessmentYear.assessmentYear, assessmentResult.baselineResult as baseLineTot, assessmentResult.projectResult as projectTot',
+        'assessment.projectId, assessmentYear.assessmentYear, assessmentResult.baselineResult as baseLineTot, assessmentResult.projectResult as projectTot',
       )
-      .where('assesment.id = :id', { id: id })
+      .where('assessment.id = :id', { id: id })
       .orderBy('assessmentYear.assessmentYear')
       .execute();
 
-    const projectionDataResults = await this.assesment
-      .createQueryBuilder('assesment')
-      .innerJoinAndSelect('assesment.projectionResult', 'projectionResult')
+    const projectionDataResults = await this.assessment
+      .createQueryBuilder('assessment')
+      .innerJoinAndSelect('assessment.projectionResult', 'projectionResult')
       .select(
         'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot',
       )
-      .where('assesment.id = :id', { id: id })
+      .where('assessment.id = :id', { id: id })
       .orderBy('projectionResult.projectionYear')
       .execute();
 
-    const dataCollectionArray = [];
     const year = [];
     const baseLineRes = [];
     const projectionRes = [];
-    for (const assesment of assesementDataResults) {
-      year.push(assesment.assessmentYear);
+    for (const assessment of assesementDataResults) {
+      year.push(assessment.assessmentYear);
       baseLineRes.push(
-        assesment.baseLineTot ? parseInt(assesment.baseLineTot) : 0,
+        assessment.baseLineTot ? parseInt(assessment.baseLineTot) : 0,
       );
       projectionRes.push(
-        assesment.projectTot ? parseInt(assesment.projectTot) : 0,
+        assessment.projectTot ? parseInt(assessment.projectTot) : 0,
       );
     }
 
@@ -650,8 +638,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
   }
 
   async genarateMacGraph(
-    assementYears: number[],
-    assementType: string[],
+    assessmentYears: number[],
+    assessmentType: string[],
     prjectIds: string[],
     isPost: number,
   ): Promise<string> {
@@ -664,13 +652,13 @@ export class ReportService extends TypeOrmCrudService<Report> {
       TokenReqestType.InstitutionId,
     ]);
 
-    assementType = assementType
+    assessmentType = assessmentType
       .filter(function (item, pos) {
-        return assementType.indexOf(item) == pos;
+        return assessmentType.indexOf(item) == pos;
       })
       .map((a) => a.replace(/'/g, ''));
 
-    const resault =
+    const result =
       await this.assessmentYearService.getAssessmentYearsWiseMacGraphDataToSummeryReport(
         {
           limit: 0,
@@ -680,17 +668,17 @@ export class ReportService extends TypeOrmCrudService<Report> {
         0,
         countryIdFromTocken,
         sectorIdFromTocken,
-        assementYears,
-        assementType,
+        assessmentYears,
+        assessmentType,
         prjectIds,
       );
 
-    const assementYearWiseList = new Map();
-    resault.items.forEach((assyesr: { assessmentYear: any }) => {
+    const assessmentYearWiseList = new Map();
+    result.items.forEach((assyesr: { assessmentYear: any }) => {
       const key = assyesr.assessmentYear;
-      const collection = assementYearWiseList.get(key);
+      const collection = assessmentYearWiseList.get(key);
       if (!collection) {
-        assementYearWiseList.set(key, [assyesr]);
+        assessmentYearWiseList.set(key, [assyesr]);
       } else {
         collection.push(assyesr);
       }
@@ -698,7 +686,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     const graphsYearWise = [];
     const graphsData = new Map();
-    assementYearWiseList.forEach(async function (value, key) {
+    assessmentYearWiseList.forEach(async function (value, key) {
       const projects: string[] = [];
       const ers: number[] = [];
       const macs: number[] = [];
@@ -814,7 +802,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     for (let i = 0; i < reportData.ndcIdList.length; i++) {
       this.ndcItemListActivity = reportData.ndcIdList[i];
-      var ndcItem = await this.ndc.findOne({
+      const ndcItem = await this.ndc.findOne({
         where: {
           id: reportData.ndcIdList[i],
         },
@@ -850,35 +838,35 @@ export class ReportService extends TypeOrmCrudService<Report> {
             index < elementActive.assessments.length;
             index++
           ) {
-            const assesment = elementActive.assessments[index];
+            const assessment = elementActive.assessments[index];
 
-            const assesActivity = await this.assesment
-              .createQueryBuilder('assesment')
+            const assesActivity = await this.assessment
+              .createQueryBuilder('assessment')
 
               .leftJoinAndMapMany(
-                'assesment.assessmentYear',
+                'assessment.assessmentYear',
 
                 AssessmentYear,
 
                 'assYr',
 
-                'assYr.assessmentId = assesment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
               )
 
               .leftJoinAndMapOne(
-                'assesment.methodology',
+                'assessment.methodology',
 
                 Methodology,
 
                 'meth',
 
-                'meth.id = assesment.methodologyId',
+                'meth.id = assessment.methodologyId',
               )
 
               .leftJoinAndMapOne(
                 'assYr.assessmentResult',
 
-                AssessmentResault,
+                AssessmentResult,
 
                 'assRslt',
 
@@ -886,27 +874,27 @@ export class ReportService extends TypeOrmCrudService<Report> {
               )
 
               .leftJoinAndMapMany(
-                'assesment.parameters',
+                'assessment.parameters',
 
                 Parameter,
 
                 'para',
 
-                'para.assessmentId = assesment.id and ((para.isEnabledAlternative = true and para.isAlternative=true) or (para.isEnabledAlternative = false and para.isAlternative = false))',
+                'para.assessmentId = assessment.id and ((para.isEnabledAlternative = true and para.isAlternative=true) or (para.isEnabledAlternative = false and para.isAlternative = false))',
               )
 
               .leftJoinAndMapMany(
-                'assesment.projectionResult',
+                'assessment.projectionResult',
 
-                ProjectionResault,
+                ProjectionResult,
 
                 'proRslt',
 
-                'proRslt.assementId = assesment.id',
+                'proRslt.assessmentId = assessment.id',
               )
 
-              .where('assesment.id = :id and assYr.id IN(:...ids)', {
-                id: assesment.id,
+              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+                id: assessment.id,
                 ids: reportData.yearIds,
               })
               .orderBy('assYr.assessmentYear', 'ASC')
@@ -915,7 +903,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
             const yearsActivity: number[] = [];
             const groupedActivity = await assesActivity?.parameters.reduce(
-              async (r, v, i, a) => {
+              async (r, v) => {
                 if (v.isDefault == true) {
                   v.defaultValue = await this.defaultValueService.findOne(
                     v.defaultValueId,
@@ -983,9 +971,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
             );
 
             if (
-              assesment.assessmentType == 'Ex-ante' ||
-              assesment.assessmentType == 'Ex-post' ||
-              assesment.assessmentType == 'MAC'
+              assessment.assessmentType == 'Ex-ante' ||
+              assessment.assessmentType == 'Ex-post' ||
+              assessment.assessmentType == 'MAC'
             ) {
               if (assesActivity) {
                 this.commenAssestmentActivity = assesActivity;
@@ -1054,7 +1042,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     for (let i = 0; i < reportData.ndcIdList.length; i++) {
       this.ndcItemList = reportData.ndcIdList[i];
-      var ndcItem = await this.ndc.findOne({
+      const ndcItem = await this.ndc.findOne({
         where: {
           id: reportData.ndcIdList[i],
         },
@@ -1090,35 +1078,35 @@ export class ReportService extends TypeOrmCrudService<Report> {
               </div>`;
 
           for (let index = 0; index < element.assessments.length; index++) {
-            const assesment = element.assessments[index];
+            const assessment = element.assessments[index];
 
-            const asses = await this.assesment
-              .createQueryBuilder('assesment')
+            const asses = await this.assessment
+              .createQueryBuilder('assessment')
 
               .leftJoinAndMapMany(
-                'assesment.assessmentYear',
+                'assessment.assessmentYear',
 
                 AssessmentYear,
 
                 'assYr',
 
-                'assYr.assessmentId = assesment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
               )
 
               .leftJoinAndMapOne(
-                'assesment.methodology',
+                'assessment.methodology',
 
                 Methodology,
 
                 'meth',
 
-                'meth.id = assesment.methodologyId',
+                'meth.id = assessment.methodologyId',
               )
 
               .leftJoinAndMapOne(
                 'assYr.assessmentResult',
 
-                AssessmentResault,
+                AssessmentResult,
 
                 'assRslt',
 
@@ -1126,51 +1114,51 @@ export class ReportService extends TypeOrmCrudService<Report> {
               )
 
               .leftJoinAndMapMany(
-                'assesment.parameters',
+                'assessment.parameters',
 
                 Parameter,
 
                 'para',
 
-                'para.assessmentId = assesment.id',
+                'para.assessmentId = assessment.id',
               )
 
               .leftJoinAndMapMany(
-                'assesment.projectionResult',
+                'assessment.projectionResult',
 
-                ProjectionResault,
+                ProjectionResult,
 
                 'proRslt',
 
-                'proRslt.assementId = assesment.id',
+                'proRslt.assessmentId = assessment.id',
               )
 
-              .where('assesment.id = :id and assYr.id IN(:...ids)', {
-                id: assesment.id,
+              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+                id: assessment.id,
                 ids: reportData.yearIds,
               })
 
               .getOne();
 
-            if (assesment.assessmentType == 'Ex-ante') {
+            if (assessment.assessmentType == 'Ex-ante') {
               await this.generateProjectionEmmisionGrpah(
-                assesment.id,
+                assessment.id,
                 element.id,
               );
             }
 
             if (
-              assesment.assessmentType == 'Ex-ante' ||
-              assesment.assessmentType == 'Ex-post'
+              assessment.assessmentType == 'Ex-ante' ||
+              assessment.assessmentType == 'Ex-post'
             ) {
               let emmisionReduction = '';
               let projectionEmission = '';
               if (asses) {
-                this.assesmentMetholodgy = asses;
+                this.assessmentMetholodgy = asses;
 
                 this.commenAssestment = asses;
 
-                for (const assesmentYer of this.commenAssestment
+                for (const assessmentYer of this.commenAssestment
                   .assessmentYear) {
                   let maxYear = 0;
 
@@ -1183,24 +1171,24 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   );
 
                   this.temporalBoundaryear =
-                    maxYear === 0 ? assesmentYer.assessmentYear : maxYear;
+                    maxYear === 0 ? assessmentYer.assessmentYear : maxYear;
 
                   this.commenAssestment?.parameters?.map((e: any) => {
                     this.isCheckLekage = e.isLekage;
                   });
 
-                  if (assesmentYer.assessmentResult) {
-                    const emisiionResult = assesmentYer.assessmentResult;
+                  if (assessmentYer.assessmentResult) {
+                    const emisiionResult = assessmentYer.assessmentResult;
 
                     emmisionReduction =
                       emmisionReduction +
                       `<div style="margin-top:25px;margin-bottom:15px">
                         <p style="font-size:15px">Emissions estimated for ${
-                          assesmentYer?.assessmentYear
+                          assessmentYer?.assessmentYear
                         } are summarized in Table 9. According to the table, ${
                         element.climateActionName
                       } reduce ${emisiionResult.totalEmission} tCO2e in the ${
-                        assesmentYer.assessmentYear
+                        assessmentYer.assessmentYear
                       }.</p>
                         <p style="font-size:15px">Table Emissions reduction due to ${
                           element.climateActionName
@@ -1210,7 +1198,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                 <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">Scenario</th>
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">${
-                                  assesmentYer?.assessmentYear
+                                  assessmentYer?.assessmentYear
                                 } Emissions (MtCO2)</th>     
                                 </tr>
                             </thead>
@@ -1247,16 +1235,16 @@ export class ReportService extends TypeOrmCrudService<Report> {
                       </div>
                       `;
 
-                    if (assesment.assessmentType === 'Ex-ante') {
+                    if (assessment.assessmentType === 'Ex-ante') {
                       projectionEmission =
                         projectionEmission +
                         `
                               <div style="margin-top:25px;margin-bottom:15px">
                               <h4>Projection of GHG Emissions</h4>
-                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assesment.projectionBaseYear} based on the ${assesment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
+                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assessment.projectionBaseYear} based on the ${assessment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
                               <div><img src="http://localhost:8080/graph` +
-                        assesment.id.toString() +
+                        assessment.id.toString() +
                         `.png"` +
                         ` alt="Italian Trulli"></div>
                               <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
@@ -1310,16 +1298,16 @@ export class ReportService extends TypeOrmCrudService<Report> {
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspTransport subsector</td>
                                 <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                  this.assesmentMetholodgy?.methodology
+                                  this.assessmentMetholodgy?.methodology
                                     ?.transportSubSector
                                 }</td>
                               </tr>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspUpstream/downstream</td>
                                 <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                  this.assesmentMetholodgy?.methodology
+                                  this.assessmentMetholodgy?.methodology
                                     ?.upstream_downstream
-                                    ? this.assesmentMetholodgy?.methodology
+                                    ? this.assessmentMetholodgy?.methodology
                                         ?.upstream_downstream
                                     : 'N/A'
                                 }</td>
@@ -1327,7 +1315,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspGHGs Included</td>
                                 <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                  this.assesmentMetholodgy?.methodology
+                                  this.assessmentMetholodgy?.methodology
                                     ?.ghgIncluded
                                 }</td>
                               </tr>
@@ -1347,13 +1335,13 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspAssessment Approach</td>
                                       <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                        assesment.assessmentType
+                                        assessment.assessmentType
                                       }</td>
                                     </tr>
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspBase Year</td>
                                       <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                        assesment.baseYear
+                                        assessment.baseYear
                                       }</td>
                                     </tr>
                                     <tr style="height:40px; width:450px; margin:0;">
@@ -1369,7 +1357,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspMethodology</td>
                                       <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
-                                        this.assesmentMetholodgy?.methodology
+                                        this.assessmentMetholodgy?.methodology
                                           .displayName
                                       }</td>
                                     </tr>
@@ -1383,7 +1371,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   `
                           <div style="margin-top:25px;margin-bottom:15px">
                           <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">Baseline Scenario</h4>
-                          <h4>${assesment.baselineScenario}</h4>
+                          <h4>${assessment.baselineScenario}</h4>
                           <p style="font-size:15px">Table Data required to assess baseline emissions of ${
                             element.climateActionName
                           }</p>
@@ -1473,7 +1461,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   `
                        <div style="margin-top:25px;margin-bottom:15px">
                        <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">Project Scenario</h4>
-                       <h4>${assesment.projectScenario}</h4>
+                       <h4>${assessment.projectScenario}</h4>
                        <p style="font-size:15px">Table: Data required to assess project emissions of ${
                          element.climateActionName
                        }</p>
@@ -1660,7 +1648,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   <hr/>
                 `;
               }
-            } else if (assesment.assessmentType == 'MAC') {
+            } else if (assessment.assessmentType == 'MAC') {
               if (asses) {
                 tableReportContent =
                   tableReportContent +
@@ -1690,7 +1678,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                       )}
                       </td>
                       <td style="border:1px solid black;width:250px;">&nbsp&nbsp&nbsp&nbsp${
-                        assesment.macValue
+                        assessment.macValue
                       }</td>
                     <tr>
                   </tbody>
@@ -1757,9 +1745,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     const conditionalValue =
       graphData.targetYearEmission - graphData.conditionaltco2;
 
-    const totalExAnthe = 0;
     let totalExPost = 0;
-    const resultArray: number[] = [];
     for (const sum of summryReport) {
       if (sum.Type == 'Ex-post') {
         totalExPost = totalExPost + Number(sum.Result);

@@ -1,9 +1,7 @@
-import { User } from 'src/users/user.entity';
 import {
   Body,
   Controller,
   Get,
-  Post,
   Put,
   Query,
   Request,

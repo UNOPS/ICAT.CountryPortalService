@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CrudService } from '@nestjsx/crud';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AssesmentService } from 'src/assesment/assesment.service';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentService } from 'src/assessment/assessment.service';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
-import { DataRequestStatus } from 'src/data-request/entity/data-request-status.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
-import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-history-action-history.entity';
-import { ParameterHistory } from 'src/parameter-history/entity/parameter-history.entity';
+import { ParameterHistoryAction } from 'src/parameter-history/entity/parameter-history-action-history.entity';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
-import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { TokenDetails } from 'src/utills/token_details';
 @Injectable()
 export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
   constructor(
@@ -29,7 +26,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private assesmentservice: AssesmentService,
+    private assessmentservice: AssessmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly tokenDetails: TokenDetails,
   ) {
@@ -98,22 +95,22 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
 
   async UpdateQCStatus(
     paramId: number,
-    assementYearId: number,
+    assessmentYearId: number,
     qaStatus: QuAlityCheckStatus,
     comment: string,
     userQc: string,
   ) {
     try {
-      const assementYear = await this.assessmentYearRepo.findOne(
-        assementYearId,
+      const assessmentYear = await this.assessmentYearRepo.findOne(
+        assessmentYearId,
         {
           relations: ['assessment'],
         },
       );
 
-      if (assementYear.qaStatus === QuAlityCheckStatus.Pending) {
-        assementYear.qaStatus = QuAlityCheckStatus.InProgress;
-        this.assessmentYearRepo.save(assementYear);
+      if (assessmentYear.qaStatus === QuAlityCheckStatus.Pending) {
+        assessmentYear.qaStatus = QuAlityCheckStatus.InProgress;
+        this.assessmentYearRepo.save(assessmentYear);
       }
 
       const param = new Parameter();
@@ -131,13 +128,12 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         dataRequset.dataRequestStatus =
           qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
         dataRequset.qaStatusUpdatedDate = new Date();
-        var dataRequestTo = dataRequset;
         await this.repo.save(dataRequset);
       }
 
-      const assesment = await this.assesmentservice.getAssessmentDetails(
-        assementYear.assessment.id,
-        assementYearId.toString(),
+      const assessment = await this.assessmentservice.getAssessmentDetails(
+        assessmentYear.assessment.id,
+        assessmentYearId.toString(),
       );
 
       this.parameterHistoryService.SaveParameterHistory(
@@ -149,7 +145,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         QuAlityCheckStatus[originalStatus],
       );
 
-      return dataRequestTo;
+      return dataRequset;
     } catch (error) {
       throw error;
     }

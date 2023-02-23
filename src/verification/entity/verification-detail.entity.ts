@@ -1,16 +1,7 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { VerificationStatus } from './verification-status.entity';
 
 @Entity({ name: 'verificationDetail' })

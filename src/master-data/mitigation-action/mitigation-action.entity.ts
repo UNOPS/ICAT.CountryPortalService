@@ -1,13 +1,6 @@
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('mitigationActionType')
 export class MitigationActionType extends MasterData {

@@ -5,6 +5,6 @@ export class ReportPdfInsert {
   years: string;
   reportName: string;
   countryId: number;
-  assesmentType: string;
+  assessmentType: string;
   generateReportName: string;
 }

@@ -1,5 +1,3 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Project } from './entity/project.entity';
 import {
@@ -11,18 +9,19 @@ import { Sector } from 'src/master-data/sector/sector.entity';
 import { MitigationActionType } from 'src/master-data/mitigation-action/mitigation-action.entity';
 import { ProjectStatus } from 'src/master-data/project-status/project-status.entity';
 import { ProjectApprovalStatus } from 'src/master-data/project-approval-status/project-approval-status.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
 import { SubNdc } from 'src/master-data/ndc/sub-ndc.entity';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { REQUEST } from '@nestjs/core';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ProjectService extends TypeOrmCrudService<Project> {
@@ -604,9 +603,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       .leftJoinAndMapMany('dr', Assessment, 'a', 'a.projectId = dr.id')
       .leftJoinAndMapMany(
         'a',
-        AssessmentResault,
+        AssessmentResult,
         'assre',
-        'assre.assementId = a.id',
+        'assre.assessmentId = a.id',
       )
       .leftJoinAndMapMany('a', Parameter, 'p', 'p.assessmentId = a.id')
       .leftJoinAndMapMany('p', ParameterRequest, 'pr', 'pr.ParameterId = p.id')
@@ -1118,9 +1117,9 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       )
       .leftJoinAndMapMany(
         'asse.assessementResult',
-        AssessmentResault,
+        AssessmentResult,
         'asseResult',
-        'asseResult.assementId = asse.id',
+        'asseResult.assessmentId = asse.id',
       )
 
       .where(filter, {

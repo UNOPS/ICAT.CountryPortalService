@@ -16,26 +16,26 @@ import {
   ParsedBody,
   ParsedRequest,
 } from '@nestjsx/crud';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { Repository } from 'typeorm';
-import { AssesmentResaultService } from './assesment-resault.service';
-import { AssessmentResault } from './entity/assessment-resault.entity';
+import { AssessmentResultService } from './assessment-result.service';
+import { AssessmentResult } from './entity/assessment-result.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
 import { getConnection } from 'typeorm';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 
 @Crud({
   model: {
-    type: AssessmentResault,
+    type: AssessmentResult,
   },
   query: {
     join: {
-      assement: {
+      assessment: {
         eager: true,
       },
       assessmentYear: {
@@ -47,37 +47,37 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
     },
   },
 })
-@Controller('assesment-resault')
-export class AssesmentResaultController
-  implements CrudController<AssessmentResault>
+@Controller('assessment-result')
+export class AssessmentResultController
+  implements CrudController<AssessmentResult>
 {
   constructor(
-    public service: AssesmentResaultService,
+    public service: AssessmentResultService,
     @InjectRepository(Assessment)
-    public assesmentRepo: Repository<Assessment>,
+    public assessmentRepo: Repository<Assessment>,
     private readonly auditService: AuditService,
     private readonly tokenDetails: TokenDetails,
   ) {}
 
-  get base(): CrudController<AssessmentResault> {
+  get base(): CrudController<AssessmentResult> {
     return this;
   }
 
   @UseGuards(LocalAuthGuard)
   @Get(
-    'assesment-resault/GetAssesmentResult/:AssessmentId/:AssessmentYearId/:calculate',
+    'assessment-result/GetAssessmentResult/:AssessmentId/:AssessmentYearId/:calculate',
   )
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
     schema: { type: 'string', default: '1234' },
   })
-  async GetAssesmentResult(
+  async GetAssessmentResult(
     @Query('AssessmentId') AssessmentId: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
     @Query('calculate') calculate: boolean,
   ) {
-    const restult = await this.service.GetAssesmentResult(
+    const restult = await this.service.GetAssessmentResult(
       AssessmentId,
       AssessmentYearId,
       calculate,
@@ -86,13 +86,13 @@ export class AssesmentResaultController
     return restult;
   }
 
-  @Get('assesment-resault/GetAllAssesmentResult/:AssessmentYearId')
-  async GetAllAssesmentResult(
+  @Get('assessment-result/GetAllAssessmentResult/:AssessmentYearId')
+  async GetAllAssessmentResult(
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
   ) {
-    const restult = await this.service.GetAllAssesmentResult(
+    const restult = await this.service.GetAllAssessmentResult(
       {
         limit: limit,
         page: page,
@@ -104,19 +104,19 @@ export class AssesmentResaultController
   }
 
   @Post(
-    'assesment-resault/updateQCStatusAssesmentResult/:resultId/:yearId/:qcStatus/:assessmentResultType/:comment',
+    'assessment-result/updateQCStatusAssessmentResult/:resultId/:yearId/:qcStatus/:assessmentResultType/:comment',
   )
   @UseGuards(JwtAuthGuard)
-  async updateQCStatusAssesmentResult(
+  async updateQCStatusAssessmentResult(
     @Query('resultId') resultId: number,
     @Query('yearId') yearId: number,
     @Query('qcStatus') qcStatus: number,
     @Query('assessmentResultType') assessmentResultType: number,
     @Query('comment') comment: string,
-  ): Promise<AssessmentResault> {
+  ): Promise<AssessmentResult> {
     const audit: AuditDto = new AuditDto();
-    audit.action = 'QC Status Assesment Result Updated';
-    audit.comment = 'QC Status Assesment Result Updated';
+    audit.action = 'QC Status Assessment Result Updated';
+    audit.comment = 'QC Status Assessment Result Updated';
     audit.actionStatus = 'Updated';
 
     this.auditService.create(audit);
@@ -130,7 +130,7 @@ export class AssesmentResaultController
     );
   }
 
-  @Get('macassesment-resault/qcupdate/:yearId/:qcStatus')
+  @Get('macassessment-result/qcupdate/:yearId/:qcStatus')
   async UpdateQcStatusForMac(
     @Query('yearId') yearId: number,
     @Query('qcStatus') qcStatus: number,
@@ -144,7 +144,7 @@ export class AssesmentResaultController
     return await this.service.checkAllQCApprovmentAssessmentResult(assersltId);
   }
 
-  @Get('macassesment-resault/verificationupdate/:yearId/:VRStatus')
+  @Get('macassessment-result/verificationupdate/:yearId/:VRStatus')
   async UpdateVRStatusForMac(
     @Query('yearId') yearId: number,
     @Query('VRStatus') VRStatus: number,
@@ -156,18 +156,18 @@ export class AssesmentResaultController
   async createOne(
     @Request() request,
     @ParsedRequest() req: CrudRequest,
-    @ParsedBody() dto: AssessmentResault,
-  ): Promise<AssessmentResault> {
+    @ParsedBody() dto: AssessmentResult,
+  ): Promise<AssessmentResult> {
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
 
     try {
-      const asr = await queryRunner.manager.save(AssessmentResault, dto);
+      const asr = await queryRunner.manager.save(AssessmentResult, dto);
 
-      const assement = await this.assesmentRepo.findOne(asr.assement.id);
-      assement.macValue = asr.macResult;
+      const assessment = await this.assessmentRepo.findOne(asr.assessment.id);
+      assessment.macValue = asr.macResult;
 
-      await queryRunner.manager.save(Assessment, assement);
+      await queryRunner.manager.save(Assessment, assessment);
 
       await queryRunner.commitTransaction();
       return asr;

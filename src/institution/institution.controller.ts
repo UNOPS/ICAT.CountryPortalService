@@ -1,38 +1,19 @@
-import { InstitutionType } from 'src/institution/institution.type.entity';
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  Request,
-  Post,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import {
   Crud,
   CrudController,
   CrudRequest,
-  GetManyDefaultResponse,
   Override,
   ParsedBody,
   ParsedRequest,
 } from '@nestjsx/crud';
 import { Institution } from './institution.entity';
 import { InstitutionService } from './institution.service';
-
-import { basename } from 'path';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
 import { getConnection } from 'typeorm';
-import { request } from 'http';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { AuditService } from 'src/audit/audit.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { REQUEST } from '@nestjs/core';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
-import { Audit } from 'src/audit/entity/audit.entity';
 
 @Crud({
   model: {
@@ -194,8 +175,8 @@ export class InstitutionController implements CrudController<Institution> {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('getInstitutionforAssesment')
-  async getInstitutionforAssesment(): Promise<any> {
+  @Get('getInstitutionforAssessment')
+  async getInstitutionforAssessment(): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
@@ -204,7 +185,7 @@ export class InstitutionController implements CrudController<Institution> {
       TokenReqestType.sectorId,
     ]);
 
-    return await this.service.getInstitutionforAssesment(countryIdFromTocken);
+    return await this.service.getInstitutionforAssessment(countryIdFromTocken);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -321,7 +302,7 @@ export class InstitutionController implements CrudController<Institution> {
         TokenReqestType.role,
       ]);
 
-    const resault = await this.service.getInstitutionForManageUsers(
+    const result = await this.service.getInstitutionForManageUsers(
       {
         limit: limit,
         page: page,
@@ -332,7 +313,7 @@ export class InstitutionController implements CrudController<Institution> {
       role,
     );
 
-    return resault;
+    return result;
   }
 
   @Get('getInstitutionForUsers')
@@ -341,8 +322,8 @@ export class InstitutionController implements CrudController<Institution> {
     @Query('insId') insId: number,
     @Query('userType') userType: number,
   ): Promise<any> {
-    const resault = await this.service.getInstitutionForUsers(insId, userType);
+    const result = await this.service.getInstitutionForUsers(insId, userType);
 
-    return resault;
+    return result;
   }
 }

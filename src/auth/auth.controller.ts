@@ -1,6 +1,4 @@
-import { Body, Controller, Get, Param, Put, Res } from '@nestjs/common';
-import { Request, Post, UseGuards } from '@nestjs/common';
-
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -10,9 +8,8 @@ import { ForgotPasswordDto } from './Dto/forgot.passowrd.dto';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { AuditService } from 'src/audit/audit.service';
-
-const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
+import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
 
 @Controller('auth')
 export class AuthController {

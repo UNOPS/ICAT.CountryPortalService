@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AssesmentModule } from 'src/assesment/assesment.module';
+import { AssessmentModule } from 'src/assessment/assessment.module';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Institution } from 'src/institution/institution.entity';
@@ -23,7 +23,7 @@ import { VerificationService } from './verification.service';
       User,
     ]),
     ParameterHistoryModule,
-    AssesmentModule,
+    AssessmentModule,
   ],
   controllers: [VerificationController],
   providers: [

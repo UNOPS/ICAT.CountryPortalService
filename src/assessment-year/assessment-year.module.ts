@@ -1,10 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
-import { Ndc } from 'src/master-data/ndc/ndc.entity';
-import { SubNdc } from 'src/master-data/ndc/sub-ndc.entity';
-import { ProjectStatus } from 'src/master-data/project-status/project-status.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
 import { AssessmentYearController } from './assessment-year.controller';
 import { AssessmentYearService } from './assessment-year.service';
 import { AssessmentYear } from './entity/assessment-year.entity';

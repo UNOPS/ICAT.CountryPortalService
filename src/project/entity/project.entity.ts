@@ -1,6 +1,4 @@
-import { ApiProperty, ApiBody } from '@nestjs/swagger';
-import { type } from 'os';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { CaActionHistory } from 'src/ca-action-history/entity/ca-action-history.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { Institution } from 'src/institution/institution.entity';

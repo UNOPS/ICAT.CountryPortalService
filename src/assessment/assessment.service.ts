@@ -6,7 +6,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
@@ -19,10 +19,10 @@ import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
-import { Assessment } from './entity/assesment.entity';
+import { Assessment } from './entity/assessment.entity';
 
 @Injectable()
-export class AssesmentService extends TypeOrmCrudService<Assessment> {
+export class AssessmentService extends TypeOrmCrudService<Assessment> {
   constructor(
     @InjectRepository(Assessment) repo,
     private readonly userService: UsersService,
@@ -129,7 +129,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'proj.id = asse.projectId',
       )
       .leftJoinAndMapMany(
-        'asse.assesmentYear',
+        'asse.assessmentYear',
         AssessmentYear,
         'assesYr',
         'assesYr.assessmentId = asse.id',
@@ -280,9 +280,9 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
       .leftJoinAndMapOne(
         'asse.assessmentResult',
-        AssessmentResault,
+        AssessmentResult,
         'ar',
-        'ar.assementId = asse.id',
+        'ar.assessmentId = asse.id',
       )
       .leftJoinAndMapMany(
         'asse.assessmentYear',
@@ -323,7 +323,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
   async getAssessmentData(
     options: IPaginationOptions,
-    assementYear: string[],
+    assessmentYear: string[],
   ): Promise<any> {
     const arr = [];
     const filter = '';
@@ -335,7 +335,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'ass',
         'ass.assessmentId = dr.id',
       )
-      .where(filter, assementYear);
+      .where(filter, assessmentYear);
 
     arr.push(data);
 
@@ -348,7 +348,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
   async getAssessmentDetails(
     assessmentId: number,
-    assementYear: string,
+    assessmentYear: string,
   ): Promise<any> {
     const filter = 'as.id = :assessmentId';
 
@@ -358,7 +358,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'as.parameters',
         Parameter,
         'pa',
-        'as.id = pa.assessmentId and (pa.AssessmentYear = :assementYear or pa.isProjection)',
+        'as.id = pa.assessmentId and (pa.AssessmentYear = :assessmentYear or pa.isProjection)',
       )
       .leftJoinAndMapOne(
         'pa.institution',
@@ -391,14 +391,14 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
       .where(filter, {
         assessmentId,
-        assementYear,
+        assessmentYear,
       });
 
     return await data.getOne();
   }
   async getAssessmentDetailsForQC(
     assessmentId: number,
-    assementYear: string,
+    assessmentYear: string,
   ): Promise<any> {
     const filter = 'as.id = :assessmentId';
     const data = this.repo
@@ -407,7 +407,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
         'as.parameters',
         Parameter,
         'pa',
-        `as.id = pa.assessmentId and COALESCE(pa.AssessmentYear ,pa.projectionBaseYear ) = ${assementYear} and ((pa.isEnabledAlternative = true AND pa.isAlternative = true) OR (pa.isEnabledAlternative = false AND pa.isAlternative = false ))`,
+        `as.id = pa.assessmentId and COALESCE(pa.AssessmentYear ,pa.projectionBaseYear ) = ${assessmentYear} and ((pa.isEnabledAlternative = true AND pa.isAlternative = true) OR (pa.isEnabledAlternative = false AND pa.isAlternative = false ))`,
       )
       .leftJoinAndMapOne(
         'pa.institution',
@@ -440,7 +440,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
       .where(filter, {
         assessmentId,
-        assementYear,
+        assessmentYear,
       });
 
     return await data.getOne();
@@ -573,7 +573,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
 
   async getAssessmentForApproveData(
     assessmentId: number,
-    assementYear: string,
+    assessmentYear: string,
     userName: string,
   ): Promise<any> {
     const data = this.repo
@@ -606,7 +606,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
       )
       .leftJoinAndMapOne('as.project', Project, 'pr', 'pr.id = as.projectId')
       .where(
-        `as.id = ${assessmentId} AND par.dataRequestStatus in (9,-9,11) AND (pa.AssessmentYear =  '${assementYear}' or pa.isProjection)`,
+        `as.id = ${assessmentId} AND par.dataRequestStatus in (9,-9,11) AND (pa.AssessmentYear =  '${assessmentYear}' or pa.isProjection)`,
       );
     return await data.getOne();
   }

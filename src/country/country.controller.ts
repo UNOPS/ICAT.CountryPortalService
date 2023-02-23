@@ -1,7 +1,6 @@
-import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
-import { Crud, CrudController, ParsedBody } from '@nestjsx/crud';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { Controller } from '@nestjs/common';
+import { Crud, CrudController } from '@nestjsx/crud';
+import { TokenDetails } from 'src/utills/token_details';
 import { CountryService } from './country.service';
 import { Country } from './entity/country.entity';
 

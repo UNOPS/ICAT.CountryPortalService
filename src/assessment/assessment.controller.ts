@@ -24,8 +24,8 @@ import { ProjectionYear } from 'src/projection-year/entity/projection-year.entit
 import { User } from 'src/users/user.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { getConnection, Repository } from 'typeorm-next';
-import { AssesmentService } from './assesment.service';
-import { Assessment } from './entity/assesment.entity';
+import { AssessmentService } from './assessment.service';
+import { Assessment } from './entity/assessment.entity';
 
 @Crud({
   model: {
@@ -66,16 +66,16 @@ import { Assessment } from './entity/assesment.entity';
     },
   },
 })
-@Controller('assesment')
-export class AssesmentController implements CrudController<Assessment> {
+@Controller('assessment')
+export class AssessmentController implements CrudController<Assessment> {
   constructor(
-    public service: AssesmentService,
+    public service: AssessmentService,
     @InjectRepository(Assessment)
     public assessmentRepo: Repository<Assessment>,
     @InjectRepository(Parameter)
     public paramterRepo: Repository<Parameter>,
     @InjectRepository(AssessmentYear)
-    public assesmentYearsRepo: Repository<AssessmentYear>,
+    public assessmentYearsRepo: Repository<AssessmentYear>,
     @InjectRepository(ProjectionYear)
     public projectionYearsRepo: Repository<ProjectionYear>,
     @InjectRepository(Project)
@@ -137,41 +137,41 @@ export class AssesmentController implements CrudController<Assessment> {
     );
   }
 
-  @Get('assessments/getAssment/:id/:assementYear')
+  @Get('assessments/getAssment/:id/:assessmentYear')
   async getAssment(
     @Request() request,
     @Query('id') id: number,
-    @Query('assementYear') assementYear: string,
+    @Query('assessmentYear') assessmentYear: string,
   ): Promise<any> {
-    return await this.service.getAssessmentDetailsForQC(id, assementYear);
+    return await this.service.getAssessmentDetailsForQC(id, assessmentYear);
   }
 
-  @Get('assessments/getassessmentData/:assementYear')
+  @Get('assessments/getassessmentData/:assessmentYear')
   async getassessmentData(
     @Request() request,
     @Query('page') page: number,
     @Query('limit') limit: number,
-    @Query('assementYear') assementYear: string[],
+    @Query('assessmentYear') assessmentYear: string[],
   ): Promise<any> {
     return await this.service.getAssessmentData(
       {
         limit: limit,
         page: page,
       },
-      assementYear,
+      assessmentYear,
     );
   }
 
-  @Get('getAssessmentsForApproveData/:id/:assementYear/:userName')
+  @Get('getAssessmentsForApproveData/:id/:assessmentYear/:userName')
   async getAssessmentsForApproveData(
     @Request() request,
     @Query('id') id: number,
-    @Query('assementYear') assementYear: string,
+    @Query('assessmentYear') assessmentYear: string,
     @Query('userName') userName: string,
   ): Promise<any> {
     return await this.service.getAssessmentForApproveData(
       id,
-      assementYear,
+      assessmentYear,
       userName,
     );
   }
@@ -286,7 +286,7 @@ export class AssesmentController implements CrudController<Assessment> {
         proj.id = dto.project.id;
         dto.project = proj;
 
-        const assesment = await queryRunner.manager.save(Assessment, dto);
+        const assessment = await queryRunner.manager.save(Assessment, dto);
         const audit: AuditDto = new AuditDto();
         audit.action = dto.assessmentType + ' Assessment Created';
         audit.comment = dto.assessmentType + ' Assessment Created';
@@ -295,23 +295,23 @@ export class AssesmentController implements CrudController<Assessment> {
         this.auditService.create(audit);
 
         dto.assessmentYear.map((a) => {
-          const assesmenttemp = new Assessment();
-          assesmenttemp.id = assesment.id;
-          a.assessment = assesmenttemp;
+          const assessmenttemp = new Assessment();
+          assessmenttemp.id = assessment.id;
+          a.assessment = assessmenttemp;
         });
 
         dto.parameters.map((a) => {
-          a.assessment = assesment;
+          a.assessment = assessment;
         });
 
         dto.projectionYear &&
           dto.projectionYear.map((a) => {
-            a.assessment = assesment;
+            a.assessment = assessment;
           });
 
         dto.applicability &&
           dto.applicability.map((a) => {
-            a.assessment = assesment;
+            a.assessment = assessment;
           });
 
         dto.applicability !== undefined &&
@@ -372,7 +372,7 @@ export class AssesmentController implements CrudController<Assessment> {
         dto.parameters = [];
 
         for await (const a of par2) {
-          if (assesment.isProposal) {
+          if (assessment.isProposal) {
             a.institution = null;
           }
 
@@ -400,14 +400,14 @@ export class AssesmentController implements CrudController<Assessment> {
         for await (const a of grouped) {
           const parent = a['parent'];
 
-          if (assesment.isProposal) {
+          if (assessment.isProposal) {
             parent.institution = null;
           }
 
           parent.parameterRequest = null;
           parent.verificationDetail = null;
           parent.isAlternative = false;
-          parent.assessment = assesment;
+          parent.assessment = assessment;
           parent.hasChild = true;
 
           const paramParent = await queryRunner.manager.save(Parameter, parent);
@@ -423,7 +423,7 @@ export class AssesmentController implements CrudController<Assessment> {
           }
 
           for await (const b of a['child']) {
-            if (assesment.isProposal) {
+            if (assessment.isProposal) {
               b.institution = null;
             }
 
@@ -447,13 +447,13 @@ export class AssesmentController implements CrudController<Assessment> {
         if (dto.assessmentObjective) {
           for await (const a of dto.assessmentObjective) {
             if (a.id === 0) {
-              a.assessmentId = assesment.id;
+              a.assessmentId = assessment.id;
               a.status = 0;
 
               await queryRunner.manager.save(AssessmentObjective, a);
             } else {
               a.id = null;
-              a.assessmentId = assesment.id;
+              a.assessmentId = assessment.id;
 
               await queryRunner.manager.save(AssessmentObjective, a);
             }
@@ -479,7 +479,7 @@ export class AssesmentController implements CrudController<Assessment> {
 
         await queryRunner.commitTransaction();
 
-        const pro = assesment.project.id;
+        const pro = assessment.project.id;
         const pr = await this.projectRepo.findOne({
           where: { id: pro },
           relations: ['country'],
@@ -501,12 +501,12 @@ export class AssesmentController implements CrudController<Assessment> {
             ' <br/> New Data request ' +
             '<br/> Data request with following information has shared with you.' +
             '<br/> project name -: ' +
-            assesment.project.climateActionName;
+            assessment.project.climateActionName;
 
           this.emaiService.sendMail(ab.email, 'New Data request', '', template);
         });
 
-        return await this.assessmentRepo.findOne(assesment.id);
+        return await this.assessmentRepo.findOne(assessment.id);
       } else {
         dto.ndc = null;
         dto.subNdc = null;
@@ -519,7 +519,7 @@ export class AssesmentController implements CrudController<Assessment> {
         proj.id = dto.project.id;
         dto.project = proj;
 
-        const assesment = await queryRunner.manager.save(Assessment, dto);
+        const assessment = await queryRunner.manager.save(Assessment, dto);
 
         const audit: AuditDto = new AuditDto();
         audit.action = dto.assessmentType + ' Assessment Created';
@@ -529,15 +529,15 @@ export class AssesmentController implements CrudController<Assessment> {
         this.auditService.create(audit);
 
         dto.assessmentYear.map((a) => {
-          a.assessment = assesment;
+          a.assessment = assessment;
         });
 
         dto.assessmentObjective.map((a) => {
-          a.assessmentId = assesment.id;
+          a.assessmentId = assessment.id;
         });
 
         dto.parameters.map((a) => {
-          a.assessment = assesment;
+          a.assessment = assessment;
         });
 
         await queryRunner.manager.save(AssessmentYear, dto.assessmentYear);
@@ -587,7 +587,7 @@ export class AssesmentController implements CrudController<Assessment> {
         dto.parameters = [];
 
         for await (const a of par2) {
-          if (assesment.isProposal) {
+          if (assessment.isProposal) {
             a.institution = null;
           }
 
@@ -611,7 +611,7 @@ export class AssesmentController implements CrudController<Assessment> {
         for await (const a of grouped) {
           const parent = a['parent'];
 
-          if (assesment.isProposal) {
+          if (assessment.isProposal) {
             parent.institution = null;
           }
 
@@ -619,7 +619,7 @@ export class AssesmentController implements CrudController<Assessment> {
           parent.verificationDetail = null;
           parent.isAlternative = false;
           parent.hasChild = true;
-          parent.assessment = assesment;
+          parent.assessment = assessment;
 
           const paramParent = await queryRunner.manager.save(Parameter, parent);
 
@@ -634,7 +634,7 @@ export class AssesmentController implements CrudController<Assessment> {
           }
 
           for await (const b of a['child']) {
-            if (assesment.isProposal) {
+            if (assessment.isProposal) {
               b.institution = null;
             }
 
@@ -660,7 +660,7 @@ export class AssesmentController implements CrudController<Assessment> {
 
         await queryRunner.commitTransaction();
 
-        const pro = assesment.project.id;
+        const pro = assessment.project.id;
         const pr = await this.projectRepo.findOne({
           where: { id: pro },
           relations: ['country'],
@@ -680,11 +680,11 @@ export class AssesmentController implements CrudController<Assessment> {
             ' ' +
             ' <br/> Data request with following information has shared with you.' +
             '<br/> project name -: ' +
-            assesment.project.climateActionName;
+            assessment.project.climateActionName;
           this.emaiService.sendMail(ab.email, 'Pass QC', '', template);
         });
 
-        return await this.assessmentRepo.findOne(assesment.id);
+        return await this.assessmentRepo.findOne(assessment.id);
       }
     } catch (err) {
       await queryRunner.rollbackTransaction();
@@ -718,10 +718,10 @@ export class AssesmentController implements CrudController<Assessment> {
       const asses = new Assessment();
       asses.baseYear = 0;
 
-      const assesment = await queryRunner.manager.save(Assessment, asses);
+      const assessment = await queryRunner.manager.save(Assessment, asses);
       const para = new Parameter();
 
-      para.assessment = assesment;
+      para.assessment = assessment;
 
       await queryRunner.commitTransaction();
 

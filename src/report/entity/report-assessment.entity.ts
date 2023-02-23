@@ -1,4 +1,4 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Report } from './report.entity';

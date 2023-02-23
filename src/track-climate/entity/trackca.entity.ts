@@ -1,12 +1,5 @@
-import { Project } from 'src/project/entity/project.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'trackClimateAction' })
 export class TrackcaEntity extends BaseTrackingEntity {

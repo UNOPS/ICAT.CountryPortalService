@@ -1,7 +1,7 @@
 import { ApiHideProperty } from '@nestjs/swagger';
 
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
@@ -13,10 +13,9 @@ import {
   OneToMany,
   ManyToOne,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 
-@Entity({ name: 'assesmentYear' })
+@Entity({ name: 'assessmentYear' })
 export class AssessmentYear extends BaseTrackingEntity {
   constructor() {
     super();
@@ -66,11 +65,11 @@ export class AssessmentYear extends BaseTrackingEntity {
   assessment: Assessment;
 
   @OneToOne(
-    () => AssessmentResault,
-    (assessmentResault) => assessmentResault.assessmentYear,
+    () => AssessmentResult,
+    (assessmentResult) => assessmentResult.assessmentYear,
   )
   @ApiHideProperty()
-  assessmentResault: AssessmentResault;
+  assessmentResult: AssessmentResult;
 
   @OneToMany(
     () => VerificationDetail,

@@ -6,8 +6,8 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { Ndc } from './ndc.entity';
 import { SubNdc } from './sub-ndc.entity';
@@ -184,7 +184,7 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
         'proj.projectApprovalStatusId',
       ])
       .innerJoinAndMapMany(
-        'ndc.assesment',
+        'ndc.assessment',
         Assessment,
         'asse',
         'asse.ndcId = ndc.id and asse.assessmentType = "Ex-post"',
@@ -197,9 +197,9 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       )
       .innerJoinAndMapMany(
         'asse.assessmentResult',
-        AssessmentResault,
+        AssessmentResult,
         'asseRslt',
-        'asseRslt.assementId = asse.id ',
+        'asseRslt.assessmentId = asse.id ',
       )
       .where(filter, {
         sectorId,

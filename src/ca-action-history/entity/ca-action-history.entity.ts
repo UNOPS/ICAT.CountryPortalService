@@ -1,14 +1,6 @@
 import { Project } from 'src/project/entity/project.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'caActionHistory' })
 export class CaActionHistory extends BaseTrackingEntity {

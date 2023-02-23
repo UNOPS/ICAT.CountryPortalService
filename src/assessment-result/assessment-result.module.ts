@@ -1,46 +1,46 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AssesmentModule } from 'src/assesment/assesment.module';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentModule } from 'src/assessment/assessment.module';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { Audit } from 'src/audit/entity/audit.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { User } from 'src/users/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { TokenDetails } from 'src/utills/token_details';
-import { AssesmentResaultController } from './assesment-resault.controller';
-import { AssesmentResaultService } from './assesment-resault.service';
-import { AssessmentResault } from './entity/assessment-resault.entity';
+import { AssessmentResultController } from './assessment-result.controller';
+import { AssessmentResultService } from './assessment-result.service';
+import { AssessmentResult } from './entity/assessment-result.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      AssessmentResault,
+      AssessmentResult,
       AssessmentYear,
-      ProjectionResault,
+      ProjectionResult,
       Assessment,
       User,
       Audit,
       Institution,
     ]),
-    AssesmentModule,
+    AssessmentModule,
     HttpModule,
     UsersModule,
   ],
-  controllers: [AssesmentResaultController],
+  controllers: [AssessmentResultController],
   providers: [
-    AssesmentResaultService,
+    AssessmentResultService,
     AssessmentYear,
-    ProjectionResault,
+    ProjectionResult,
     Assessment,
     AuditService,
     EmailNotificationService,
     TokenDetails,
   ],
-  exports: [AssesmentResaultService, AuditService],
+  exports: [AssessmentResultService, AuditService],
 })
-export class AssesmentResaultModule {}
+export class AssessmentResultModule {}

@@ -1,15 +1,9 @@
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { type } from 'src/ormconfig';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import { MasterData } from 'src/shared/entities/master.data.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';

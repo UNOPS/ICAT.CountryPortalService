@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  Query,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';

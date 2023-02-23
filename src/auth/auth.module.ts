@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -13,7 +12,6 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Institution } from 'src/institution/institution.entity';
 import { UserType } from 'src/users/user.type.entity';
-import { InstitutionModule } from 'src/institution/institution.module';
 import { User } from 'src/users/user.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { Audit } from 'src/audit/entity/audit.entity';

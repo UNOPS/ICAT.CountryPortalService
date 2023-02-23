@@ -1,5 +1,5 @@
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class ReportPdfFileData extends BaseTrackingEntity {
@@ -26,7 +26,7 @@ export class ReportPdfFileData extends BaseTrackingEntity {
   countryId: number;
 
   @Column({ default: null })
-  assesmentType: string;
+  assessmentType: string;
 
   @Column()
   generateReportName: string;

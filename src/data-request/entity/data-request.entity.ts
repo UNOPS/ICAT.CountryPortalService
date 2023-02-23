@@ -1,7 +1,3 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
-import { Country } from 'src/country/entity/country.entity';
-import { Institution } from 'src/institution/institution.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
@@ -9,9 +5,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';

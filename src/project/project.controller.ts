@@ -2,26 +2,22 @@ import {
   Body,
   Controller,
   Get,
-  Inject,
   Put,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
 import { ApiHeader } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Crud,
   CrudController,
   CrudRequest,
-  GetManyDefaultResponse,
   Override,
   ParsedBody,
   ParsedRequest,
 } from '@nestjsx/crud';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -29,7 +25,6 @@ import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { Repository } from 'typeorm-next';
-
 import { Project } from './entity/project.entity';
 import { ProjectService } from './project.service';
 const fs = require('fs');
@@ -74,9 +69,6 @@ const fs = require('fs');
         eager: true,
       },
       projectApprovalStatus: {
-        eager: true,
-      },
-      assesments: {
         eager: true,
       },
     },
@@ -583,7 +575,7 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    const resault = await this.service.getProjectsForCountryAndSectorAdmins(
+    const result = await this.service.getProjectsForCountryAndSectorAdmins(
       {
         limit: limit,
         page: page,
@@ -597,7 +589,7 @@ export class ProjectController implements CrudController<Project> {
       institutionIdFromTocken,
     );
 
-    return resault;
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -656,7 +648,7 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    const resault =
+    const result =
       await this.service.getProjectsForCountryAndSectorAdminsprojectApprovalStatusWise(
         {
           limit: limit,
@@ -671,7 +663,7 @@ export class ProjectController implements CrudController<Project> {
         institutionIdFromTocken,
       );
 
-    return resault;
+    return result;
   }
   @UseGuards(JwtAuthGuard)
   @Get('getProjectsForCountrySectorInstitution')
@@ -695,7 +687,7 @@ export class ProjectController implements CrudController<Project> {
         TokenReqestType.InstitutionId,
       ]);
 
-    const resault = await this.service.getProjectsForCountrySectorInstitution(
+    const result = await this.service.getProjectsForCountrySectorInstitution(
       {
         limit: limit,
         page: page,
@@ -709,6 +701,6 @@ export class ProjectController implements CrudController<Project> {
       institutionIdFromTocken,
     );
 
-    return resault;
+    return result;
   }
 }

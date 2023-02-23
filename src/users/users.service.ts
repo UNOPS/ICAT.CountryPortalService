@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { count } from 'console';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcript from 'bcrypt';
-import { ResetPassword } from 'src/auth/Dto/reset.password.dto';
-import { RSA_PSS_SALTLEN_MAX_SIGN } from 'constants';
 import { UserType } from './user.type.entity';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Institution } from 'src/institution/institution.entity';
 import { RecordStatus } from 'src/shared/entities/base.tracking.entity';
@@ -20,8 +15,6 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { InstitutionCategory } from 'src/institution/institution.category.entity';
-import { InstitutionType } from 'src/institution/institution.type.entity';
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -346,9 +339,6 @@ export class UsersService extends TypeOrmCrudService<User> {
   ): Promise<Pagination<User>> {
     const user = await this.usersRepository.findOne({ username: userName });
     const institutionId = user ? user.institution.id : 0;
-
-    const filter = '';
-
     const data = this.repo
       .createQueryBuilder('user')
       .leftJoinAndMapOne(

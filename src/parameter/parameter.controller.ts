@@ -1,6 +1,5 @@
 import {
   Body,
-  ConsoleLogger,
   Controller,
   Get,
   Post,
@@ -12,14 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody } from '@nestjs/swagger';
-import {
-  Crud,
-  CrudController,
-  CrudRequest,
-  Override,
-  ParsedBody,
-  ParsedRequest,
-} from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -60,12 +52,12 @@ export class ParameterController implements CrudController<Parameter> {
     private readonly tokenDetails: TokenDetails,
   ) {}
 
-  @Get('parameter/parameterByAssesment/:assesmentId')
-  async parameterByAssesment(
+  @Get('parameter/parameterByAssessment/:assessmentId')
+  async parameterByAssessment(
     @Request() request,
-    @Query('assesmentId') assesmentId: number,
+    @Query('assessmentId') assessmentId: number,
   ): Promise<any> {
-    return await this.service.getParameterByAssesment(assesmentId);
+    return await this.service.getParameterByAssessment(assessmentId);
   }
 
   @UseGuards(JwtAuthGuard)

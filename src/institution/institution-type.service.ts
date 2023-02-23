@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { User } from 'src/users/user.entity';
 import { UserType } from 'src/users/user.type.entity';
-import { Repository } from 'typeorm-next';
 import { Institution } from './institution.entity';
 import { InstitutionType } from './institution.type.entity';
 

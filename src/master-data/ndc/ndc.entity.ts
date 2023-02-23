@@ -1,16 +1,9 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { ReportNdc } from 'src/report/entity/report-ndc.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';
-import {
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  JoinTable,
-  ManyToMany,
-} from 'typeorm';
+import { Entity, ManyToOne, OneToMany, JoinTable, ManyToMany } from 'typeorm';
 import { Sector } from '../sector/sector.entity';
 import { NdcSet } from './ndc-set.entity';
 import { SubNdc } from './sub-ndc.entity';

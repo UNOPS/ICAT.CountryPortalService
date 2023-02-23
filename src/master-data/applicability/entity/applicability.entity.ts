@@ -1,15 +1,7 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('applicability')
 export class ApplicabilityEntity extends MasterData {

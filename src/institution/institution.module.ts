@@ -1,10 +1,9 @@
 import { User } from './../users/user.entity';
-import { Module, Param } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { InstitutionService } from './institution.service';
 import { InstitutionController } from './institution.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Institution } from './institution.entity';
-import { Repository } from 'typeorm';
 import { InstitutionType } from './institution.type.entity';
 import { InstitutionTypeService } from './institution-type.service';
 import { InstitutionTypeController } from './institution-type.controller';

@@ -6,14 +6,13 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AssesmentService } from 'src/assesment/assesment.service';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentService } from 'src/assessment/assessment.service';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { DataRequestStatus } from 'src/data-request/entity/data-request-status.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
-import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-history-action-history.entity';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
@@ -35,7 +34,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     public userRepo: Repository<User>,
     @InjectRepository(ParameterRequest)
     private readonly ParameterRequestRepo: Repository<ParameterRequest>,
-    private assesmentservice: AssesmentService,
+    private assessmentservice: AssessmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly emaiService: EmailNotificationService,
   ) {
@@ -149,17 +148,16 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       const asseYa = await this.assessmentYearRepo.findOne({
         where: { id: ass },
       });
-      const assesment = await this.assesmentservice.findOne({
+      const assessment = await this.assessmentservice.findOne({
         where: { id: verificationDetail[0].assessmentId },
       });
 
-      let user: User[];
-      const inscon = assesment.project.country;
-      const insSec = assesment.project.sector;
+      const inscon = assessment.project.country;
+      const insSec = assessment.project.sector;
       const ins = await this.institutionRepo.findOne({
         where: { country: inscon, sector: insSec, type: 2 },
       });
-      user = await this.userRepo.find({
+      const user: User[] = await this.userRepo.find({
         where: { country: inscon, userType: 5, institution: ins },
       });
 

@@ -1,5 +1,4 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import * as moment from 'moment';
 import { Injectable } from '@nestjs/common';
 
 const fs = require('fs');

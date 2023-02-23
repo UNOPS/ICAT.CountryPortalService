@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
-import { ProjectionResault } from './entity/projection-resault.entity';
+import { ProjectionResult } from './entity/projection-result.entity';
 
 @Injectable()
-export class ProjectionResaultService extends TypeOrmCrudService<ProjectionResault> {
-  constructor(@InjectRepository(ProjectionResault) repo) {
+export class ProjectionResultService extends TypeOrmCrudService<ProjectionResult> {
+  constructor(@InjectRepository(ProjectionResult) repo) {
     super(repo);
   }
 
   async updateQCStatus(
     id: number,
-    assesmentyearId: number,
+    assessmentyearId: number,
     qcStatus: QuAlityCheckStatus,
     comment: string,
   ) {
@@ -25,16 +25,16 @@ export class ProjectionResaultService extends TypeOrmCrudService<ProjectionResau
   }
 
   async GetProjectionResult(
-    assesmentId: number,
+    assessmentId: number,
     projectionYear: number,
   ): Promise<any> {
-    const assement = new Assessment();
-    assement.id = assesmentId;
+    const assessment = new Assessment();
+    assessment.id = assessmentId;
 
-    const assessmentResault = await this.repo.find({
-      where: { assement: assement },
+    const assessmentResult = await this.repo.find({
+      where: { assessment: assessment },
     });
 
-    return assessmentResault;
+    return assessmentResult;
   }
 }

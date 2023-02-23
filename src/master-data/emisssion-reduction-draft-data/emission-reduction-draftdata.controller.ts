@@ -6,8 +6,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-
 import {
   Crud,
   CrudController,
@@ -18,7 +16,6 @@ import {
 } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
-import { Repository } from 'typeorm';
 import { EmissionReductionDraftdataService } from './emission-reduction-draftdata.service';
 import { EmissionReductioDraftDataEntity } from './entity/emission-reductio-draft-data.entity';
 

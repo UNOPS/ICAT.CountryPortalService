@@ -1,4 +1,4 @@
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import { AssessmentObjective } from 'src/assessment-objective/entity/assessment-objective.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { Country } from 'src/country/entity/country.entity';
@@ -9,7 +9,7 @@ import { SubNdc } from 'src/master-data/ndc/sub-ndc.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { ProjectionYear } from 'src/projection-year/entity/projection-year.entity';
 import { ReportAssessment } from 'src/report/entity/report-assessment.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
@@ -26,7 +26,7 @@ import {
 } from 'typeorm';
 import { AssessmentStatus } from './assessment-status.entity';
 
-@Entity({ name: 'assesment' })
+@Entity({ name: 'assessment' })
 export class Assessment extends BaseTrackingEntity {
   constructor() {
     super();
@@ -130,11 +130,11 @@ export class Assessment extends BaseTrackingEntity {
   assessmentYear: AssessmentYear[];
 
   @OneToMany(
-    () => AssessmentResault,
-    (assessmentResult) => assessmentResult.assement,
+    () => AssessmentResult,
+    (assessmentResult) => assessmentResult.assessment,
     { cascade: false, nullable: true },
   )
-  assessmentResult: AssessmentResault[];
+  assessmentResult: AssessmentResult[];
 
   @ManyToOne(() => MitigationActionType, { cascade: false, nullable: true })
   mitigationActionType: MitigationActionType;
@@ -176,8 +176,8 @@ export class Assessment extends BaseTrackingEntity {
   public reportAssessment!: ReportAssessment[];
 
   @OneToMany(
-    () => ProjectionResault,
-    (projectiondata) => projectiondata.assement,
+    () => ProjectionResult,
+    (projectiondata) => projectiondata.assessment,
   )
-  projectionResult: ProjectionResault[];
+  projectionResult: ProjectionResult[];
 }

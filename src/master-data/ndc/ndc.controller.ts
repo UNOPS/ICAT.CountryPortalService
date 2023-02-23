@@ -1,18 +1,16 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { Ndc } from './ndc.entity';
 import { NdcService } from './ndc.service';
-import { Request, Post, UseGuards } from '@nestjs/common';
+import { Request, UseGuards } from '@nestjs/common';
 import {
   Crud,
   CrudController,
   Override,
-  ParsedBody,
   ParsedRequest,
   CrudRequest,
   GetManyDefaultResponse,
 } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { REQUEST } from '@nestjs/core';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 
 @Crud({

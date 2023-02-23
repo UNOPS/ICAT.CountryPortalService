@@ -10,23 +10,18 @@ import {
   StreamableFile,
   UseGuards,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Crud, CrudController } from '@nestjsx/crud';
-import { request, response } from 'express';
-import { createReadStream, readFile } from 'fs';
-import { AssesmentResaultService } from 'src/assesment-resault/assesment-resault.service';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { createReadStream } from 'fs';
+import { AssessmentResultService } from 'src/assessment-result/assessment-result.service';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYearService } from 'src/assessment-year/assessment-year.service';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { SectorService } from 'src/master-data/sector/sector.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { ParameterService } from 'src/parameter/parameter.service';
 import { Project } from 'src/project/entity/project.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
-import { Repository } from 'typeorm-next';
 import { GetReportDto } from './dto/get-report.dto';
 import { ReportResponseDto } from './dto/report-response.dto';
 import { ReportDataPDF } from './dto/reportDataPDF.dto';
@@ -61,7 +56,7 @@ export class ReportController implements CrudController<Report> {
     public service: ReportService,
     public paraService: ParameterService,
     public yrService: AssessmentYearService,
-    public resaultService: AssesmentResaultService,
+    public resultService: AssessmentResultService,
     private readonly tokenDetails: TokenDetails,
   ) {}
 
@@ -220,33 +215,32 @@ export class ReportController implements CrudController<Report> {
     @Body() getReportDto: GetReportDto,
   ): Promise<any> {
     const finalReport = new ReportResponseDto();
-    let assesment = new Assessment();
+    let assessment = new Assessment();
     let project = new Project();
     let parameter: Parameter[] = [];
     const assemenntIdList: number[] = [];
     let yr: AssessmentYear[] = [];
-    const res: AssessmentResault[] = [];
-    const resault: AssessmentResault[] = [];
+    const res: AssessmentResult[] = [];
 
     try {
-      for (var a = 0; a < getReportDto.project.length; a++) {
+      for (let a = 0; a < getReportDto.project.length; a++) {
         project = getReportDto.project[a];
         finalReport.project.push(project);
         finalReport.sector.push(project.sector);
         finalReport.ndc.push(project.ndc);
 
         for (let b = 0; b < getReportDto.project[a].assessments.length; b++) {
-          assesment = getReportDto.project[a].assessments[b];
+          assessment = getReportDto.project[a].assessments[b];
 
           if (
-            getReportDto.assessmentTypeList.includes(assesment.assessmentType)
+            getReportDto.assessmentTypeList.includes(assessment.assessmentType)
           ) {
-            finalReport.assessment.push(assesment);
-            assemenntIdList.push(assesment.id);
+            finalReport.assessment.push(assessment);
+            assemenntIdList.push(assessment.id);
           }
         }
 
-        for (var a = 0; a < assemenntIdList.length; a++) {
+        for (let a = 0; a < assemenntIdList.length; a++) {
           yr = await this.yrService.getYearListByAssessmentId(
             assemenntIdList[a],
           );
@@ -257,8 +251,8 @@ export class ReportController implements CrudController<Report> {
           }
         }
       }
-      for (var a = 0; a < assemenntIdList.length; a++) {
-        parameter = await this.paraService.getParameterByAssesment(
+      for (let a = 0; a < assemenntIdList.length; a++) {
+        parameter = await this.paraService.getParameterByAssessment(
           assemenntIdList[a],
         );
         for (const a of parameter) {
@@ -269,11 +263,11 @@ export class ReportController implements CrudController<Report> {
       for (const a of assemenntIdList) {
         for (const b of finalReport.assessmentYr)
           res.push(
-            await this.resaultService.GetAssesmentResult(a, b.id, false),
+            await this.resultService.GetAssessmentResult(a, b.id, false),
           );
       }
       for (const r of res) {
-        finalReport.resault.push(r);
+        finalReport.result.push(r);
       }
 
       finalReport.reportName = getReportDto.reportName;

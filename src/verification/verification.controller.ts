@@ -82,11 +82,11 @@ export class VerificationController
     );
   }
 
-  @Get('verification/GetVerificationDetails/:assesmentYearId')
+  @Get('verification/GetVerificationDetails/:assessmentYearId')
   async GetVerificationDetails(
-    @Query('assesmentYearId') assesmentYearId: number,
+    @Query('assessmentYearId') assessmentYearId: number,
   ) {
-    return await this.service.GetVerificationDetails(assesmentYearId);
+    return await this.service.GetVerificationDetails(assessmentYearId);
   }
 
   @Put('verification/SaveVerificationDetails')

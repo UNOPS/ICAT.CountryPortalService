@@ -6,9 +6,6 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Institution } from 'src/institution/institution.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { UserType } from 'src/users/user.type.entity';
 import { LearningMaterialSector } from './entity/learning-material-sector.entity';
 import { LearningMaterialUserType } from './entity/learning-material-usertype.entity';
 import { LearningMaterial } from './entity/learning-material.entity';

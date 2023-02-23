@@ -5,7 +5,7 @@ import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { ParameterRequest } from './entity/data-request.entity';
 
@@ -18,14 +18,12 @@ import {
 import { UpdateDeadlineDto } from './dto/dataRequest.dto';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
-import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-history-action-history.entity';
+import { ParameterHistoryAction } from 'src/parameter-history/entity/parameter-history-action-history.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
-import { UserType } from 'src/users/user.type.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { Country } from 'src/country/entity/country.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
 
 @Injectable()
 export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest> {
@@ -49,7 +47,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
   }
 
   async getDateRequestToManageDataStatus(
-    assesmentId: number,
+    assessmentId: number,
     assessmentYear: number,
   ): Promise<any> {
     const data = this.repo
@@ -62,7 +60,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .select(['dr.dataRequestStatus', 'para.id'])
       .where(
-        `para.assessmentId = ${assesmentId} AND ((para.isEnabledAlternative = true AND para.isAlternative = true) OR (para.isEnabledAlternative = false AND para.isAlternative = false )) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmentYear}`,
+        `para.assessmentId = ${assessmentId} AND ((para.isEnabledAlternative = true AND para.isAlternative = true) OR (para.isEnabledAlternative = false AND para.isAlternative = false )) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmentYear}`,
       );
 
     return await data.execute();
@@ -652,11 +650,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         const savedObject = await this.defaultValRepo.save(defaultValObject);
       }
     }
-    let user: User[];
     const ins = await this.institutionRepo.findOne({
       where: { country: inscon, sector: insSec, type: 2 },
     });
-    user = await this.userRepo.find({
+    const user: User[] = await this.userRepo.find({
       where: { country: inscon, userType: 6, institution: ins },
     });
     user.forEach((ab) => {
@@ -697,7 +694,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       dataRequestItem.UserDataEntry = updateDataRequestDto.userId;
 
       const email = dataRequestItem.parameter.institution.email;
-      var template: any;
+      let template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
           'Dear ' +

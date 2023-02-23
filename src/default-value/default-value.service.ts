@@ -9,7 +9,6 @@ import {
 import { Country } from 'src/country/entity/country.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { ProjectApprovalStatusService } from 'src/master-data/project-approval-status/project-approval-status.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Repository } from 'typeorm';
 import { defaultValueDtos } from './dto/defaultValue.dto';

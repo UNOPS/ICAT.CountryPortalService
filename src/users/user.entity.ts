@@ -1,12 +1,10 @@
 import {
-  BaseEntity,
   Column,
   DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcript from 'bcrypt';
@@ -14,9 +12,8 @@ import { UserType } from './user.type.entity';
 import { Exclude } from 'class-transformer';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { Audit } from 'src/audit/entity/audit.entity';
 import { Country } from 'src/country/entity/country.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 
 @Entity()
 export class User extends BaseTrackingEntity {

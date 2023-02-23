@@ -6,15 +6,15 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { AxiosResponse } from 'axios';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { Observable } from 'rxjs';
-import { AssesmentService } from 'src/assesment/assesment.service';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentService } from 'src/assessment/assessment.service';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { Repository } from 'typeorm';
-import { AssessmentResault } from './entity/assessment-resault.entity';
+import { AssessmentResult } from './entity/assessment-result.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
 import { VerificationStatus } from 'src/verification/entity/verification-status.entity';
 import { Institution } from 'src/institution/institution.entity';
@@ -23,77 +23,78 @@ import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResault> {
+export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult> {
   constructor(
-    @InjectRepository(AssessmentResault) repo,
-    private assesmentservice: AssesmentService,
+    @InjectRepository(AssessmentResult) repo,
+    private assessmentservice: AssessmentService,
     @InjectRepository(AssessmentYear)
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
 
-    @InjectRepository(ProjectionResault)
-    private readonly projectionResaultRepo: Repository<ProjectionResault>,
+    @InjectRepository(ProjectionResult)
+    private readonly projectionResultRepo: Repository<ProjectionResult>,
     private httpService: HttpService,
     private configService: ConfigService,
     private readonly emaiService: EmailNotificationService,
     @InjectRepository(Assessment)
-    public assesmentRepo: Repository<Assessment>,
+    public assessmentRepo: Repository<Assessment>,
     private readonly userService: UsersService,
   ) {
     super(repo);
   }
 
-  async GetAssesmentResult(
-    assesmentId: number,
-    assesmentYearId: number,
+  async GetAssessmentResult(
+    assessmentId: number,
+    assessmentYearId: number,
     isCalculate: boolean,
   ): Promise<any> {
-    const assement = new Assessment();
-    assement.id = assesmentId;
+    const assessment = new Assessment();
+    assessment.id = assessmentId;
 
-    let assesmentYear = new AssessmentYear();
-    assesmentYear.id = assesmentYearId;
+    let assessmentYear = new AssessmentYear();
+    assessmentYear.id = assessmentYearId;
 
-    const assessmentResault = await this.repo.findOne({
-      where: { assement: assement, assessmentYear: assesmentYear },
+    const assessmentResult = await this.repo.findOne({
+      where: { assessment: assessment, assessmentYear: assessmentYear },
       relations: ['assessmentYear'],
     });
 
-    assesmentYear = await this.assessmentYearRepo.findOne(assesmentYearId);
+    assessmentYear = await this.assessmentYearRepo.findOne(assessmentYearId);
 
     if (isCalculate.toString() == 'false') {
-      return assessmentResault;
+      return assessmentResult;
     } else {
-      const asseDetail = await this.assesmentRepo.findOne(assesmentId);
+      const asseDetail = await this.assessmentRepo.findOne(assessmentId);
 
       if (asseDetail.isProposal) {
-        var assesment = await this.assesmentservice.getAssessmentDetails(
-          assesmentId,
-          assesmentYear.assessmentYear,
+        const assessment = await this.assessmentservice.getAssessmentDetails(
+          assessmentId,
+          assessmentYear.assessmentYear,
         );
       } else {
-        var assesment = await this.assesmentservice.getAssessmentDetailsForQC(
-          assesmentId,
-          assesmentYear.assessmentYear,
-        );
+        const assessment =
+          await this.assessmentservice.getAssessmentDetailsForQC(
+            assessmentId,
+            assessmentYear.assessmentYear,
+          );
       }
 
-      if (!assesment.isProposal) {
-        const result = assesment.parameters.find((m) =>
+      if (!assessment.isProposal) {
+        const result = assessment.parameters.find((m) =>
           m.parameterRequest
             ? m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass
             : false,
         );
 
         if (result === null || result === undefined) {
-          await this.getAssesmentResultFromEngine(
-            assesment.parameters,
+          await this.getAssessmentResultFromEngine(
+            assessment.parameters,
           ).subscribe(async (a) => {
-            const saveEntity = await this.saveAssesmentResult(
+            const saveEntity = await this.saveassessmentResult(
               a.data,
-              assesmentId,
-              assesmentYearId,
+              assessmentId,
+              assessmentYearId,
             );
 
             return saveEntity;
@@ -102,53 +103,53 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           return null;
         }
       } else {
-        await this.getAssesmentResultFromEngine(assesment.parameters).subscribe(
-          (a) => {
-            return this.saveAssesmentResult(
-              a.data,
-              assesmentId,
-              assesmentYearId,
-            );
-          },
-        );
+        await this.getAssessmentResultFromEngine(
+          assessment.parameters,
+        ).subscribe((a) => {
+          return this.saveassessmentResult(
+            a.data,
+            assessmentId,
+            assessmentYearId,
+          );
+        });
       }
     }
   }
 
-  async saveAssesmentResult(
+  async saveassessmentResult(
     data: any,
-    assesmentId: number,
-    assesmentYearId: number,
+    assessmentId: number,
+    assessmentYearId: number,
   ) {
-    const assesment = new Assessment();
-    assesment.id = assesmentId;
+    const assessment = new Assessment();
+    assessment.id = assessmentId;
 
-    const assesmentYear = new AssessmentYear();
-    assesmentYear.id = assesmentYearId;
+    const assessmentYear = new AssessmentYear();
+    assessmentYear.id = assessmentYearId;
 
-    let assesmentResult = await this.repo.findOne({
-      where: { assement: assesment, assessmentYear: assesmentYear },
+    let assessmentResult = await this.repo.findOne({
+      where: { assessment: assessment, assessmentYear: assessmentYear },
     });
 
-    if (assesmentResult === undefined || assesmentResult === null) {
-      assesmentResult = new AssessmentResault();
-      assesmentResult.assement = assesment;
-      assesmentResult.assessmentYear = assesmentYear;
+    if (assessmentResult === undefined || assessmentResult === null) {
+      assessmentResult = new AssessmentResult();
+      assessmentResult.assessment = assessment;
+      assessmentResult.assessmentYear = assessmentYear;
     }
 
-    assesmentResult.projectResult = data.projectEmission;
-    assesmentResult.baselineResult = data.baseLineEmission;
-    assesmentResult.lekageResult = data.leakegeEmission;
-    assesmentResult.totalEmission = data.emissionReduction;
+    assessmentResult.projectResult = data.projectEmission;
+    assessmentResult.baselineResult = data.baseLineEmission;
+    assessmentResult.lekageResult = data.leakegeEmission;
+    assessmentResult.totalEmission = data.emissionReduction;
 
-    if (assesmentResult.id > 0) {
-      const responce = await this.repo.save(assesmentResult);
-      await this.saveProjectionResult(data, assesment, assesmentYear);
+    if (assessmentResult.id > 0) {
+      const responce = await this.repo.save(assessmentResult);
+      await this.saveProjectionResult(data, assessment, assessmentYear);
 
       return responce;
     } else {
-      const responce = await this.repo.insert(assesmentResult);
-      await this.saveProjectionResult(data, assesment, assesmentYear);
+      const responce = await this.repo.insert(assessmentResult);
+      await this.saveProjectionResult(data, assessment, assessmentYear);
 
       return responce;
     }
@@ -156,18 +157,18 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
 
   async saveProjectionResult(
     data: any,
-    assesment: Assessment,
-    assesmentYear: AssessmentYear,
+    assessment: Assessment,
+    assessmentYear: AssessmentYear,
   ) {
     if (data.projectionResults) {
       data.projectionResults.map(async (p) => {
-        let projectionResult = await this.projectionResaultRepo.findOne({
-          where: { assement: assesment, projectionYear: p.year },
+        let projectionResult = await this.projectionResultRepo.findOne({
+          where: { assessment: assessment, projectionYear: p.year },
         });
 
         if (projectionResult === undefined || projectionResult === null) {
-          projectionResult = new ProjectionResault();
-          projectionResult.assement = assesment;
+          projectionResult = new ProjectionResult();
+          projectionResult.assessment = assessment;
           projectionResult.projectionYear = p.year;
         }
         projectionResult.projectResult = p.projectEmission;
@@ -177,9 +178,9 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         projectionResult.projectionResualt = 0;
 
         if (projectionResult.id > 0) {
-          await this.projectionResaultRepo.save(projectionResult);
+          await this.projectionResultRepo.save(projectionResult);
         } else {
-          const responce = await this.projectionResaultRepo.insert(
+          const response = await this.projectionResultRepo.insert(
             projectionResult,
           );
         }
@@ -209,7 +210,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
 
   async updateQCStatus(
     id: number,
-    assesmentyearId: number,
+    assessmentyearId: number,
     qcStatus: QuAlityCheckStatus,
     assessmentResultType: AssessmentResultType,
     comment: string,
@@ -219,10 +220,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
 
     const re = await this.repo.findOne({
       where: { id: id },
-      relations: ['assement'],
+      relations: ['assessment'],
     });
-    const country = re.assement.project.country;
-    const sec = re.assement.project.sector;
+    const country = re.assessment.project.country;
+    const sec = re.assessment.project.sector;
     let template: any;
     let ins: any;
     let user: User[];
@@ -242,7 +243,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             ' ' +
             ' <br/> Data request with following information has shared with you.' +
             '<br/> parameter name -: ' +
-            re.assement.project.climateActionName;
+            re.assessment.project.climateActionName;
         } else {
           template =
             'Dear ' + ab.username + ' ' + ' <br/> Accepted reviw value ';
@@ -266,7 +267,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             ' ' +
             ' <br/> Reject QC' +
             '<br/> parameter name -: ' +
-            re.assement.project.climateActionName +
+            re.assessment.project.climateActionName +
             '<br> comment -: ' +
             comment;
         } else {
@@ -303,44 +304,47 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       qcStatus == QuAlityCheckStatus.Fail ||
       (await this.checkAllQCApprovmentAssessmentResult(result.id))
     ) {
-      const assementYear = await this.assessmentYearRepo.findOne(
-        assesmentyearId,
+      const assessmentYear = await this.assessmentYearRepo.findOne(
+        assessmentyearId,
       );
 
-      assementYear.qaStatus = qcStatus;
-      this.assessmentYearRepo.save(assementYear);
+      assessmentYear.qaStatus = qcStatus;
+      this.assessmentYearRepo.save(assessmentYear);
     }
 
     return resultTo;
   }
 
   async updateQCStatusforMac(
-    assesmentyearId: number,
+    assessmentyearId: number,
     qcStatus: QuAlityCheckStatus,
   ) {
-    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    const assessmentYear = await this.assessmentYearRepo.findOne(
+      assessmentyearId,
+    );
 
-    assementYear.qaStatus = qcStatus;
-    this.assessmentYearRepo.save(assementYear);
+    assessmentYear.qaStatus = qcStatus;
+    this.assessmentYearRepo.save(assessmentYear);
     return 1;
   }
 
   async updateVRStatusforMac(
-    assesmentyearId: number,
+    assessmentyearId: number,
     VRStatus: VerificationStatus,
   ) {
-    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    const assessmentYear = await this.assessmentYearRepo.findOne(
+      assessmentyearId,
+    );
 
-    assementYear.verificationStatus = VRStatus;
-    this.assessmentYearRepo.save(assementYear);
+    assessmentYear.verificationStatus = VRStatus;
+    this.assessmentYearRepo.save(assessmentYear);
     return 1;
   }
 
-  getAssesmentResultFromEngine(
+  getAssessmentResultFromEngine(
     parametrs: Parameter[],
   ): Observable<AxiosResponse<any>> {
     try {
-      const baseurl = this.configService.get<string>('calculationEngineUrl');
       const fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
 
       const content_ = JSON.stringify(parametrs);
@@ -352,8 +356,6 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
           Accept: 'application/json',
         },
       };
-
-      const bodyParser = require('body-parser');
 
       return this.httpService.post(
         fullUrl,
@@ -367,7 +369,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     id: number,
     qcStatus: QuAlityCheckStatus,
     assessmentResultType: AssessmentResultType,
-    assesmentyearId: number,
+    assessmentyearId: number,
   ) {
     const result = await this.repo.findOne(id);
 
@@ -382,13 +384,15 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     }
     this.repo.save(result);
 
-    const assementYear = await this.assessmentYearRepo.findOne(assesmentyearId);
+    const assessmentYear = await this.assessmentYearRepo.findOne(
+      assessmentyearId,
+    );
 
-    assementYear.qaStatus = qcStatus;
-    this.assessmentYearRepo.save(assementYear);
+    assessmentYear.qaStatus = qcStatus;
+    this.assessmentYearRepo.save(assessmentYear);
   }
 
-  async GetAllAssesmentResult(
+  async GetAllAssessmentResult(
     options: IPaginationOptions,
     AssessmentYearId: number,
   ): Promise<any> {
@@ -404,10 +408,10 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     const data = this.repo
       .createQueryBuilder('dr')
       .leftJoinAndMapOne(
-        'dr.assement',
+        'dr.assessment',
         Assessment,
         'ass',
-        'ass.id = dr.assementId',
+        'ass.id = dr.assessmentId',
       )
       .leftJoinAndMapOne('ass.project', Project, 'pr', 'pr.id = ass.projectId')
       .where(filter, {
@@ -429,7 +433,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         'ar.assessmentResult',
         Assessment,
         'asse',
-        'asse.id = ar.assementId ',
+        'asse.id = ar.assessmentId ',
       )
       .where('asse.id = ' + id);
 
@@ -496,7 +500,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
         'ar.assessment',
         Assessment,
         'asse',
-        'asse.id = ar.assementId and asse.assessmentType="Ex-post"  ',
+        'asse.id = ar.assessmentId and asse.assessmentType="Ex-post"  ',
       )
       .innerJoinAndMapOne(
         'asse.project',

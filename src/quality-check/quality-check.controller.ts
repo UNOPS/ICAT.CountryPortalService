@@ -57,18 +57,18 @@ export class QualityCheckController
 
   @UseGuards(JwtAuthGuard)
   @Post(
-    'quality-check/UpdateQCStatus/:paramId/:assesmentYearId/:qaStatusId/:comment/:userQc',
+    'quality-check/UpdateQCStatus/:paramId/:assessmentYearId/:qaStatusId/:comment/:userQc',
   )
   async UpdateQCStatus(
     @Query('paramId') paramId: number,
-    @Query('assesmentYearId') assesmentYearId: number,
+    @Query('assessmentYearId') assessmentYearId: number,
     @Query('qaStatusId') qaStatusId: number,
     @Query('comment') comment: string,
     @Query('userQc') userQc: string,
   ): Promise<any> {
     return this.service.UpdateQCStatus(
       paramId,
-      assesmentYearId,
+      assessmentYearId,
       QuAlityCheckStatus[QuAlityCheckStatus[qaStatusId]],
       comment,
       userQc,

@@ -1,5 +1,4 @@
 import { UsersModule } from './../users/users.module';
-import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/user.entity';
 import { Module } from '@nestjs/common';
 import { ParameterRequestService } from './data-request.service';

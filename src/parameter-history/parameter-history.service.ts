@@ -4,7 +4,7 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Repository } from 'typeorm';
-import { ParameterHistoryAction } from './entity/paeameter-history-action-history.entity';
+import { ParameterHistoryAction } from './entity/parameter-history-action-history.entity';
 import { ParameterHistory } from './entity/parameter-history.entity';
 
 @Injectable()

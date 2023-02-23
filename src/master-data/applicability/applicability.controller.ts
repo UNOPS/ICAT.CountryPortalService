@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Request } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { ApplicabilityService } from './applicability.service';
 import { ApplicabilityEntity } from './entity/applicability.entity';

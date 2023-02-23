@@ -1,4 +1,4 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { ApplicabilityEntity } from 'src/master-data/applicability/entity/applicability.entity';
 

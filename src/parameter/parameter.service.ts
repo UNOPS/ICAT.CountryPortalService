@@ -2,20 +2,13 @@ import { ParameterRequest } from './../data-request/entity/data-request.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
-import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { Institution } from 'src/institution/institution.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { Parameter } from './entity/parameter.entity';
 import { UpdateValueEnterData } from './dto/updateValueEnterData.dto';
 import { Repository } from 'typeorm';
 import { UnitConversion } from 'src/unit-conversion/entity/unit-conversion.entity';
-import { DataRequestStatus } from 'src/data-request/entity/data-request-status.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 
 const schema = {
@@ -50,10 +43,10 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
 
   readXlsxFile = require('read-excel-file/node');
 
-  async getParameterByAssesment(id: number): Promise<Parameter[]> {
-    const assement = new Assessment();
-    assement.id = id;
-    return await this.repo.find({ where: { assessment: assement } });
+  async getParameterByAssessment(id: number): Promise<Parameter[]> {
+    const assessment = new Assessment();
+    assessment.id = id;
+    return await this.repo.find({ where: { assessment: assessment } });
   }
 
   async GetParameterForIaDash(

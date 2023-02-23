@@ -15,7 +15,6 @@ import {
   ParsedBody,
   ParsedRequest,
 } from '@nestjsx/crud';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -24,9 +23,7 @@ import { AssessmentYearService } from './assessment-year.service';
 import { DataVerifierDto } from './Dto/dataVerifier.dto';
 import { AssessmentYear } from './entity/assessment-year.entity';
 import { getConnection } from 'typeorm';
-
 import axios from 'axios';
-import { Email } from 'read-excel-file/types';
 
 @Crud({
   model: {
@@ -37,7 +34,7 @@ import { Email } from 'read-excel-file/types';
       assessment: {
         eager: true,
       },
-      assessmentResault: {
+      assessmentResult: {
         eager: true,
       },
       QuAlityCheckStatus: {
@@ -106,13 +103,13 @@ export class AssessmentYearController
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('getDataForReportNew/:projIds/:assessTypes/:yearIds/:macAssesmentType')
+  @Get('getDataForReportNew/:projIds/:assessTypes/:yearIds/:macAssessmentType')
   async getDataForReportNew(
     @Request() request,
     @Query('projIds') projIds: string,
     @Query('assessTypes') assessTypes: string,
     @Query('yearIds') yearIds: string,
-    @Query('MacAssesmentType') macAssesmentType: string,
+    @Query('MacAssessmentType') macAssessmentType: string,
   ): Promise<any> {
     const audit: AuditDto = new AuditDto();
     audit.action = 'Report Generated';
@@ -124,20 +121,20 @@ export class AssessmentYearController
       projIds,
       assessTypes,
       yearIds,
-      macAssesmentType,
+      macAssessmentType,
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(
-    'getDataForParameterReportNew/:projIds/:assessTypes/:yearIds/:macAssesmentType',
+    'getDataForParameterReportNew/:projIds/:assessTypes/:yearIds/:macAssessmentType',
   )
   async getDataForParameterReportNew(
     @Request() request,
     @Query('projIds') projIds: string,
     @Query('assessTypes') assessTypes: string,
     @Query('yearIds') yearIds: string,
-    @Query('MacAssesmentType') macAssesmentType: string,
+    @Query('MacAssessmentType') macAssessmentType: string,
   ): Promise<any> {
     const audit: AuditDto = new AuditDto();
     audit.action = 'Report Generated';
@@ -149,7 +146,7 @@ export class AssessmentYearController
       projIds,
       assessTypes,
       yearIds,
-      macAssesmentType,
+      macAssessmentType,
     );
   }
 
@@ -239,30 +236,30 @@ export class AssessmentYearController
     }
   }
 
-  @Get('assessmentYears/getVerification/:assessmentId/:assementYear')
+  @Get('assessmentYears/getVerification/:assessmentId/:assessmentYear')
   async getVerificationDeatilsByAssessmentIdAndAssessmentYear(
     @Request() request,
     @Query('assessmentId') assessmentId: number,
-    @Query('assementYear') assementYear: string,
+    @Query('assessmentYear') assessmentYear: string,
   ): Promise<any> {
     return await this.service.getVerificationDetails(
       assessmentId,
-      assementYear,
+      assessmentYear,
     );
   }
 
   @Get(
-    'assessmentYears/getapprovedata/:assessmentType/:assementYear/:climateActionName',
+    'assessmentYears/getapprovedata/:assessmentType/:assessmentYear/:climateActionName',
   )
   async getdetailsByAssessmentYearAndProjNameAndAsseType(
     @Request() request,
     @Query('assessmentType') assessmentType: string,
-    @Query('assementYear') assementYear: string,
+    @Query('assessmentYear') assessmentYear: string,
     @Query('climateActionName') climateActionName: string,
   ): Promise<any> {
     return await this.service.getdetailsByAssessmentYearAndProjNameAndAsseType(
       assessmentType,
-      assementYear,
+      assessmentYear,
       climateActionName,
     );
   }
@@ -322,7 +319,7 @@ export class AssessmentYearController
       TokenReqestType.InstitutionId,
     ]);
 
-    const resault =
+    const result =
       await this.service.getAssessmentYearsForCountryAndSectorAdmins(
         {
           limit: limit,
@@ -334,12 +331,12 @@ export class AssessmentYearController
         sectorIdFromTocken,
       );
 
-    const assementYearWiseList = new Map();
-    resault.items.forEach((assyesr) => {
+    const assessmentYearWiseList = new Map();
+    result.items.forEach((assyesr) => {
       const key = assyesr.assessmentYear;
-      const collection = assementYearWiseList.get(key);
+      const collection = assessmentYearWiseList.get(key);
       if (!collection) {
-        assementYearWiseList.set(key, [assyesr]);
+        assessmentYearWiseList.set(key, [assyesr]);
       } else {
         collection.push(assyesr);
       }
@@ -347,7 +344,7 @@ export class AssessmentYearController
 
     const graphsYearWise = [];
     const graphsData = new Map();
-    assementYearWiseList.forEach(async function (value, key) {
+    assessmentYearWiseList.forEach(async function (value, key) {
       const projects: string[] = [];
       const ers: number[] = [];
       const macs: number[] = [];
@@ -376,12 +373,9 @@ export class AssessmentYearController
     });
 
     for (const gr of graphsData) {
-      await axios
-        .post('http://localhost:8000/image', gr[1])
-        .then((res) => {
-          graphsYearWise.push([gr[0], res.data]);
-        })
-        .catch((err) => {});
+      await axios.post('http://localhost:8000/image', gr[1]).then((res) => {
+        graphsYearWise.push([gr[0], res.data]);
+      });
     }
 
     return graphsYearWise;

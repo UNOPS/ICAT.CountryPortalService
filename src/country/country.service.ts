@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { Sector } from 'src/master-data/sector/sector.entity';
 import { Repository } from 'typeorm';
 import { CountrySector } from './entity/country-sector.entity';

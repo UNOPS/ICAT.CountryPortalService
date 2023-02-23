@@ -1,4 +1,4 @@
-import { UsersModule } from './../users/users.module';
+import { UsersModule } from '../users/users.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssessmentObjective } from 'src/assessment-objective/entity/assessment-objective.entity';
@@ -8,9 +8,9 @@ import { ApplicabilityEntity } from 'src/master-data/applicability/entity/applic
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { ProjectionYear } from 'src/projection-year/entity/projection-year.entity';
-import { AssesmentController } from './assesment.controller';
-import { AssesmentService } from './assesment.service';
-import { Assessment } from './entity/assesment.entity';
+import { AssessmentController } from './assessment.controller';
+import { AssessmentService } from './assessment.service';
+import { Assessment } from './entity/assessment.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { Audit } from 'src/audit/entity/audit.entity';
 import { User } from 'src/users/user.entity';
@@ -37,9 +37,9 @@ import { EmailNotificationService } from 'src/notifications/email.notification.s
     ]),
     UsersModule,
   ],
-  controllers: [AssesmentController],
+  controllers: [AssessmentController],
   providers: [
-    AssesmentService,
+    AssessmentService,
     Parameter,
     AssessmentYear,
     ProjectionYear,
@@ -54,11 +54,11 @@ import { EmailNotificationService } from 'src/notifications/email.notification.s
     EmailNotificationService,
   ],
   exports: [
-    AssesmentService,
+    AssessmentService,
     Parameter,
     AssessmentYear,
     AuditService,
     EmailNotificationService,
   ],
 })
-export class AssesmentModule {}
+export class AssessmentModule {}

@@ -4,41 +4,39 @@ import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
-import { ProjectionResault } from './entity/projection-resault.entity';
-import { ProjectionResaultService } from './projection-resault.service';
+import { ProjectionResult } from './entity/projection-result.entity';
+import { ProjectionResultService } from './projection-result.service';
 
 @Crud({
   model: {
-    type: ProjectionResault,
+    type: ProjectionResult,
   },
   query: {
     join: {
-      assement: {
+      assessment: {
         eager: true,
       },
-      assementResult: {
+      assessmentResult: {
         eager: true,
       },
     },
   },
 })
-@Controller('projection-resault')
-export class ProjectionResaultController
-  implements CrudController<ProjectionResault>
+@Controller('projection-result')
+export class ProjectionResultController
+  implements CrudController<ProjectionResult>
 {
   constructor(
-    public service: ProjectionResaultService,
+    public service: ProjectionResultService,
     private readonly auditService: AuditService,
   ) {}
 
-  get base(): CrudController<ProjectionResault> {
+  get base(): CrudController<ProjectionResult> {
     return this;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(
-    'projection-resault/updateQCStatus/:resultId/:yearId/:qcStatus/:comment',
-  )
+  @Post('projection-result/updateQCStatus/:resultId/:yearId/:qcStatus/:comment')
   async updateQCStatus(
     @Query('resultId') resultId: number,
     @Query('yearId') yearId: number,
@@ -59,7 +57,7 @@ export class ProjectionResaultController
     );
   }
 
-  @Get('projection-resault/GetProjectionResult/:AssessmentId/:ProjectionYear')
+  @Get('projection-result/GetProjectionResult/:AssessmentId/:ProjectionYear')
   async GetProjectionResult(
     @Query('AssessmentId') AssessmentId: number,
     @Query('ProjectionYear') ProjectionYear: number,

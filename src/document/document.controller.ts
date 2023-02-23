@@ -1,13 +1,8 @@
 import { DocumentOwner } from './entity/document-owner.entity';
 import { editFileName, fileLocation } from './entity/file-upload.utils';
-import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './document.service';
-import {
-  Crud,
-  CrudController,
-  ParsedRequest,
-  CrudRequest,
-} from '@nestjsx/crud';
+import { Crud, CrudController, CrudRequest } from '@nestjsx/crud';
 import { Documents } from './entity/document.entity';
 import {
   Controller,
@@ -23,7 +18,6 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { assert, log } from 'console';
 import { join } from 'path';
 import { createReadStream } from 'fs';
 import { AuditDto } from 'src/audit/dto/audit-dto';

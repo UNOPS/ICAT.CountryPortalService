@@ -1,18 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Crud, CrudController } from '@nestjsx/crud';
-import * as moment from 'moment';
-import { audit } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { Repository } from 'typeorm';
@@ -70,9 +59,6 @@ export class AuditController implements CrudController<Audit> {
     @Query('editedOn') editedOn: string,
     @Query('filterText') filterText: string,
   ): Promise<any> {
-    const timestamp = Date.parse(editedOn);
-    const dateObject = new Date(timestamp);
-
     let role: string;
     let username: string;
     let countryIdFromTocken: number;

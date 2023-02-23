@@ -1,5 +1,5 @@
 import { Methodology } from 'src/methodology/entity/methodology.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import {
   Entity,
   JoinColumn,
@@ -7,7 +7,6 @@ import {
   OneToMany,
   JoinTable,
   ManyToMany,
-  OneToOne,
 } from 'typeorm';
 import { Ndc } from './ndc.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';

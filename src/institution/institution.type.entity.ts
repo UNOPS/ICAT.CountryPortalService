@@ -1,12 +1,6 @@
 import { MasterData } from 'src/shared/entities/master.data.entity';
 import { UserType } from 'src/users/user.type.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity()
 export class InstitutionType extends MasterData {

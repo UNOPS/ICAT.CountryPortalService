@@ -1,19 +1,8 @@
 import { CountrySector } from 'src/country/entity/country-sector.entity';
-import { Country } from 'src/country/entity/country.entity';
 import { LearningMaterialSector } from 'src/learning-material/entity/learning-material-sector.entity';
-import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { ReportSector } from 'src/report/entity/report-sector.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Entity,
-  ManyToMany,
-  JoinTable,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { SubSector } from '../sub-sector/entity/sub-sector.entity';
 
 @Entity({ name: 'sector' })

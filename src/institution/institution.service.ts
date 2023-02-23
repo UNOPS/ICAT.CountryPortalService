@@ -1,8 +1,7 @@
 import { User } from './../users/user.entity';
-import { count, log } from 'console';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Institution } from './institution.entity';
 
@@ -13,7 +12,6 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { InstitutionCategory } from './institution.category.entity';
 import { InstitutionType } from './institution.type.entity';
-import { UsersController } from 'src/users/users.controller';
 import { UsersService } from 'src/users/users.service';
 import { UserType } from 'src/users/user.type.entity';
 import { Country } from 'src/country/entity/country.entity';
@@ -163,8 +161,6 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
   }
 
   async getInstitutionForUsers(inside: number, userType: number): Promise<any> {
-    const filter = '';
-
     const data = this.repo
       .createQueryBuilder('ins')
       .select(['ins.id', 'user.id'])
@@ -186,7 +182,7 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
     }
   }
 
-  async getInstitutionforAssesment(
+  async getInstitutionforAssessment(
     countryIdFromTocken: number,
   ): Promise<Institution[]> {
     const data = this.repo

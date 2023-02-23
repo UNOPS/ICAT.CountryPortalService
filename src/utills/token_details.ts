@@ -1,7 +1,5 @@
-import { Inject, Injectable, UseGuards } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { use } from 'passport';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Injectable()
 export class TokenDetails {
