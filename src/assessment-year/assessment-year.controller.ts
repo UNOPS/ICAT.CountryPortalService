@@ -196,7 +196,7 @@ export class AssessmentYearController
     await queryRunner.startTransaction();
     try {
       const audit: AuditDto = new AuditDto();
-      const paeameter =
+      const parameter =
         this.service.acceptDataVerifiersForIds(updateDeadlineDto);
 
       audit.action = 'Verifier Deadline Created';
@@ -204,7 +204,7 @@ export class AssessmentYearController
       audit.actionStatus = 'Created';
       this.auditService.create(audit);
       await queryRunner.commitTransaction();
-      return paeameter;
+      return parameter;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       return err;
@@ -220,14 +220,14 @@ export class AssessmentYearController
     await queryRunner.startTransaction();
     try {
       const audit: AuditDto = new AuditDto();
-      const paeameter = this.service.acceptQC(updateDeadlineDto);
+      const parameter = this.service.acceptQC(updateDeadlineDto);
 
       audit.action = 'Quality Check Added';
       audit.comment = 'Quality Check Added';
       audit.actionStatus = 'Added';
       this.auditService.create(audit);
       await queryRunner.commitTransaction();
-      return paeameter;
+      return parameter;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       return err;

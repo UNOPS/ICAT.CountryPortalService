@@ -346,7 +346,6 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
   ): Observable<AxiosResponse<any>> {
     try {
       const fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
-
       const content_ = JSON.stringify(parametrs);
       const options_ = <RequestInit>{
         body: content_,
