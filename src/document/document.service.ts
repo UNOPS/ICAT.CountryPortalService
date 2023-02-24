@@ -88,9 +88,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       },
     });
 
-    const base = this.configService.get<string>('downloadbaseUrl');
+    const base = process.env.DOWNLOAD_BASE_URL;
     documenst.forEach((a) => {
-      a.url = `https://icat-ca-tool.climatesi.com/web-api/document/downloadDocument/attachment/${a.id}`;
+      a.url = `${base}document/downloadDocument/attachment/${a.id}`;
     });
 
     return documenst;
@@ -106,7 +106,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       where: { documentOwnerId: oid, country: country },
     });
 
-    const base = this.configService.get<string>('baseUrl');
+    const base = process.env.BASE_URL;
     documenst.forEach((a) => {
       a.url = `${base}document/downloadDocument/attachment/${a.id}`;
     });

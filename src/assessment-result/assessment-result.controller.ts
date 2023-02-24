@@ -70,7 +70,7 @@ export class AssessmentResultController
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async GetAssessmentResult(
     @Query('AssessmentId') AssessmentId: number,

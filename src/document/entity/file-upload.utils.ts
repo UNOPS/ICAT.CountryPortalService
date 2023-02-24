@@ -8,11 +8,11 @@ export class FileUpload {
   constructor(private configService: ConfigService) {}
 
   getStaticFolderName() {
-    return this.configService.get<string>('staticFolederName');
+    return this.configService.get<string>('staticFolderName');
   }
 
   getbaseUrl() {
-    return this.configService.get<string>('baseUrl');
+    return this.configService.get<string>(process.env.BASE_URL);
   }
 }
 

@@ -714,7 +714,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     for (const gr of graphsData) {
       await axios
-        .post('http://localhost:8000/image', gr[1])
+        .post(`${process.env.BASE_URL}/image`, gr[1])
         .then((res) => {
           graphsYearWise.push([gr[0], res.data]);
         })
@@ -1243,7 +1243,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                               <h4>Projection of GHG Emissions</h4>
                               <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assessment.projectionBaseYear} based on the ${assessment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
-                              <div><img src="http://localhost:8080/graph` +
+                              <div><img src="${process.env.BASE_URL}/graph` +
                         assessment.id.toString() +
                         `.png"` +
                         ` alt="Italian Trulli"></div>
@@ -1894,7 +1894,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
       </tr></thead><tbody>${tableContent}</tbody>
       </table></div> 
       <div class="container-fluid mb-5" >${paragraph}</div>
-      <div><img src="http://localhost:8080/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
+      <div><img src="${
+        process.env.BASE_URL
+      }/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
       <div><p>Figure 1 Emissions reduction of ${reportData.sectors.toString()} sector of ${
           reportData.country
         }</p></div>

@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:18-alpine As development
+FROM node:14-alpine As development
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 # Create app directory
 WORKDIR /usr/src/app
@@ -25,7 +25,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:18-alpine As build
+FROM node:14-alpine As build
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 WORKDIR /usr/src/app
@@ -52,7 +52,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:18-alpine As production
+FROM node:14-alpine As production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Copy the bundled code from the build stage to the production image

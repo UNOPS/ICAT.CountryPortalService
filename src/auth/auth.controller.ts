@@ -88,7 +88,9 @@ export class AuthController {
       'utf8',
     );
 
-    const resetPwdUrl = this.configService.get<string>('PWD_RESET_URL');
+    const resetPwdUrl = this.configService.get<string>(
+      process.env.PWD_RESET_URL,
+    );
 
     emailTemplate = emailTemplate.replace(
       '[RESER_PWD_URL]',

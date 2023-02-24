@@ -72,7 +72,9 @@ export class UsersService extends TypeOrmCrudService<User> {
 
     const newUserDb = await this.usersRepository.save(newUser);
 
-    const systemLoginUrl = this.configService.get<string>('LOGIN_URL');
+    const systemLoginUrl = this.configService.get<string>(
+      process.env.CLIENT_URL,
+    );
 
     const template =
       'Dear ' +
@@ -116,7 +118,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     userId: number,
     newToken: string,
   ): Promise<User> {
-    const systemLoginUrl = this.configService.get<string>('ClientURl');
+    const systemLoginUrl = process.env.CLIENT_URL;
     const user = await this.usersRepository.findOne(userId);
     user.resetToken = newToken;
     const newUUID = uuidv4();

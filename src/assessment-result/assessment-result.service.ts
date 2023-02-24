@@ -345,7 +345,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     parametrs: Parameter[],
   ): Observable<AxiosResponse<any>> {
     try {
-      const fullUrl = 'http://13.233.122.62:3600/methodology/calculation';
+      const fullUrl = `${process.env.CAL_ENGINE_BASE_URL}/methodology/calculation`;
       const content_ = JSON.stringify(parametrs);
       const options_ = <RequestInit>{
         body: content_,
@@ -359,7 +359,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
       return this.httpService.post(
         fullUrl,
         { body: content_ },
-        { headers: { 'api-key': '1234' } },
+        { headers: { 'api-key': process.env.API_KEY_1 } },
       );
     } catch (e) {}
   }

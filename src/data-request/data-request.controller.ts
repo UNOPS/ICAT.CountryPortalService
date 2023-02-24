@@ -58,7 +58,7 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   @UseGuards(JwtAuthGuard)
   async getNewDataRequest(
@@ -98,7 +98,7 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   @UseGuards(JwtAuthGuard)
   async getNewDataRequestForClimateList(
@@ -138,7 +138,7 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getAssignDateRequest(
     @Request() request,
@@ -162,7 +162,7 @@ export class ParameterRequestController
   @Get('getEnterDataRequest/:page/:limit/:filterText/:climateActionId/:year')
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getEnterDataParameter(
     @Request() request,
@@ -191,7 +191,7 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getReviewDataRequest(
     @Request() request,

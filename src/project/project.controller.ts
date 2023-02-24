@@ -245,7 +245,7 @@ export class ProjectController implements CrudController<Project> {
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getactiveClimateActionDetails(
     @Request() request,
@@ -284,7 +284,7 @@ export class ProjectController implements CrudController<Project> {
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getAllClimateActionList(
     @Request() request,
@@ -329,7 +329,7 @@ export class ProjectController implements CrudController<Project> {
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getActiveClimateActionList(
     @Request() request,
@@ -375,7 +375,7 @@ export class ProjectController implements CrudController<Project> {
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getProjectList(
     @Request() request,
@@ -445,7 +445,7 @@ export class ProjectController implements CrudController<Project> {
 
     const updateData = await this.base.updateOneBase(req, dto);
     const audit: AuditDto = new AuditDto();
-    const baseurl = this.configService.get<string>('ClientURl');
+    const baseurl = process.env.CLIENT_URL;
 
     if (
       dto.projectApprovalStatus &&
@@ -626,7 +626,7 @@ export class ProjectController implements CrudController<Project> {
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234' },
+    schema: { type: 'string', default: process.env.API_KEY_1 },
   })
   async getProjectsForCountryAndSectorAdminsprojectApprovalStatusWise(
     @Request() request,
