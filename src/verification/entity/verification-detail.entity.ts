@@ -1,16 +1,7 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { VerificationStatus } from './verification-status.entity';
 
 @Entity({ name: 'verificationDetail' })
@@ -82,11 +73,6 @@ export class VerificationDetail extends BaseTrackingEntity {
   @Column({ nullable: true })
   userVerifier?: number;
 
-  // @Column({ nullable: true })
-  // verifierName?: string;
-
-  // @Column({ nullable: true })
-  // institutionName?: string;
   @Column({ nullable: true })
   isAssumption: boolean;
 
@@ -99,6 +85,8 @@ export class VerificationDetail extends BaseTrackingEntity {
   )
   public assessmentYear!: AssessmentYear;
 
-  @ManyToOne(() => Parameter, (parameter) => parameter.verificationDetail,{nullable: true})
+  @ManyToOne(() => Parameter, (parameter) => parameter.verificationDetail, {
+    nullable: true,
+  })
   public parameter: Parameter;
 }

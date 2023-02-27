@@ -5,7 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 @Entity('methodology_subsection')
 export class SubsectionEntity extends MasterData {
   @Column()
-  type: string; // baseline or project
+  type: string;
 
   @Column()
   parentType: string;

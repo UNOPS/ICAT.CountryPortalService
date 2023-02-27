@@ -1,16 +1,14 @@
 import { EmissionReductioDraftDataEntity } from './../master-data/emisssion-reduction-draft-data/entity/emission-reductio-draft-data.entity';
-import { promises } from 'fs';
-import { type } from 'os';
-import { Injectable, Options } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-// import ChartJSImage from 'chart.js-image';
+
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYearService } from 'src/assessment-year/assessment-year.service';
 import { Country } from 'src/country/entity/country.entity';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
@@ -22,23 +20,22 @@ import { ReportNdc } from './entity/report-ndc.entity';
 import { ReportProject } from './entity/report-project.entity';
 import { ReportSector } from './entity/report-sector.entity';
 import { Report } from './entity/report.entity';
-import { In, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { ProjectService } from 'src/project/project.service';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import axios from 'axios';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
-import { AssesmentService } from 'src/assesment/assesment.service';
+import { AssessmentService } from 'src/assessment/assessment.service';
 const path = require('path');
 import { readdir } from 'fs/promises';
 import { ReportPdfInsert } from './dto/reportPdfInsert.dto';
 import { ReportPdfFileData } from './entity/report-pdfFile.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { UsersService } from 'src/users/users.service';
-import { async } from 'rxjs';
 import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 
@@ -48,7 +45,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     @InjectRepository(Report) repo,
     private readonly usersService: UsersService,
     private readonly assessmentYearService: AssessmentYearService,
-    private readonly assessmentService: AssesmentService,
+    private readonly assessmentService: AssessmentService,
     private readonly projectService: ProjectService,
     private readonly defaultValueService: DefaultValueService,
     private readonly emissionReductionDraftDataService: EmissionReductionDraftdataService,
@@ -57,17 +54,18 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly graphRepository: Repository<EmissionReductioDraftDataEntity>,
     @InjectRepository(Project) private readonly proRepo: Repository<Project>,
     @InjectRepository(Assessment)
-    private readonly assesment: Repository<Assessment>,
+    private readonly assessment: Repository<Assessment>,
     @InjectRepository(AssessmentYear)
-    private readonly assesmentYearResults: Repository<AssessmentYear>,
+    private readonly assessmentYearResults: Repository<AssessmentYear>,
     @InjectRepository(ReportPdfFileData)
     private readonly reportPdfFileData: Repository<ReportPdfFileData>,
     @InjectRepository(Ndc) private readonly ndc: Repository<Ndc>,
-    @InjectRepository(Parameter) private readonly parameter: Repository<Parameter>,
+    @InjectRepository(Parameter)
+    private readonly parameter: Repository<Parameter>,
     @InjectRepository(ProjectOwner)
     private readonly projectOwner: Repository<ProjectOwner>,
-    @InjectRepository(AssessmentResault)
-    private readonly assResRepo: Repository<AssessmentResault>,
+    @InjectRepository(AssessmentResult)
+    private readonly assResRepo: Repository<AssessmentResult>,
   ) {
     super(repo);
   }
@@ -75,9 +73,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public ndcItemList: any;
   public ndcItemListActivity: any;
   public asesmentYears: any;
-  public assesmentMetholodgy: any;
-  public assesmentParameter: any;
-  public assesmentResult: any;
+  public assessmentMetholodgy: any;
+  public assessmentParameter: any;
+  public assessmentResult: any;
   public commenAssestment: any;
   public commenAssestmentActivity: any;
   public assestmentYerResult: any;
@@ -87,11 +85,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public projectResultConcat: any;
   public isCheckLekage: any;
 
-  public assementBaseLineResultYears: any[] = [];
-  public assementBaseLineResult: any[] = [];
+  public assessmentBaseLineResultYears: any[] = [];
+  public assessmentBaseLineResult: any[] = [];
 
-  public assementProjectResultYears: any[] = [];
-  public assementProjectResult: any[] = [];
+  public assessmentProjectResultYears: any[] = [];
+  public assessmentProjectResult: any[] = [];
 
   public projectionBaseLineResultYears: any[] = [];
   public projectionBaseLineResult: any[] = [];
@@ -100,8 +98,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
   public projectionProjectResult: any[] = [];
 
   public projectionBaseResul: any[] = [];
-  public assementProjectResultWithYears: any[] = [];
-  //public dataCollectionArray: any[] = [];
+  public assessmentProjectResultWithYears: any[] = [];
 
   async getReportDetails(
     options: IPaginationOptions,
@@ -113,9 +110,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     assessmentType: string,
     countryIdFromTocken: number,
   ): Promise<Pagination<Report>> {
-    // console.log('selected type',assessmentType)
-
-    let filter: string = '';
+    let filter = '';
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and rep.countryId = :countryIdFromTocken`;
@@ -134,12 +129,10 @@ export class ReportService extends TypeOrmCrudService<Report> {
       assessmentType != ''
     ) {
       if (filter) {
-        // console.log('ewwwww',assessmentType)
         filter = `${filter} and asse.assessmentType = :assessmentType`;
       } else {
         filter = `asse.assessmentType = :assessmentType`;
       }
-      // filter = '(asse.assessmentType LIKE :assessmentType)';
     }
 
     if (countryId != 0) {
@@ -174,7 +167,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       }
     }
 
-    var data = this.repo
+    const data = this.repo
       .createQueryBuilder('rep')
 
       .leftJoinAndMapOne(
@@ -231,26 +224,19 @@ export class ReportService extends TypeOrmCrudService<Report> {
       })
       .orderBy('rep.createdOn', 'DESC');
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
-    // console.log(data.getQuery());
     if (resualt) {
       return resualt;
     }
   }
 
   async getPdfReportFiles() {
-    // let ext = path.extname('./public')
-    // console.log("===== ext +++++", ext);
-
     try {
-      const dirpath = path.join(__dirname, './public');
       const files = await readdir('./public');
-      // const txtFiles = files.filter(el => path.extname(el) === '.pdf')
-      // console.log("======== txtFiles", txtFiles);
-      let pdfFiles = [];
-      for (let file of files) {
-        //console.log("======== txtFiles", file);
+
+      const pdfFiles = [];
+      for (const file of files) {
         if (path.extname(file) === '.pdf') {
           pdfFiles.push(file);
         }
@@ -261,139 +247,71 @@ export class ReportService extends TypeOrmCrudService<Report> {
       console.error(err);
     }
   }
-sfdsfds
-  async generateChart(
-    summryReport:any[],
-    graphData:any,
-    // years: number[],
-    // projIds: string[],
-    // assessType: string[],
-  ): Promise<string> {
-    // console.log('climateActionIds',projIds)
-    let BAUList: Number[] = [];
-    let ConditionalList: Number[] = [];
-    let UnConditionalList: Number[] = [];
-    let ActualList: Number[] = [];
-    let assessmentListId: Number[] = [];
-    let currentYear: number = new Date().getFullYear();
-    // let climateAcList: Project[] = await this.proRepo.find({
-    //   where: { id: In(projIds) },
-    //   relations: ['assessments'],
-    // });
-
-    // console.log("projects",climateAcList)
-    // for (let a = 0; a < climateAcList.length; a++) {
-    //   // console.log("assesResult3",climateAcList[a].assessments)
-    //   if (climateAcList[a].assessments) {
-    //     // console.log("assesResult2")
-    //     for (let b = 0; b < climateAcList[a].assessments.length; b++) {
-    //       assessmentListId.push(climateAcList[a].assessments[b]?.id);
-    //     }
-    //   }
-    // }
-
-    // console.log("assessmentListId",assessmentListId)
+  sfdsfds;
+  async generateChart(summryReport: any[], graphData: any): Promise<string> {
+    const BAUList: number[] = [];
+    const ConditionalList: number[] = [];
+    const UnConditionalList: number[] = [];
+    const ActualList: number[] = [];
+    const currentYear: number = new Date().getFullYear();
 
     const ChartJSImage = require('chart.js-image');
-    // let graphData = await this.graphRepository.findOne({ id: 1 });
-    // console.log('graphData', graphData);
-    // years.push(parseInt(graphData.baseYear));
-    // years.push(parseInt(graphData.targetYear));
-    // years = years.sort(function (a, b) {
-    //   return a - b;
-    // });
 
-    // // console.log('years', years);
-
-    // years = years.filter(function (o) {
-    //   return (
-    //     o >= parseInt(graphData.baseYear) && o <= parseInt(graphData.targetYear)
-    //   );
-    // });
-let yrList:number[]=[];
-    for(let year = parseInt(graphData.baseYear);year<=parseInt(graphData.targetYear);year++ )
-    {
-      yrList.push(year)
+    const yrList: number[] = [];
+    for (
+      let year = parseInt(graphData.baseYear);
+      year <= parseInt(graphData.targetYear);
+      year++
+    ) {
+      yrList.push(year);
     }
-
-    let yearlstLength = yrList.length;
-    // console.log('years', years);
-    let unconditionalValue =
+    const unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
 
-    let conditionalValue =
+    const conditionalValue =
       graphData.targetYearEmission - graphData.conditionaltco2;
 
-    let yrGap = parseInt(graphData.targetYear) - parseInt(graphData.baseYear);
-    let baseYear = parseInt(graphData.baseYear);
+    const yrGap = parseInt(graphData.targetYear) - parseInt(graphData.baseYear);
+    const baseYear = parseInt(graphData.baseYear);
 
-    //  this.projectService.getProjectsForCountryAndSectorAdmins()
-
-    for (let year of yrList) {
-      // console.log("work testay",year)
-      
-
-      let bauValue: number =
+    for (const year of yrList) {
+      const bauValue: number =
         ((graphData.targetYearEmission - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
+          (year - baseYear) +
         graphData.baseYearEmission;
-      ConditionalList.push(graphData.conditionaltco2 && graphData.conditionaltco2 != 0 ? 
-        ((conditionalValue - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
-        graphData.baseYearEmission : 0
+      ConditionalList.push(
+        graphData.conditionaltco2 && graphData.conditionaltco2 != 0
+          ? ((conditionalValue - graphData.baseYearEmission) / yrGap) *
+              (year - baseYear) +
+              graphData.baseYearEmission
+          : 0,
       );
-      UnConditionalList.push(graphData.unconditionaltco2 && graphData.unconditionaltco2 != 0 ? 
-        ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
-        graphData.baseYearEmission:0
+      UnConditionalList.push(
+        graphData.unconditionaltco2 && graphData.unconditionaltco2 != 0
+          ? ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
+              (year - baseYear) +
+              graphData.baseYearEmission
+          : 0,
       );
       BAUList.push(bauValue);
 
       let total = 0;
 
-      for(let sum of summryReport){
-        if (sum.Type == 'Ex-post' && Number(sum.Year)==year) {
-          // console.log("========this.executiveSummery++++++", Number(sum.Result));
+      for (const sum of summryReport) {
+        if (sum.Type == 'Ex-post' && Number(sum.Year) == year) {
           total = total + Number(sum.Result);
         }
       }
-      if (year <= currentYear) { ActualList.push(bauValue - total/1000000); }
-
-      // if (year <= currentYear) {
-        // let assesResult = await this.assResRepo.find({
-        //   where: {
-        //     assessmentYear: { assessmentYear: year },
-        //     assement: {
-        //       assessmentType: In(assessType),
-        //       id: In(assessmentListId),
-        //     },
-        //   },
-        //   relations: ['assessmentYear', 'assement'],
-        // });
-        // console.log("assesResult1")
-        // console.log("assesResult",assesResult)
-        // if (assesResult.length > 0) {
-        //   for (let assement of assesResult) {
-        //     // console.log("totalemition",assement.totalEmission)
-        //     total += assement.totalEmission ? assement.totalEmission : 0;
-        //     // console.log(total)
-        //   }
-
-        //   ActualList.push(bauValue - total / 1000000);
-        // } else {
-        //   ActualList.push(bauValue);
-        // }
-      // }
-
-      // this.postYrList.push(total);
+      if (year <= currentYear) {
+        ActualList.push(bauValue - total / 1000000);
+      }
     }
-    // console.log('ActualList', ActualList);
-    // console.log('BAUList', BAUList);
+
     const line_chart = ChartJSImage()
       .chart({
         type: 'line',
         data: {
-          labels: yrList, ///['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+          labels: yrList,
 
           datasets: [
             {
@@ -451,112 +369,107 @@ let yrList:number[]=[];
             ],
           },
         },
-      }) // Line chart
+      })
       .backgroundColor('white')
-      .width(500) // 500px
-      .height(300); // 300px
+      .width(500)
+      .height(300);
 
-    let datetime: string = new Date().getTime().toString();
-
-    //line_chart.toURL(); // String: https://image-charts.com/chart.js/2.8.0?icac=documentation&chart=%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B%27January%27%2C%27February%27%2C%27March%27%2C%27April%27%2C%27May%27%2C%27June%27%2C%27July%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27My+First+dataset%27%2CborderColor%3A%27rgb%28255%2C+99%2C+132%29%27%2CbackgroundColor%3A%27rgba%28255%2C+99%2C+132%2C+.5%29%27%2Cdata%3A%5B57%2C90%2C11%2C-15%2C37%2C-37%2C-27%5D%7D%2C%7Blabel%3A%27My+Second+dataset%27%2CborderColor%3A%27rgb%2854%2C+162%2C+235%29%27%2CbackgroundColor%3A%27rgba%2854%2C+162%2C+235%2C+.5%29%27%2Cdata%3A%5B71%2C-36%2C-94%2C78%2C98%2C65%2C-61%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%2875%2C+192%2C+192%29%27%2CbackgroundColor%3A%27rgba%2875%2C+192%2C+192%2C+.5%29%27%2Cdata%3A%5B48%2C-64%2C-61%2C98%2C0%2C-39%2C-70%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%28255%2C+205%2C+86%29%27%2CbackgroundColor%3A%27rgba%28255%2C+205%2C+86%2C+.5%29%27%2Cdata%3A%5B-58%2C88%2C29%2C44%2C3%2C78%2C-9%5D%7D%5D%7D%2Coptions%3A%7Bresponsive%3Atrue%2Ctitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Chart.js+Line+Chart+-+Stacked+Area%27%7D%2Ctooltips%3A%7Bmode%3A%27index%27%7D%2Chover%3A%7Bmode%3A%27index%27%7D%2Cscales%3A%7BxAxes%3A%5B%7BscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Month%27%7D%7D%5D%2CyAxes%3A%5B%7Bstacked%3Atrue%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Value%27%7D%7D%5D%7D%7D%7D&bkg=white&width=700&height=390&icretina=1&ichm=922e17b749b1ab7fab2a14cb742029dc46e50e658457913a9f548793910d2a0d
-    line_chart.toFile(`./public/reportPDF_${datetime}.png`); // Promise<()>
-    return datetime
-    //line_chart.toDataURI(); // Promise<String> : data:image/png;base64,iVBORw0KGgo...
-    //line_chart.toBuffer(); // Promise<Buffer> : Buffer 89 50 4e 47 0d 0a 1a 0a 00 00 00 ...
+    const datetime: string = new Date().getTime().toString();
+    line_chart.toFile(`./public/reportPDF_${datetime}.png`);
+    return datetime;
   }
 
-
   async generateChartForDownlord(
-    // years: number[],
     projIds: string[],
     assessType: string[],
     selectAllSectors: boolean,
     sectorIds: number[],
     yearIds: number[],
-    countryIdFromTocken:number,
-    sectorIdFromTocken:number
+    countryIdFromTocken: number,
+    sectorIdFromTocken: number,
   ) {
-    let summryReport: any[] =
-    await this.assessmentYearService.getDataForReportNew(
-      projIds.join(','),
-      assessType.join(','),
-      yearIds.join(','),
-      '',
-    );
+    const summryReport: any[] =
+      await this.assessmentYearService.getDataForReportNew(
+        projIds.join(','),
+        assessType.join(','),
+        yearIds.join(','),
+        '',
+      );
 
-    let setSectorId:number=sectorIds[0];
-    if(selectAllSectors==true){
-      setSectorId=0;
+    let setSectorId: number = sectorIds[0];
+    if (selectAllSectors == true) {
+      setSectorId = 0;
     }
-    let graphData = await this.emissionReductionDraftDataService.getEmissionReductionDraftDataForReport(setSectorId,countryIdFromTocken,sectorIdFromTocken);
-    
-    let BAUList: Number[] = [];
-    let ConditionalList: Number[] = [];
-    let UnConditionalList: Number[] = [];
-    let ActualList: Number[] = [];
-   
-    let currentYear: number = new Date().getFullYear();
-    
+    const graphData =
+      await this.emissionReductionDraftDataService.getEmissionReductionDraftDataForReport(
+        setSectorId,
+        countryIdFromTocken,
+        sectorIdFromTocken,
+      );
+    const BAUList: number[] = [];
+    const ConditionalList: number[] = [];
+    const UnConditionalList: number[] = [];
+    const ActualList: number[] = [];
+
+    const currentYear: number = new Date().getFullYear();
 
     const ChartJSImage = require('chart.js-image');
-   
-let yrList:number[]=[];
-    for(let year = parseInt(graphData.baseYear);year<=parseInt(graphData.targetYear);year++ )
-    {
-      yrList.push(year)
-    }
 
-    let yearlstLength = yrList.length;
-    // console.log('years', years);
-    let unconditionalValue =
+    const yrList: number[] = [];
+    for (
+      let year = parseInt(graphData.baseYear);
+      year <= parseInt(graphData.targetYear);
+      year++
+    ) {
+      yrList.push(year);
+    }
+    const unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
 
-    let conditionalValue =
+    const conditionalValue =
       graphData.targetYearEmission - graphData.conditionaltco2;
 
-    let yrGap = parseInt(graphData.targetYear) - parseInt(graphData.baseYear);
-    let baseYear = parseInt(graphData.baseYear);
+    const yrGap = parseInt(graphData.targetYear) - parseInt(graphData.baseYear);
+    const baseYear = parseInt(graphData.baseYear);
 
-   
-
-    for (let year of yrList) {
-     
-      
-
-      let bauValue: number =
+    for (const year of yrList) {
+      const bauValue: number =
         ((graphData.targetYearEmission - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
+          (year - baseYear) +
         graphData.baseYearEmission;
-      ConditionalList.push(graphData.conditionaltco2 && graphData.conditionaltco2 != 0 ? 
-        ((conditionalValue - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
-        graphData.baseYearEmission : 0
+      ConditionalList.push(
+        graphData.conditionaltco2 && graphData.conditionaltco2 != 0
+          ? ((conditionalValue - graphData.baseYearEmission) / yrGap) *
+              (year - baseYear) +
+              graphData.baseYearEmission
+          : 0,
       );
-      UnConditionalList.push(graphData.unconditionaltco2 && graphData.unconditionaltco2 != 0 ? 
-        ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
-        (year - baseYear) +
-        graphData.baseYearEmission:0
+      UnConditionalList.push(
+        graphData.unconditionaltco2 && graphData.unconditionaltco2 != 0
+          ? ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
+              (year - baseYear) +
+              graphData.baseYearEmission
+          : 0,
       );
       BAUList.push(bauValue);
 
       let total = 0;
 
-      for(let sum of summryReport){
-        if (sum.Type == 'Ex-post' && Number(sum.Year)==year) {
-         
+      for (const sum of summryReport) {
+        if (sum.Type == 'Ex-post' && Number(sum.Year) == year) {
           total = total + Number(sum.Result);
         }
       }
-      if (year <= currentYear) { ActualList.push(bauValue - total/1000000); }
-
-    
+      if (year <= currentYear) {
+        ActualList.push(bauValue - total / 1000000);
+      }
     }
-   
+
     const line_chart = ChartJSImage()
       .chart({
         type: 'line',
         data: {
-          labels: yrList, ///['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+          labels: yrList,
 
           datasets: [
             {
@@ -614,228 +527,52 @@ let yrList:number[]=[];
             ],
           },
         },
-      }) // Line chart
+      })
       .backgroundColor('white')
-      .width(500) // 500px
-      .height(300); // 300px
+      .width(500)
+      .height(300);
 
-
-    // console.log('climateActionIds',projIds)
-    // let BAUList: Number[] = [];
-    // let ConditionalList: Number[] = [];
-    // let UnConditionalList: Number[] = [];
-    // let ActualList: Number[] = [];
-    // let assessmentListId: Number[] = [];
-    // let currentYear: number = new Date().getFullYear();
-    // let climateAcList: Project[] = await this.proRepo.find({
-    //   where: { id: In(projIds) },
-    //   relations: ['assessments'],
-    // });
-
-    // // console.log("projects",climateAcList)
-    // for (let a = 0; a < climateAcList.length; a++) {
-    //   // console.log("assesResult3",climateAcList[a].assessments)
-    //   if (climateAcList[a].assessments) {
-    //     // console.log("assesResult2")
-    //     for (let b = 0; b < climateAcList[a].assessments.length; b++) {
-    //       assessmentListId.push(climateAcList[a].assessments[b]?.id);
-    //     }
-    //   }
-    // }
-
-    // console.log("assessmentListId",assessmentListId)
-
-    // const ChartJSImage = require('chart.js-image');
-    // let graphData = await this.graphRepository.findOne({ id: 1 });
-    // // console.log('graphData', graphData);
-    // years.push(parseInt(graphData.baseYear));
-    // years.push(parseInt(graphData.targetYear));
-    // years = years.sort(function (a, b) {
-    //   return a - b;
-    // });
-
-    // // console.log('years', years);
-
-    // years = years.filter(function (o) {
-    //   return (
-    //     o >= parseInt(graphData.baseYear) && o <= parseInt(graphData.targetYear)
-    //   );
-    // });
-    // // console.log('years', years);
-    // let unconditionalValue =
-    //   graphData.targetYearEmission - graphData.unconditionaltco2;
-
-    // let conditionalValue =
-    //   graphData.targetYearEmission - graphData.conditionaltco2;
-
-    // let yrGap = parseInt(graphData.targetYear) - parseInt(graphData.baseYear);
-    // let baseYear = parseInt(graphData.baseYear);
-
-    // //  this.projectService.getProjectsForCountryAndSectorAdmins()
-
-    // for (let year of years) {
-    //   // console.log("work testay",year)
-    //   let total = 0;
-
-    //   let bauValue: number =
-    //     ((graphData.targetYearEmission - graphData.baseYearEmission) / yrGap) *
-    //     (year - baseYear) +
-    //     graphData.baseYearEmission;
-    //   ConditionalList.push(!graphData.conditionaltco2 && graphData.conditionaltco2 == 0 ? 0 :
-    //     ((conditionalValue - graphData.baseYearEmission) / yrGap) *
-    //     (year - baseYear) +
-    //     graphData.baseYearEmission,
-    //   );
-    //   UnConditionalList.push(!graphData.unconditionaltco2 && graphData.unconditionaltco2 == 0 ? 0 :
-    //     ((unconditionalValue - graphData.baseYearEmission) / yrGap) *
-    //     (year - baseYear) +
-    //     graphData.baseYearEmission,
-    //   );
-    //   BAUList.push(bauValue);
-    //   if (year <= currentYear) {
-    //     let assesResult = await this.assResRepo.find({
-    //       where: {
-    //         assessmentYear: { assessmentYear: year },
-    //         assement: {
-    //           assessmentType: In(assessType),
-    //           id: In(assessmentListId),
-    //         },
-    //       },
-    //       relations: ['assessmentYear', 'assement'],
-    //     });
-    //     // console.log("assesResult1")
-    //     // console.log("assesResult",assesResult)
-    //     if (assesResult.length > 0) {
-    //       for (let assement of assesResult) {
-    //         // console.log("totalemition",assement.totalEmission)
-    //         total += assement.totalEmission ? assement.totalEmission : 0;
-    //         // console.log(total)
-    //       }
-
-    //       ActualList.push(bauValue - total / 1000000);
-    //     } else {
-    //       ActualList.push(bauValue);
-    //     }
-    //   }
-
-    //   // this.postYrList.push(total);
-    // }
-    // // console.log('ActualList', ActualList);
-    // // console.log('BAUList', BAUList);
-    // const line_chart = ChartJSImage()
-    //   .chart({
-    //     type: 'line',
-    //     data: {
-    //       labels: years, ///['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
-
-    //       datasets: [
-    //         {
-    //           label: 'Actual',
-    //           tension: 0.5,
-    //           borderColor: 'rgb(255,+205,+86)',
-    //           backgroundColor: 'rgba(255,+205,+86,+.5)',
-    //           data: ActualList,
-    //         },
-    //         {
-    //           label: 'BAU',
-    //           tension: 0.5,
-    //           borderColor: 'rgb(255,+99,+132)',
-    //           backgroundColor: 'rgba(255,+99,+132,+.5)',
-    //           data: BAUList,
-    //         },
-    //         {
-    //           label: 'NDC-Conditional',
-    //           tension: 0.5,
-    //           borderColor: 'rgb(54,+162,+235)',
-    //           backgroundColor: 'rgba(54,+162,+235,+.5)',
-    //           data: ConditionalList,
-    //         },
-    //         {
-    //           label: 'NDC-Unconditional',
-    //           tension: 0.5,
-    //           borderColor: 'rgb(75,+192,+192)',
-    //           backgroundColor: 'rgba(75,+192,+192,+.5)',
-    //           data: UnConditionalList,
-    //         },
-    //       ],
-    //     },
-    //     options: {
-    //       title: {
-    //         display: true,
-    //         text: 'Emission Reduction Targets',
-    //       },
-    //       scales: {
-    //         xAxes: [
-    //           {
-    //             scaleLabel: {
-    //               display: true,
-    //               labelString: 'Year',
-    //             },
-    //           },
-    //         ],
-    //         yAxes: [
-    //           {
-    //             stacked: false,
-    //             scaleLabel: {
-    //               display: true,
-    //               labelString: 'Emission(MtCO₂e)',
-    //             },
-    //           },
-    //         ],
-    //       },
-    //     },
-    //   }) // Line chart
-    //   .backgroundColor('white')
-    //   .width(500) // 500px
-    //   .height(300); // 300px
-
-    let datetime: string = new Date().getTime().toString();
-    //line_chart.toURL(); // String: https://image-charts.com/chart.js/2.8.0?icac=documentation&chart=%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B%27January%27%2C%27February%27%2C%27March%27%2C%27April%27%2C%27May%27%2C%27June%27%2C%27July%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27My+First+dataset%27%2CborderColor%3A%27rgb%28255%2C+99%2C+132%29%27%2CbackgroundColor%3A%27rgba%28255%2C+99%2C+132%2C+.5%29%27%2Cdata%3A%5B57%2C90%2C11%2C-15%2C37%2C-37%2C-27%5D%7D%2C%7Blabel%3A%27My+Second+dataset%27%2CborderColor%3A%27rgb%2854%2C+162%2C+235%29%27%2CbackgroundColor%3A%27rgba%2854%2C+162%2C+235%2C+.5%29%27%2Cdata%3A%5B71%2C-36%2C-94%2C78%2C98%2C65%2C-61%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%2875%2C+192%2C+192%29%27%2CbackgroundColor%3A%27rgba%2875%2C+192%2C+192%2C+.5%29%27%2Cdata%3A%5B48%2C-64%2C-61%2C98%2C0%2C-39%2C-70%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%28255%2C+205%2C+86%29%27%2CbackgroundColor%3A%27rgba%28255%2C+205%2C+86%2C+.5%29%27%2Cdata%3A%5B-58%2C88%2C29%2C44%2C3%2C78%2C-9%5D%7D%5D%7D%2Coptions%3A%7Bresponsive%3Atrue%2Ctitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Chart.js+Line+Chart+-+Stacked+Area%27%7D%2Ctooltips%3A%7Bmode%3A%27index%27%7D%2Chover%3A%7Bmode%3A%27index%27%7D%2Cscales%3A%7BxAxes%3A%5B%7BscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Month%27%7D%7D%5D%2CyAxes%3A%5B%7Bstacked%3Atrue%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Value%27%7D%7D%5D%7D%7D%7D&bkg=white&width=700&height=390&icretina=1&ichm=922e17b749b1ab7fab2a14cb742029dc46e50e658457913a9f548793910d2a0d
-    await line_chart.toFile(`./public/chart_${datetime}.png`); // Promise<()>
-    return `chart_${datetime}.png`
-    //line_chart.toDataURI(); // Promise<String> : data:image/png;base64,iVBORw0KGgo...
-    //line_chart.toBuffer(); // Promise<Buffer> : Buffer 89 50 4e 47 0d 0a 1a 0a 00 00 00 ...
+    const datetime: string = new Date().getTime().toString();
+    await line_chart.toFile(`./public/chart_${datetime}.png`);
+    return `chart_${datetime}.png`;
   }
 
   async generateProjectionEmmisionGrpah(id: number, projectId: number) {
-    let assesementDataResults = await this.assesment
-      .createQueryBuilder('assesment')
-      .innerJoinAndSelect('assesment.assessmentYear', 'assessmentYear')
-      .innerJoinAndSelect('assesment.assessmentResult', 'assessmentResult')
+    const assesementDataResults = await this.assessment
+      .createQueryBuilder('assessment')
+      .innerJoinAndSelect('assessment.assessmentYear', 'assessmentYear')
+      .innerJoinAndSelect('assessment.assessmentResult', 'assessmentResult')
       .select(
-        'assesment.projectId, assessmentYear.assessmentYear, assessmentResult.baselineResult as baseLineTot, assessmentResult.projectResult as projectTot',
+        'assessment.projectId, assessmentYear.assessmentYear, assessmentResult.baselineResult as baseLineTot, assessmentResult.projectResult as projectTot',
       )
-      .where('assesment.id = :id', { id: id })
+      .where('assessment.id = :id', { id: id })
       .orderBy('assessmentYear.assessmentYear')
       .execute();
 
-    let projectionDataResults = await this.assesment
-      .createQueryBuilder('assesment')
-      .innerJoinAndSelect('assesment.projectionResult', 'projectionResult')
+    const projectionDataResults = await this.assessment
+      .createQueryBuilder('assessment')
+      .innerJoinAndSelect('assessment.projectionResult', 'projectionResult')
       .select(
         'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot',
       )
-      .where('assesment.id = :id', { id: id })
+      .where('assessment.id = :id', { id: id })
       .orderBy('projectionResult.projectionYear')
       .execute();
 
-    let dataCollectionArray = [];
-    let year = [];
-    let baseLineRes = [];
-    let projectionRes = [];
-    for (let assesment of assesementDataResults) {
-      //console.log("assesment ========", assesment);
-      year.push(assesment.assessmentYear);
+    const year = [];
+    const baseLineRes = [];
+    const projectionRes = [];
+    for (const assessment of assesementDataResults) {
+      year.push(assessment.assessmentYear);
       baseLineRes.push(
-        assesment.baseLineTot ? parseInt(assesment.baseLineTot) : 0,
+        assessment.baseLineTot ? parseInt(assessment.baseLineTot) : 0,
       );
       projectionRes.push(
-        assesment.projectTot ? parseInt(assesment.projectTot) : 0,
+        assessment.projectTot ? parseInt(assessment.projectTot) : 0,
       );
     }
 
-    for (let projection of projectionDataResults) {
-      // console.log("projectionRes ========", projectionRes);
+    for (const projection of projectionDataResults) {
       year.push(projection.projectionYear);
       baseLineRes.push(
         projection.projectionBasetot ? projection.projectionBasetot : 0,
@@ -844,8 +581,6 @@ let yrList:number[]=[];
         projection.projectionProjecttot ? projection.projectionProjecttot : 0,
       );
     }
-
-    //console.log("dataCollectionArray ========", dataCollectionArray);
 
     const ChartJSImage = require('chart.js-image');
 
@@ -894,18 +629,17 @@ let yrList:number[]=[];
             ],
           },
         },
-      }) // Line chart
+      })
       .backgroundColor('white')
-      .width(500) // 500px
-      .height(300); // 300px
+      .width(500)
+      .height(300);
 
-    //line_chart.toURL(); // String: https://image-charts.com/chart.js/2.8.0?icac=documentation&chart=%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B%27January%27%2C%27February%27%2C%27March%27%2C%27April%27%2C%27May%27%2C%27June%27%2C%27July%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27My+First+dataset%27%2CborderColor%3A%27rgb%28255%2C+99%2C+132%29%27%2CbackgroundColor%3A%27rgba%28255%2C+99%2C+132%2C+.5%29%27%2Cdata%3A%5B57%2C90%2C11%2C-15%2C37%2C-37%2C-27%5D%7D%2C%7Blabel%3A%27My+Second+dataset%27%2CborderColor%3A%27rgb%2854%2C+162%2C+235%29%27%2CbackgroundColor%3A%27rgba%2854%2C+162%2C+235%2C+.5%29%27%2Cdata%3A%5B71%2C-36%2C-94%2C78%2C98%2C65%2C-61%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%2875%2C+192%2C+192%29%27%2CbackgroundColor%3A%27rgba%2875%2C+192%2C+192%2C+.5%29%27%2Cdata%3A%5B48%2C-64%2C-61%2C98%2C0%2C-39%2C-70%5D%7D%2C%7Blabel%3A%27My+Third+dataset%27%2CborderColor%3A%27rgb%28255%2C+205%2C+86%29%27%2CbackgroundColor%3A%27rgba%28255%2C+205%2C+86%2C+.5%29%27%2Cdata%3A%5B-58%2C88%2C29%2C44%2C3%2C78%2C-9%5D%7D%5D%7D%2Coptions%3A%7Bresponsive%3Atrue%2Ctitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Chart.js+Line+Chart+-+Stacked+Area%27%7D%2Ctooltips%3A%7Bmode%3A%27index%27%7D%2Chover%3A%7Bmode%3A%27index%27%7D%2Cscales%3A%7BxAxes%3A%5B%7BscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Month%27%7D%7D%5D%2CyAxes%3A%5B%7Bstacked%3Atrue%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Value%27%7D%7D%5D%7D%7D%7D&bkg=white&width=700&height=390&icretina=1&ichm=922e17b749b1ab7fab2a14cb742029dc46e50e658457913a9f548793910d2a0d
-    line_chart.toFile('./public/graph' + id.toString() + '.png'); // Promise<()>
+    line_chart.toFile('./public/graph' + id.toString() + '.png');
   }
 
   async genarateMacGraph(
-    assementYears: number[],
-    assementType: string[],
+    assessmentYears: number[],
+    assessmentType: string[],
     prjectIds: string[],
     isPost: number,
   ): Promise<string> {
@@ -918,17 +652,13 @@ let yrList:number[]=[];
       TokenReqestType.InstitutionId,
     ]);
 
-    //console.log("countryIdFromTocken", countryIdFromTocken)
-    //console.log("sectorIdFromTocken", sectorIdFromTocken)
-
-    //console.log("prjectIds", prjectIds)
-    assementType = assementType
+    assessmentType = assessmentType
       .filter(function (item, pos) {
-        return assementType.indexOf(item) == pos;
+        return assessmentType.indexOf(item) == pos;
       })
       .map((a) => a.replace(/'/g, ''));
-    //console.log("assementType", assementType)
-    let resault =
+
+    const result =
       await this.assessmentYearService.getAssessmentYearsWiseMacGraphDataToSummeryReport(
         {
           limit: 0,
@@ -938,48 +668,30 @@ let yrList:number[]=[];
         0,
         countryIdFromTocken,
         sectorIdFromTocken,
-        assementYears,
-        assementType,
+        assessmentYears,
+        assessmentType,
         prjectIds,
       );
 
-    // let resault= await this.assessmentYearService.getAssessmentYearsForCountryAndSectorAdmins({
-    //   limit: 0,
-    //   page: 0,
-    //   },
-    //   0,
-    //   countryIdFromTocken,
-    //   sectorIdFromTocken,
-    //  );
-    //console.log("yearresuktlist", resault)
-    const assementYearWiseList = new Map();
-    resault.items.forEach((assyesr: { assessmentYear: any; }) => {
+    const assessmentYearWiseList = new Map();
+    result.items.forEach((assyesr: { assessmentYear: any }) => {
       const key = assyesr.assessmentYear;
-      const collection = assementYearWiseList.get(key);
+      const collection = assessmentYearWiseList.get(key);
       if (!collection) {
-        assementYearWiseList.set(key, [assyesr]);
+        assessmentYearWiseList.set(key, [assyesr]);
       } else {
         collection.push(assyesr);
       }
     });
 
-    // console.log(assementYearWiseList);
     const graphsYearWise = [];
     const graphsData = new Map();
-    assementYearWiseList.forEach(async function (value, key) {
-      let projects: string[] = [];
-      let ers: number[] = [];
-      let macs: number[] = [];
-      // console.log(key + " = " + value);
-      for (let assYr of value) {
-        //  console.log('prject',assYr.assessment.project.climateActionName);
-        //  console.log('ers',assYr.assessmentResault?assYr.assessmentResault.totalEmission:0);
-        //  console.log('macs',assYr.assessmentResault?assYr.assessmentResault.macResult?assYr.assessmentResault.macResult:0:0);
-        // if(!projects.includes(assYr.assessment.project.climateActionName) && assYr.assessmentResault &&assYr.assessmentResault.totalEmission&& assYr.assessmentResault.totalEmission > 0 && assYr.assessmentResault.macResult ){
-        //   projects.push(assYr.assessment.project.climateActionName);
-        //   ers.push(assYr.assessmentResault.totalEmission);
-        //  macs.push(assYr.assessmentResault.macResult);
-        // }
+    assessmentYearWiseList.forEach(async function (value, key) {
+      const projects: string[] = [];
+      const ers: number[] = [];
+      const macs: number[] = [];
+
+      for (const assYr of value) {
         if (
           !projects.includes(assYr.assessment.project.climateActionName) &&
           assYr.assessment &&
@@ -998,25 +710,15 @@ let yrList:number[]=[];
           macs: macs,
         });
       }
-
-      // console.log(projects);
-      // console.log(ers);
-      // console.log(macs);
     });
-    console.log(typeof graphsData);
-    for (let gr of graphsData) {
-      // console.log('gr',gr[1])
-      await axios
-        .post('http://localhost:8000/image', gr[1])
-        .then((res) => {
-          // console.log(res.data)
-          graphsYearWise.push([gr[0], res.data]);
 
-          // console.log('graphsYearWise',graphsYearWise)
+    for (const gr of graphsData) {
+      await axios
+        .post(`${process.env.BASE_URL}/image`, gr[1])
+        .then((res) => {
+          graphsYearWise.push([gr[0], res.data]);
         })
-        .catch((err) => {
-          // console.log(err)
-        });
+        .catch((err) => {});
     }
     let macHtml = '';
     graphsYearWise.map((tr) => {
@@ -1033,39 +735,38 @@ let yrList:number[]=[];
     return macHtml;
   }
 
-
   async getParameterData(assesId: string, assesYear: string): Promise<any> {
-    let res = await this.parameter.createQueryBuilder('para')
+    const res = await this.parameter
+      .createQueryBuilder('para')
       .innerJoinAndSelect('para.assessment', 'asses')
-      .where('para.AssessmentYear = :AssessmentYear', { AssessmentYear: assesYear })
+      .where('para.AssessmentYear = :AssessmentYear', {
+        AssessmentYear: assesYear,
+      })
       .andWhere('asses.id = :id', { id: assesId })
       .orderBy('para.isBaseline', 'DESC')
-      .getMany()
+      .getMany();
 
     return res;
   }
 
   async savePdfFileData(pdfData: ReportPdfInsert): Promise<any> {
-    let response = await this.reportPdfFileData.insert(pdfData);
+    const response = await this.reportPdfFileData.insert(pdfData);
 
     return response;
   }
-
-
 
   async getPdfFileData(
     ndcName: string,
     climateAction: string,
     sectorName: string,
     reportName: string,
-    countryIdFromTocken: number
+    countryIdFromTocken: number,
   ) {
     let res = [];
     if (!ndcName && !climateAction && !sectorName && !reportName) {
       res = await this.reportPdfFileData.find({
         where: {
-
-          countryId: countryIdFromTocken
+          countryId: countryIdFromTocken,
         },
       });
     } else {
@@ -1075,63 +776,39 @@ let yrList:number[]=[];
           climateAction: Like(`%${climateAction}%`),
           sectorName: Like(`%${sectorName}%`),
           reportName: Like(`%${reportName}%`),
-          countryId: countryIdFromTocken
+          countryId: countryIdFromTocken,
         },
       });
     }
 
-    //console.log("===== get file data ndcNameId",sectorname);
     return res;
   }
 
-  // async testChart(reportData: ReportDataPDF, chartname: string): Promise<any> {
-
-  //   await this.generateChartForDownlord(
-  //     reportData.years,
-  //     reportData.projIds,
-  //     reportData.assessType,
-  //     chartname
-  //   );
-  // }
-
-  async testPDF(reportData: ReportDataPDF,countryIdFromTocken:number,sectorIdFromTocken:number): Promise<string> {
-    //  await this.getPdfFileData()
-   
-
-    // let macHtmlpost = await this.genarateMacGraph(reportData.years, reportData.assessType,
-    //   reportData.projIds, 0
-    // )
-    // let macHtmlante = await this.genarateMacGraph(reportData.years, reportData.assessType,
-    //   reportData.projIds, 1
-    // )
-    // console.log('macHtml', macHtml)
-    
-
+  async testPDF(
+    reportData: ReportDataPDF,
+    countryIdFromTocken: number,
+    sectorIdFromTocken: number,
+  ): Promise<string> {
     const html_to_pdf = require('html-pdf-node');
 
-    //let datetime: string = new Date().getTime().toString();
- 
-
-
-
-    let activitiData: string = '';
+    let activitiData = '';
     activitiData =
       activitiData +
       `
                 <div>
                   <h2 style="font-weight: 700;color: #15246e;font-family: Calibri, san-serif;font-size: 32px;">Activity data</h2>
                 </div>
-              `
+              `;
 
     for (let i = 0; i < reportData.ndcIdList.length; i++) {
       this.ndcItemListActivity = reportData.ndcIdList[i];
-      var ndcItem = await this.ndc.findOne({
+      const ndcItem = await this.ndc.findOne({
         where: {
-          id: reportData.ndcIdList[i]
-        }
+          id: reportData.ndcIdList[i],
+        },
       });
       for (let i = 0; i < reportData.projIds.length; i++) {
-        let climateDataActivity = await this.proRepo
+        const climateDataActivity = await this.proRepo
           .createQueryBuilder('climate')
           .innerJoinAndSelect('climate.ndc', 'ndc')
           .innerJoinAndSelect('climate.assessments', 'assessments')
@@ -1139,21 +816,14 @@ let yrList:number[]=[];
           .innerJoinAndSelect('climate.projectOwner', 'projectOwner')
           .innerJoinAndSelect('climate.projectStatus', 'projectStatus')
           .where('climate.id = :id', { id: reportData.projIds[i] })
-          .andWhere('climate.ndcId = :ndcId', { ndcId: this.ndcItemListActivity })
+          .andWhere('climate.ndcId = :ndcId', {
+            ndcId: this.ndcItemListActivity,
+          })
           .andWhere('assessmentYear.verificationStatus = 7')
           .getOne();
 
-
-
-        // console.log("climateData=====", climateData.length);
-
-        // for (let index = 0; index < climateData.length; index++) {
         if (climateDataActivity && climateDataActivity.assessments.length > 0) {
-          // const element = climateData[index];
           const elementActive = climateDataActivity;
-          //console.log("climateDataActivity====", climateDataActivity.assessments);
-
-
 
           activitiData =
             activitiData +
@@ -1161,39 +831,42 @@ let yrList:number[]=[];
                 <div>
                   <p style="font-weight: 700;font-family: Calibri, san-serif;font-size: 26px;margin-top: 25px;margin-bottom: 5px">${elementActive.climateActionName}</p>
                 </div>
-                `
+                `;
 
-          for (let index = 0; index < elementActive.assessments.length; index++) {
-            const assesment = elementActive.assessments[index];
+          for (
+            let index = 0;
+            index < elementActive.assessments.length;
+            index++
+          ) {
+            const assessment = elementActive.assessments[index];
 
-            //console.log("++++++++++ assesment +++++++", assesment);
-            var assesActivity = await this.assesment
-              .createQueryBuilder('assesment')
+            const assesActivity = await this.assessment
+              .createQueryBuilder('assessment')
 
               .leftJoinAndMapMany(
-                'assesment.assessmentYear',
+                'assessment.assessmentYear',
 
                 AssessmentYear,
 
                 'assYr',
 
-                'assYr.assessmentId = assesment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
               )
 
               .leftJoinAndMapOne(
-                'assesment.methodology',
+                'assessment.methodology',
 
                 Methodology,
 
                 'meth',
 
-                'meth.id = assesment.methodologyId',
+                'meth.id = assessment.methodologyId',
               )
 
               .leftJoinAndMapOne(
                 'assYr.assessmentResult',
 
-                AssessmentResault,
+                AssessmentResult,
 
                 'assRslt',
 
@@ -1201,83 +874,110 @@ let yrList:number[]=[];
               )
 
               .leftJoinAndMapMany(
-                'assesment.parameters',
+                'assessment.parameters',
 
                 Parameter,
 
                 'para',
 
-                'para.assessmentId = assesment.id and ((para.isEnabledAlternative = true and para.isAlternative=true) or (para.isEnabledAlternative = false and para.isAlternative = false))',
+                'para.assessmentId = assessment.id and ((para.isEnabledAlternative = true and para.isAlternative=true) or (para.isEnabledAlternative = false and para.isAlternative = false))',
               )
 
               .leftJoinAndMapMany(
-                'assesment.projectionResult',
+                'assessment.projectionResult',
 
-                ProjectionResault,
+                ProjectionResult,
 
                 'proRslt',
 
-                'proRslt.assementId = assesment.id',
+                'proRslt.assessmentId = assessment.id',
               )
 
-              .where('assesment.id = :id and assYr.id IN(:...ids)', {
-                id: assesment.id,
+              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+                id: assessment.id,
                 ids: reportData.yearIds,
-
               })
-              .orderBy("assYr.assessmentYear", "ASC")
+              .orderBy('assYr.assessmentYear', 'ASC')
 
               .getOne();
 
+            const yearsActivity: number[] = [];
+            const groupedActivity = await assesActivity?.parameters.reduce(
+              async (r, v) => {
+                if (v.isDefault == true) {
+                  v.defaultValue = await this.defaultValueService.findOne(
+                    v.defaultValueId,
+                  );
+                }
 
-
-            let yearsActivity: number[] = []
-            let groupedActivity =await assesActivity?.parameters.reduce(async (r, v, i, a) => {
-
-              if(v.isDefault==true){
-                v.defaultValue=await this.defaultValueService.findOne(v.defaultValueId)
-               }
-              //  console.log("default",v.defaultValue)
-                let foundyears = yearsActivity.find((element) => {
-                  return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
+                const foundyears = yearsActivity.find((element) => {
+                  return element == v.AssessmentYear
+                    ? v.AssessmentYear
+                    : v.baseYear;
                 });
-  
-  
-  
+
                 if (foundyears == undefined) {
-                  yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
+                  yearsActivity.push(
+                    v.AssessmentYear ? v.AssessmentYear : v.baseYear,
+                  );
                 }
-  
-                let found = (await r).find((element) => {
-                  return element['name'] == v.name
+
+                const found = (await r).find((element) => {
+                  return element['name'] == v.name;
                 });
-  
-  
+
                 if (found == undefined) {
-                  (await r).push({ 'name': v.name, 'unit': v.uomDataRequest?v.uomDataRequest:v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"":v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" }] })
+                  (await r).push({
+                    name: v.name,
+                    unit: v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry,
+                    years: [
+                      {
+                        year: v.AssessmentYear ? v.AssessmentYear : v.baseYear,
+                        conValue: v.isDefault
+                          ? v.defaultValue.value
+                            ? v.defaultValue.value
+                            : ''
+                          : v.uomDataRequest
+                          ? v.conversionValue
+                            ? v.conversionValue
+                            : ''
+                          : v.value
+                          ? v.value
+                          : '',
+                      },
+                    ],
+                  });
                 } else {
-  
-  
-                  found['years'].push({ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"": v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" })
-                  r[(await r).indexOf(found)] = found
+                  found['years'].push({
+                    year: v.AssessmentYear ? v.AssessmentYear : v.baseYear,
+                    conValue: v.isDefault
+                      ? v.defaultValue.value
+                        ? v.defaultValue.value
+                        : ''
+                      : v.uomDataRequest
+                      ? v.conversionValue
+                        ? v.conversionValue
+                        : ''
+                      : v.value
+                      ? v.value
+                      : '',
+                  });
+                  r[(await r).indexOf(found)] = found;
                 }
-  
+
                 return r;
-              }, Promise.resolve([]));
-
-            //console.log("===== groupe +++++", groupedActivity);
-            // groupedActivity.forEach(e => console.log("==== group years", e['years']))
-
+              },
+              Promise.resolve([]),
+            );
 
             if (
-              assesment.assessmentType == 'Ex-ante' ||
-              assesment.assessmentType == 'Ex-post' ||
-              assesment.assessmentType == 'MAC'
+              assessment.assessmentType == 'Ex-ante' ||
+              assessment.assessmentType == 'Ex-post' ||
+              assessment.assessmentType == 'MAC'
             ) {
-
               if (assesActivity) {
                 this.commenAssestmentActivity = assesActivity;
-                const map = Array.prototype.map
+                const map = Array.prototype.map;
                 activitiData =
                   activitiData +
                   `
@@ -1287,52 +987,62 @@ let yrList:number[]=[];
                               <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                 <th style="border:1px solid black;text-align: center;width:300px;font-size: 17px" scope="col">Parameter</th>
                                 <th style="border:1px solid black;text-align: center;width:75px;font-size: 17px;" scope="col">Unit</th>
-                                ${map.call(yearsActivity, (e: any) =>
-                    `
+                                ${map
+                                  .call(
+                                    yearsActivity,
+                                    (e: any) =>
+                                      `
                                 <th style="border:1px solid black;text-align: center;width:75px;font-size: 17px;" scope="col">${e}</th>
-                                `
-                  ).join("")}
+                                `,
+                                  )
+                                  .join('')}
                               </tr>
                               </thead>
                               <tbody>
-                                ${map.call(groupedActivity, (e: { [x: string]: any; }) =>
-                    `
+                                ${map
+                                  .call(
+                                    groupedActivity,
+                                    (e: { [x: string]: any }) =>
+                                      `
                                   <tr style="height:30px; width:450px; margin:0">
-                                  <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${e['name']}</td>
-                                  <td style="border:1px solid black;width:75px">&nbsp&nbsp&nbsp&nbsp${e['unit']}</td>
-                                  ${map.call(e['years'], (e: { [x: string]: any; }) =>
-                      `
-                                    <td style="border:1px solid black;width:75px">&nbsp&nbsp&nbsp&nbsp${e['conValue'] ? e['conValue'] : ""}</td>
-                                    `
-                    ).join("")}
+                                  <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                    e['name']
+                                  }</td>
+                                  <td style="border:1px solid black;width:75px">&nbsp&nbsp&nbsp&nbsp${
+                                    e['unit']
+                                  }</td>
+                                  ${map
+                                    .call(
+                                      e['years'],
+                                      (e: { [x: string]: any }) =>
+                                        `
+                                    <td style="border:1px solid black;width:75px">&nbsp&nbsp&nbsp&nbsp${
+                                      e['conValue'] ? e['conValue'] : ''
+                                    }</td>
+                                    `,
+                                    )
+                                    .join('')}
                                   
                                   <tr>
-                                  `
-                  ).join("")}
+                                  `,
+                                  )
+                                  .join('')}
                               </tbody>
                               </table>
                   </div>
-                  `
+                  `;
               }
-
             }
-
-
-
           }
         }
       }
     }
 
+    let tableReportContent = '';
 
-
-
-    // main report start
-    let tableReportContent: string = '';
-    // selected ndc list itterate
     for (let i = 0; i < reportData.ndcIdList.length; i++) {
       this.ndcItemList = reportData.ndcIdList[i];
-      var ndcItem = await this.ndc.findOne({
+      const ndcItem = await this.ndc.findOne({
         where: {
           id: reportData.ndcIdList[i],
         },
@@ -1343,9 +1053,8 @@ let yrList:number[]=[];
           <h3 style="font-weight: 700;color: #15246e;font-family: Calibri, san-serif;font-size: 32px;">${ndcItem.name}</h3>
           `;
 
-      // selected projects itterated
       for (let i = 0; i < reportData.projIds.length; i++) {
-        let climateData = await this.proRepo
+        const climateData = await this.proRepo
           .createQueryBuilder('climate')
           .innerJoinAndSelect('climate.ndc', 'ndc')
           .innerJoinAndSelect('climate.assessments', 'assessments')
@@ -1355,7 +1064,6 @@ let yrList:number[]=[];
           .andWhere('climate.ndcId = :ndcId', { ndcId: this.ndcItemList })
           .getOne();
 
-         
         if (climateData) {
           const element = climateData;
 
@@ -1369,37 +1077,36 @@ let yrList:number[]=[];
                 </div>
               </div>`;
 
-              // itterate assesment according to a selected projec assesment id
           for (let index = 0; index < element.assessments.length; index++) {
-            const assesment = element.assessments[index];
+            const assessment = element.assessments[index];
 
-            var asses = await this.assesment
-              .createQueryBuilder('assesment')
+            const asses = await this.assessment
+              .createQueryBuilder('assessment')
 
               .leftJoinAndMapMany(
-                'assesment.assessmentYear',
+                'assessment.assessmentYear',
 
                 AssessmentYear,
 
                 'assYr',
 
-                'assYr.assessmentId = assesment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
               )
 
               .leftJoinAndMapOne(
-                'assesment.methodology',
+                'assessment.methodology',
 
                 Methodology,
 
                 'meth',
 
-                'meth.id = assesment.methodologyId',
+                'meth.id = assessment.methodologyId',
               )
 
               .leftJoinAndMapOne(
                 'assYr.assessmentResult',
 
-                AssessmentResault,
+                AssessmentResult,
 
                 'assRslt',
 
@@ -1407,122 +1114,139 @@ let yrList:number[]=[];
               )
 
               .leftJoinAndMapMany(
-                'assesment.parameters',
+                'assessment.parameters',
 
                 Parameter,
 
                 'para',
 
-                'para.assessmentId = assesment.id',
+                'para.assessmentId = assessment.id',
               )
 
               .leftJoinAndMapMany(
-                'assesment.projectionResult',
+                'assessment.projectionResult',
 
-                ProjectionResault,
+                ProjectionResult,
 
                 'proRslt',
 
-                'proRslt.assementId = assesment.id',
+                'proRslt.assessmentId = assessment.id',
               )
 
-        
-              .where('assesment.id = :id and assYr.id IN(:...ids)', {
-                id: assesment.id,
+              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+                id: assessment.id,
                 ids: reportData.yearIds,
               })
 
               .getOne();
 
-            if (assesment.assessmentType == 'Ex-ante') {
-            
+            if (assessment.assessmentType == 'Ex-ante') {
               await this.generateProjectionEmmisionGrpah(
-                assesment.id,
+                assessment.id,
                 element.id,
               );
             }
 
             if (
-              assesment.assessmentType == 'Ex-ante' ||
-              assesment.assessmentType == 'Ex-post'
+              assessment.assessmentType == 'Ex-ante' ||
+              assessment.assessmentType == 'Ex-post'
             ) {
-              
-              let emmisionReduction: string = '';
-              let projectionEmission: string = '';
+              let emmisionReduction = '';
+              let projectionEmission = '';
               if (asses) {
-                this.assesmentMetholodgy = asses;
-               
+                this.assessmentMetholodgy = asses;
 
                 this.commenAssestment = asses;
-                
 
-                for (let assesmentYer of this.commenAssestment.assessmentYear) {
-                
+                for (const assessmentYer of this.commenAssestment
+                  .assessmentYear) {
                   let maxYear = 0;
 
-                  this.commenAssestment.projectionResult.map((e: { projectionYear: number; }) => {
-                    if (e.projectionYear > maxYear) {
-                      maxYear = e.projectionYear;
-                    }
-                  });
+                  this.commenAssestment.projectionResult.map(
+                    (e: { projectionYear: number }) => {
+                      if (e.projectionYear > maxYear) {
+                        maxYear = e.projectionYear;
+                      }
+                    },
+                  );
 
                   this.temporalBoundaryear =
-                    maxYear === 0 ? assesmentYer.assessmentYear : maxYear;
-
+                    maxYear === 0 ? assessmentYer.assessmentYear : maxYear;
 
                   this.commenAssestment?.parameters?.map((e: any) => {
-                    
+                    this.isCheckLekage = e.isLekage;
+                  });
 
-                    this.isCheckLekage = e.isLekage
-                  })
-                 
-                  if (assesmentYer.assessmentResult) {
-                    let emisiionResult = assesmentYer.assessmentResult;
-                  
+                  if (assessmentYer.assessmentResult) {
+                    const emisiionResult = assessmentYer.assessmentResult;
+
                     emmisionReduction =
                       emmisionReduction +
                       `<div style="margin-top:25px;margin-bottom:15px">
-                        <p style="font-size:15px">Emissions estimated for ${assesmentYer?.assessmentYear} are summarized in Table 9. According to the table, ${element.climateActionName} reduce ${emisiionResult.totalEmission} tCO2e in the ${assesmentYer.assessmentYear}.</p>
-                        <p style="font-size:15px">Table Emissions reduction due to ${element.climateActionName}</p>
+                        <p style="font-size:15px">Emissions estimated for ${
+                          assessmentYer?.assessmentYear
+                        } are summarized in Table 9. According to the table, ${
+                        element.climateActionName
+                      } reduce ${emisiionResult.totalEmission} tCO2e in the ${
+                        assessmentYer.assessmentYear
+                      }.</p>
+                        <p style="font-size:15px">Table Emissions reduction due to ${
+                          element.climateActionName
+                        }</p>
                         <table style="border:1px solid black;width:100%;">
                               <thead > 
                                 <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">Scenario</th>
-                                <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">${assesmentYer?.assessmentYear} Emissions (MtCO2)</th>     
+                                <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">${
+                                  assessmentYer?.assessmentYear
+                                } Emissions (MtCO2)</th>     
                                 </tr>
                             </thead>
                             <tbody>
                                  
                                   <tr style="height:30px; width:450px; margin:0;">
                                   <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbspBaseline emissions</td>
-                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${emisiionResult?.baselineResult}</td>
+                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${
+                                    emisiionResult?.baselineResult
+                                  }</td>
                                   </tr>
                                   <tr style="height:30px; width:450px; margin:0;">
                                     <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbspProject emissions</td>
-                                    <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${emisiionResult?.projectResult}</td>
+                                    <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${
+                                      emisiionResult?.projectResult
+                                    }</td>
                                   </tr>
                                   <tr style="height:30px; width:450px; margin:0;">
                                   <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbspLekage reductions</td>
-                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${emisiionResult?.lekageResult === null ? "N/A" : emisiionResult?.lekageResult}</td>
+                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${
+                                    emisiionResult?.lekageResult === null
+                                      ? 'N/A'
+                                      : emisiionResult?.lekageResult
+                                  }</td>
                                   </tr>
                                   <tr style="height:30px; width:450px; margin:0;">
                                   <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbspEmission reductions</td>
-                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${emisiionResult?.totalEmission}</td>
+                                  <td style="border:1px solid black;width:225px">&nbsp&nbsp&nbsp&nbsp${
+                                    emisiionResult?.totalEmission
+                                  }</td>
                                   </tr>
                               </tbody>
                             </table>
                       </div>
                       `;
 
-                    if (assesment.assessmentType === 'Ex-ante') {
+                    if (assessment.assessmentType === 'Ex-ante') {
                       projectionEmission =
                         projectionEmission +
                         `
                               <div style="margin-top:25px;margin-bottom:15px">
                               <h4>Projection of GHG Emissions</h4>
-                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assesment.projectionBaseYear} based on the ${assesment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
+                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assessment.projectionBaseYear} based on the ${assessment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
-                              <div><img src="http://localhost:7080/graph` + assesment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
+                              <div><img src="${process.env.BASE_URL}/graph` +
+                        assessment.id.toString() +
+                        `.png"` +
+                        ` alt="Italian Trulli"></div>
                               <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
                               </div>
                               </div>
@@ -1531,7 +1255,6 @@ let yrList:number[]=[];
                   }
                 }
 
-               
                 tableReportContent =
                   tableReportContent +
                   `
@@ -1539,7 +1262,9 @@ let yrList:number[]=[];
                           <div>
                             <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 23px">GHG impact assessment</h4>
                             <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">System boundary</h4>
-                            <p style="font-size:15px">Table System boundary of the GHG impact assessment of ${element.climateActionName}</p>
+                            <p style="font-size:15px">Table System boundary of the GHG impact assessment of ${
+                              element.climateActionName
+                            }</p>
                             <table style="border:1px solid black;width:100%">
                             <thead >
                             <tr style="height:40px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1550,40 +1275,55 @@ let yrList:number[]=[];
                             <tbody>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspGeographic Boundary</td>
-                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${element.subNationalLevl1 === null ? "N/A" : element.subNationalLevl1}, ${element.subNationalLevl2 === null ? "N/A" : element.subNationalLevl2}, ${element.subNationalLevl3 === null ? "N/A" : element.subNationalLevl3}</td>
+                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                  element.subNationalLevl1 === null
+                                    ? 'N/A'
+                                    : element.subNationalLevl1
+                                }, ${
+                    element.subNationalLevl2 === null
+                      ? 'N/A'
+                      : element.subNationalLevl2
+                  }, ${
+                    element.subNationalLevl3 === null
+                      ? 'N/A'
+                      : element.subNationalLevl3
+                  }</td>
                               </tr>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspTemporal Boundary</td>
-                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${element.proposeDateofCommence.getFullYear()} - ${this.temporalBoundaryear
+                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${element.proposeDateofCommence.getFullYear()} - ${
+                    this.temporalBoundaryear
                   } </td>
                               </tr>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspTransport subsector</td>
-                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${this.assesmentMetholodgy?.methodology
-                    ?.transportSubSector
-                  }</td>
+                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                  this.assessmentMetholodgy?.methodology
+                                    ?.transportSubSector
+                                }</td>
                               </tr>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspUpstream/downstream</td>
-                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${this.assesmentMetholodgy?.methodology
-                    ?.upstream_downstream
-                    ? this.assesmentMetholodgy?.methodology
-                      ?.upstream_downstream
-                    : 'N/A'
-                  }</td>
+                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                  this.assessmentMetholodgy?.methodology
+                                    ?.upstream_downstream
+                                    ? this.assessmentMetholodgy?.methodology
+                                        ?.upstream_downstream
+                                    : 'N/A'
+                                }</td>
                               </tr>
                               <tr style="height:40px; width:450px; margin:0;">
                                 <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspGHGs Included</td>
-                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${this.assesmentMetholodgy?.methodology
-                    ?.ghgIncluded
-                  }</td>
+                                <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                  this.assessmentMetholodgy?.methodology
+                                    ?.ghgIncluded
+                                }</td>
                               </tr>
                             </tbody>
                             </table>
                           </div>
                         </div>
                         `;
-                
 
                 tableReportContent =
                   tableReportContent +
@@ -1594,30 +1334,32 @@ let yrList:number[]=[];
                                   <tbody>
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspAssessment Approach</td>
-                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${assesment.assessmentType
-                  }</td>
+                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                        assessment.assessmentType
+                                      }</td>
                                     </tr>
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspBase Year</td>
-                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${assesment.baseYear
-                  }</td>
+                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                        assessment.baseYear
+                                      }</td>
                                     </tr>
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspAssessment year(s)</td>
                                       <td style="border:1px solid black;width:300px">
                                       &nbsp&nbsp&nbsp&nbsp${this.commenAssestment?.assessmentYear?.map(
-                    (e: { assessmentYear: any; }) => {
-                      
-                      return e.assessmentYear;
-                    }
-                  )}
+                                        (e: { assessmentYear: any }) => {
+                                          return e.assessmentYear;
+                                        },
+                                      )}
                                       </td>
                                     </tr>
                                     <tr style="height:40px; width:450px; margin:0;">
                                       <td style="border:1px solid black;width:150px">&nbsp&nbsp&nbsp&nbspMethodology</td>
-                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${this.assesmentMetholodgy?.methodology
-                    .displayName
-                  }</td>
+                                      <td style="border:1px solid black;width:300px">&nbsp&nbsp&nbsp&nbsp${
+                                        this.assessmentMetholodgy?.methodology
+                                          .displayName
+                                      }</td>
                                     </tr>
                                   </tbody>
                                   </table>
@@ -1629,9 +1371,10 @@ let yrList:number[]=[];
                   `
                           <div style="margin-top:25px;margin-bottom:15px">
                           <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">Baseline Scenario</h4>
-                          <h4>${assesment.baselineScenario}</h4>
-                          <p style="font-size:15px">Table Data required to assess baseline emissions of ${element.climateActionName
-                  }</p>
+                          <h4>${assessment.baselineScenario}</h4>
+                          <p style="font-size:15px">Table Data required to assess baseline emissions of ${
+                            element.climateActionName
+                          }</p>
                            
                              
                             <table style="border:1px solid black;width:100%;">
@@ -1642,14 +1385,26 @@ let yrList:number[]=[];
                             </tr>
                             </thead>
                             <tbody>
-                              ${this.commenAssestment.parameters.map((ele: any) => `
-                              ${ele.isBaseline ? `
+                              ${this.commenAssestment.parameters
+                                .map(
+                                  (ele: any) => `
+                              ${
+                                ele.isBaseline
+                                  ? `
                               <tr style="height:40px; width:450px; margin:0">
-                              <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${ele.name}</td>
-                              <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${ele.uomDataRequest ? ele.uomDataRequest : "N/A"}</td>
+                              <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                                ele.name
+                              }</td>
+                              <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                                ele.uomDataRequest ? ele.uomDataRequest : 'N/A'
+                              }</td>
                               </tr>
-                              ` : ""}
-                              `).join("")}
+                              `
+                                  : ''
+                              }
+                              `,
+                                )
+                                .join('')}
                             </tbody>
                             </table>
                             `;
@@ -1658,10 +1413,12 @@ let yrList:number[]=[];
                   tableReportContent +
                   `
                          <div style="margin-top:25px;margin-bottom:15px">
-                            <h4>Baseline emissions attributed to the ${element.climateActionName
-                  } are given in Table.</h4>
-                            <p style="font-size:15px">Table Baseline emissions of ${element.climateActionName
-                  }</p>
+                            <h4>Baseline emissions attributed to the ${
+                              element.climateActionName
+                            } are given in Table.</h4>
+                            <p style="font-size:15px">Table Baseline emissions of ${
+                              element.climateActionName
+                            }</p>
                             <table style="border:1px solid black;width:100%;">
                             <thead >
                             <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1673,19 +1430,24 @@ let yrList:number[]=[];
                               
                                 
                                   ${this.commenAssestment?.assessmentYear?.map(
-                    (e: { assessmentYear: any; assessmentResult: { baselineResult: any; }; }) => {
-                      return `<tr style="height:30px; width:450px; margin:0;">
-                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear
-                        }</td>
-                        <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
-                          ? e.assessmentResult.baselineResult
+                                    (e: {
+                                      assessmentYear: any;
+                                      assessmentResult: { baselineResult: any };
+                                    }) => {
+                                      return `<tr style="height:30px; width:450px; margin:0;">
+                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                        e.assessmentYear
+                      }</td>
+                        <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                          e.assessmentResult
                             ? e.assessmentResult.baselineResult
+                              ? e.assessmentResult.baselineResult
+                              : '&nbsp&nbsp&nbsp&nbsp-'
                             : '&nbsp&nbsp&nbsp&nbsp-'
-                          : '&nbsp&nbsp&nbsp&nbsp-'
                         }</td>
                         </tr>`;
-                    }
-                  )}
+                                    },
+                                  )}
                                 
                                 
                               
@@ -1699,9 +1461,10 @@ let yrList:number[]=[];
                   `
                        <div style="margin-top:25px;margin-bottom:15px">
                        <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">Project Scenario</h4>
-                       <h4>${assesment.projectScenario}</h4>
-                       <p style="font-size:15px">Table: Data required to assess project emissions of ${element.climateActionName
-                  }</p>
+                       <h4>${assessment.projectScenario}</h4>
+                       <p style="font-size:15px">Table: Data required to assess project emissions of ${
+                         element.climateActionName
+                       }</p>
                         
              
                          <table style="border:1px solid black;width:100%;">
@@ -1712,17 +1475,30 @@ let yrList:number[]=[];
                          </tr>
                          </thead>
                          <tbody>
-                           ${this.commenAssestment.parameters.map(
-                    (e: { isProject: boolean; name: any; uomDataRequest: any; }) =>
-
-                      `
-                      ${e.isProject ? `<tr style="height:40px; width:450px; margin:0;">
-                      <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.name}</td>
-                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.uomDataRequest ? e.uomDataRequest : "N/A"}</td>
-                      </tr>` : ""}
+                           ${this.commenAssestment.parameters
+                             .map(
+                               (e: {
+                                 isProject: boolean;
+                                 name: any;
+                                 uomDataRequest: any;
+                               }) =>
+                                 `
+                      ${
+                        e.isProject
+                          ? `<tr style="height:40px; width:450px; margin:0;">
+                      <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                        e.name
+                      }</td>
+                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                        e.uomDataRequest ? e.uomDataRequest : 'N/A'
+                      }</td>
+                      </tr>`
+                          : ''
+                      }
                              
-                             `
-                  ).join("")}
+                             `,
+                             )
+                             .join('')}
                          </tbody>
                          </table>
                         `;
@@ -1731,10 +1507,12 @@ let yrList:number[]=[];
                   tableReportContent +
                   `
                          <div style="margin-top:25px;margin-bottom:15px">
-                            <p style="font-size:15px">Direct project emissions attributed to the ${element.climateActionName
-                  } are given in Table 6. </p>
-                            <p style="font-size:15px">Table: Direct project emissions attributed to ${element.climateActionName
-                  }</p>
+                            <p style="font-size:15px">Direct project emissions attributed to the ${
+                              element.climateActionName
+                            } are given in Table 6. </p>
+                            <p style="font-size:15px">Table: Direct project emissions attributed to ${
+                              element.climateActionName
+                            }</p>
                             <table style="border:1px solid black;width:100%;">
                             <thead >
                             <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1745,18 +1523,24 @@ let yrList:number[]=[];
                             <tbody>
                              
                                   ${this.commenAssestment?.assessmentYear?.map(
-                    (e: { assessmentYear: any; assessmentResult: { projectResult: any; }; }) => {
-                      return `<tr style="height:30px; width:450px; margin:0;">
-                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear}</td>
-                        <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
-                          ? e.assessmentResult.projectResult
+                                    (e: {
+                                      assessmentYear: any;
+                                      assessmentResult: { projectResult: any };
+                                    }) => {
+                                      return `<tr style="height:30px; width:450px; margin:0;">
+                      <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                        e.assessmentYear
+                      }</td>
+                        <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                          e.assessmentResult
                             ? e.assessmentResult.projectResult
+                              ? e.assessmentResult.projectResult
+                              : '&nbsp&nbsp&nbsp&nbsp-'
                             : '&nbsp&nbsp&nbsp&nbsp-'
-                          : '&nbsp&nbsp&nbsp&nbsp-'
                         }</td>
                         </tr>`;
-                    }
-                  )}
+                                    },
+                                  )}
                                
                             </tbody>
                             </table>
@@ -1770,7 +1554,9 @@ let yrList:number[]=[];
                           <div style="margin-top:25px;margin-bottom:15px">
                           <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 20px">Lekage Scenario</h4>
                           <p style="font-size:15px">Table gives the key indicators used to assess the emissions due to leakages. Please see Annex 1 for activity data and the sources.</p>
-                          <p style="font-size:15px">Table Data required to assess leakage emissions of ${element.climateActionName}</p>
+                          <p style="font-size:15px">Table Data required to assess leakage emissions of ${
+                            element.climateActionName
+                          }</p>
                           <table style="border:1px solid black;width:100%;">
                              <thead >
                                <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1779,30 +1565,43 @@ let yrList:number[]=[];
                               </tr>
                             </thead>
                             <tbody>
-                            ${this.commenAssestment.parameters.map((ele: any) => `
-                                ${ele.isLekage ? `
+                            ${this.commenAssestment.parameters
+                              .map(
+                                (ele: any) => `
+                                ${
+                                  ele.isLekage
+                                    ? `
                             <tr style="height:40px; width:450px; margin:0">
-                            <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${ele.name}</td>
-                            <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${ele.uomDataRequest ? ele.uomDataRequest : "N/A"}</td>
+                            <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                              ele.name
+                            }</td>
+                            <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                              ele.uomDataRequest ? ele.uomDataRequest : 'N/A'
+                            }</td>
                             </tr>
-                            ` : ""}
-                            `).join("")}
+                            `
+                                    : ''
+                                }
+                            `,
+                              )
+                              .join('')}
                             </tbody>
                            </table>
                         </div>
-                          `
+                          `;
                 }
-
 
                 if (this.isCheckLekage == true) {
                   tableReportContent =
                     tableReportContent +
                     `
                           <div style="margin-top:25px;margin-bottom:15px">
-                          <p style="font-size:15px">Indirect project emissions attributed to the ${element.climateActionName
-                    } are given in Table 8</p>
-                          <p style="font-size:15px">Table Leakage emissions of ${element.climateActionName
-                    }</p>
+                          <p style="font-size:15px">Indirect project emissions attributed to the ${
+                            element.climateActionName
+                          } are given in Table 8</p>
+                          <p style="font-size:15px">Table Leakage emissions of ${
+                            element.climateActionName
+                          }</p>
                           <table style="border:1px solid black;width:100%;">
                           <thead >
                           <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1812,24 +1611,28 @@ let yrList:number[]=[];
                           </thead>
                           <tbody>
                               ${this.commenAssestment?.assessmentYear?.map(
-                      (e: { assessmentYear: any; assessmentResult: { lekageResult: any; }; }) => {
-                        return `<tr style="height:30px; width:450px; margin:0;">
-                            <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.assessmentYear
-                          }</td><td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.assessmentResult
-                            ? e.assessmentResult.lekageResult
-                              ? e.assessmentResult.lekageResult
-                              : '&nbsp&nbsp&nbsp&nbsp-'
-                            : '&nbsp&nbsp&nbsp&nbsp-'
-                          }</td></tr>`;
-                      }
-                    )}
+                                (e: {
+                                  assessmentYear: any;
+                                  assessmentResult: { lekageResult: any };
+                                }) => {
+                                  return `<tr style="height:30px; width:450px; margin:0;">
+                            <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${
+                              e.assessmentYear
+                            }</td><td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${
+                                    e.assessmentResult
+                                      ? e.assessmentResult.lekageResult
+                                        ? e.assessmentResult.lekageResult
+                                        : '&nbsp&nbsp&nbsp&nbsp-'
+                                      : '&nbsp&nbsp&nbsp&nbsp-'
+                                  }</td></tr>`;
+                                },
+                              )}
                       
                           </tbody>
                           </table>
                           </div>
-                          `
+                          `;
                 }
-
 
                 tableReportContent =
                   tableReportContent +
@@ -1837,7 +1640,7 @@ let yrList:number[]=[];
                   ${emmisionReduction}
                         
                     `;
-                
+
                 tableReportContent =
                   tableReportContent +
                   `
@@ -1845,17 +1648,19 @@ let yrList:number[]=[];
                   <hr/>
                 `;
               }
-            } else if (assesment.assessmentType == 'MAC') {
+            } else if (assessment.assessmentType == 'MAC') {
               if (asses) {
                 tableReportContent =
                   tableReportContent +
                   `
                 <div style="margin-top:25px;margin-bottom:15px">
                 <h4 style="color: #15246e;font-family: Calibri, san-serif;font-size: 23px">Cost of climate action</h4>
-                <p style="font-size:15px">The marginal abatement cost (MAC), in general, measures the cost of reducing one more unit of pollution. Table 10 indicates the MAC of ${element.climateActionName
-                  }. </p>
-                <p style="font-size:15px">Table 10 MAC of the ${element.climateActionName
-                  }</p>
+                <p style="font-size:15px">The marginal abatement cost (MAC), in general, measures the cost of reducing one more unit of pollution. Table 10 indicates the MAC of ${
+                  element.climateActionName
+                }. </p>
+                <p style="font-size:15px">Table 10 MAC of the ${
+                  element.climateActionName
+                }</p>
                 <table style="border:1px solid black;width:100%;">
                   <thead >
                   <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
@@ -1866,11 +1671,15 @@ let yrList:number[]=[];
                   <tbody>
                     <tr style="height:30px; width:450px; margin:0;">
                       <td style="border:1px solid black;width:200px;">
-                      &nbsp&nbsp&nbsp&nbsp${this.commenAssestment?.assessmentYear?.map((e: { assessmentYear: any; }) => {
-                    return e.assessmentYear;
-                  })}
+                      &nbsp&nbsp&nbsp&nbsp${this.commenAssestment?.assessmentYear?.map(
+                        (e: { assessmentYear: any }) => {
+                          return e.assessmentYear;
+                        },
+                      )}
                       </td>
-                      <td style="border:1px solid black;width:250px;">&nbsp&nbsp&nbsp&nbsp${assesment.macValue}</td>
+                      <td style="border:1px solid black;width:250px;">&nbsp&nbsp&nbsp&nbsp${
+                        assessment.macValue
+                      }</td>
                     <tr>
                   </tbody>
                   </table>
@@ -1880,19 +1689,12 @@ let yrList:number[]=[];
               `;
               }
             }
-
-            
           }
         }
-
-       
       }
     }
 
-    // Example of options with args //
-    // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-
-    let summryReport: any[] =
+    const summryReport: any[] =
       await this.assessmentYearService.getDataForReportNew(
         reportData.projIds.join(','),
         reportData.assessType.join(','),
@@ -1900,7 +1702,7 @@ let yrList:number[]=[];
         reportData.macAssecmentType.join(','),
       );
 
-    let tableContent: string = '';
+    let tableContent = '';
     for (let index = 0; index < summryReport.length; index++) {
       const element = summryReport[index];
 
@@ -1910,95 +1712,63 @@ let yrList:number[]=[];
         <th>${element.NDC}</th>
         <th>${element.ClimateAction}</th>
         <th>${element.Year}</th>
-        <th>${element.Type == 'MAC'
-          ? 'MAC ' + element.TypeOfMac
-          : 'GHG ' + element.Type
+        <th>${
+          element.Type == 'MAC'
+            ? 'MAC ' + element.TypeOfMac
+            : 'GHG ' + element.Type
         }</th>
-        <th>${element.Type != 'MAC'
-          ? element.Result
-          : element.EmmisionValue
+        <th>${
+          element.Type != 'MAC'
+            ? element.Result
+            : element.EmmisionValue
             ? element.EmmisionValue
             : 'N/A'
         }</th>
         <th>${element.MACResult ? element.MACResult : 'N/A'}</th>
         </tr>`;
     }
-    //console.log('====== summryReport=====', summryReport);
-    
-    let setSectorId:number=reportData.sectorIds[0];
-    if(reportData.selectAllSectors==true){
-      setSectorId=0;
-    }
-    let graphData = await this.emissionReductionDraftDataService.getEmissionReductionDraftDataForReport(setSectorId,countryIdFromTocken,sectorIdFromTocken);
 
-    let unconditionalValue =
+    let setSectorId: number = reportData.sectorIds[0];
+    if (reportData.selectAllSectors == true) {
+      setSectorId = 0;
+    }
+    const graphData =
+      await this.emissionReductionDraftDataService.getEmissionReductionDraftDataForReport(
+        setSectorId,
+        countryIdFromTocken,
+        sectorIdFromTocken,
+      );
+
+    const unconditionalValue =
       graphData.targetYearEmission - graphData.unconditionaltco2;
-    console.log('unconditional', unconditionalValue);
-    let conditionalValue =
+
+    const conditionalValue =
       graphData.targetYearEmission - graphData.conditionaltco2;
 
-    let totalExAnthe = 0;
     let totalExPost = 0;
-    let resultArray: number[] = [];
-    for(let sum of summryReport){
+    for (const sum of summryReport) {
       if (sum.Type == 'Ex-post') {
-        // console.log("========this.executiveSummery++++++", Number(sum.Result));
         totalExPost = totalExPost + Number(sum.Result);
       }
     }
 
-    // let totalExAn = summryReport.map((e) => {
-    //   //console.log('+++e==== eeeeee before', e.Year);
-    //   if (e.Year >= graphData.baseYear && e.Year <= graphData.targetYear) {
-    //     //console.log("+++++eeeeee event=====", e);
-    //     //console.log('+++e==== before', e.Result);
-    //     if (e.Result !== null) {
-    //       //console.log('+++e==== after', e.Result);
-    //       return resultArray.push(e.Result);
-    //     }
-    //   }
-    // });
-
-    // console.log('+++totalExAn====', totalExAn);
-
-    // let sumOfExAntheResults: number;
-    // let sumOfExPostResults: number;
-
-    // let summeryExAntheResults = resultArray.forEach((e) => {
-    //   //console.log('=====summeryExAntheResults e======', e);
-    //   sumOfExAntheResults = totalExAnthe += e;
-    //   //console.log('&&&&====sumOfResults', sumOfExAntheResults);
-    //   return sumOfExAntheResults;
-    // });
-
-    // let summeryExPostResults = resultArray.forEach((e) => {
-    //   //console.log('=====sumOfExPostResults e======', e);
-    //   sumOfExPostResults = totalExPost += e;
-    //   //console.log('&&&&====sumOfExPostResults', sumOfExPostResults);
-    //   return sumOfExPostResults;
-    // });
-
-    let paragraph = `
+    const paragraph = `
       <div style="text-align: justify;text-justify: inter-word;">
-      ${unconditionalValue
-        ? `<p style="font-size:15px">Figure 1 illustrates the status of achieving emissions reduction targets
-      of ${reportData.sectors} sector of ${reportData.country
-        }. The expected emission
-      reduction of the ${reportData.sectors} sector by ${graphData.targetYear
-        } year is
+      ${
+        unconditionalValue
+          ? `<p style="font-size:15px">Figure 1 illustrates the status of achieving emissions reduction targets
+      of ${reportData.sectors} sector of ${reportData.country}. The expected emission
+      reduction of the ${reportData.sectors} sector by ${graphData.targetYear} year is
       ${conditionalValue} MtCO₂e conditionally, and
       ${unconditionalValue} MtCO₂e unconditionally.
-      Mitigation actions implemented by year ${graphData.targetYear
-        } were able to reduce
+      Mitigation actions implemented by year ${graphData.targetYear} were able to reduce
       ${reportData.sectors} sector emissions from
       ${totalExPost} tCO2e.</p>`
-        : `
+          : `
       <p style="font-size:15px">
       Figure 1 illustrates the status of achieving emissions reduction targets
-        of ${reportData.sectors} sector of ${reportData.country
-        }. The expected emission
-        reduction of the ${reportData.sectors} sector by ${graphData.targetYear
-        } year is
+        of ${reportData.sectors} sector of ${reportData.country}. The expected emission
+        reduction of the ${reportData.sectors} sector by ${graphData.targetYear} year is
         ${conditionalValue} MtCO₂e. Mitigation actions
         implemented by year ${graphData.targetYear} were able to reduce
         ${reportData.sectors} sector emissions from
@@ -2009,45 +1779,40 @@ let yrList:number[]=[];
       </div>
     `;
 
-
-
-
-    let datetime = await this.generateChart(
-      summryReport,
-      graphData,
-      // reportData.years,
-      // reportData.projIds,
-      // reportData.assessType,
-    );
-    let fileName = `reportPDF_${datetime}.pdf`;
-    //let fileName = `reportPDF`;
-    let options = {
+    const datetime = await this.generateChart(summryReport, graphData);
+    const fileName = `reportPDF_${datetime}.pdf`;
+    const options = {
       format: 'A4',
       margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
       path: './public/' + fileName,
-      printBackground: true
+      printBackground: true,
     };
 
-
-
-
-
-
-    
     let userName: string;
 
-    [userName] = this.tokenDetails.getDetails([
-      TokenReqestType.username,
-    ]);
+    [userName] = this.tokenDetails.getDetails([TokenReqestType.username]);
     const selectedUser = await this.usersService.findByUserName(userName);
 
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
 
     const d = new Date();
-    let month = months[d.getMonth()];
-    var year = d.getUTCFullYear();
+    const month = months[d.getMonth()];
+    const year = d.getUTCFullYear();
 
-    let coverPage = `
+    const coverPage = `
     <div style="display:flex;flex-direction:column;height:1500px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
               <h1 style="font-size: 50px;color: white">${reportData.reportName}</h1>
@@ -2061,9 +1826,9 @@ let yrList:number[]=[];
               <h4 style="color: white">${selectedUser.firstName} ${selectedUser.lastName}</h4>
             </div>
     </div>
-    `
+    `;
 
-    let file = {
+    const file = {
       content:
         `<!DOCTYPE html>
         <html lang="en">
@@ -2129,20 +1894,21 @@ let yrList:number[]=[];
       </tr></thead><tbody>${tableContent}</tbody>
       </table></div> 
       <div class="container-fluid mb-5" >${paragraph}</div>
-      <div><img src="http://localhost:7080/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
-      <div><p>Figure 1 Emissions reduction of ${reportData.sectors.toString()} sector of ${reportData.country
+      <div><img src="${
+        process.env.BASE_URL
+      }/reportPDF_${datetime}.png" alt="Italian Trulli"></div>
+      <div><p>Figure 1 Emissions reduction of ${reportData.sectors.toString()} sector of ${
+          reportData.country
         }</p></div>
         <p><strong>Note:</strong> Only the emission reductions of Climate Actions calculated Ex-post using the tool are reflected in the Actual Emissions curve</p>
 
         <br>
       <div class="mb-5 mt-5">${tableReportContent} </div>
       <div class="mb-5 mt-5">${activitiData}</div>
-      </body></html>`
+      </body></html>`,
     };
 
-    await html_to_pdf.generatePdf(file, options).then((pdfBuffer: any) => {
-      console.log('PDF Buffer:-', pdfBuffer);
-    });
+    await html_to_pdf.generatePdf(file, options).then((pdfBuffer: any) => {});
 
     return fileName;
   }

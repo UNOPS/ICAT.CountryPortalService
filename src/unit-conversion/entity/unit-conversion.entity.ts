@@ -3,9 +3,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class UnitConversion extends BaseTrackingEntity {
-  /**
-   *
-   */
   constructor() {
     super();
   }

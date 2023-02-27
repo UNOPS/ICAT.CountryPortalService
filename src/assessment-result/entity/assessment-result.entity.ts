@@ -1,6 +1,6 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import {
@@ -13,8 +13,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'assessmentResault' })
-export class AssessmentResault extends BaseTrackingEntity {
+@Entity({ name: 'assessmentResult' })
+export class AssessmentResult extends BaseTrackingEntity {
   constructor() {
     super();
     this.status = 0;
@@ -90,10 +90,13 @@ export class AssessmentResault extends BaseTrackingEntity {
   @JoinColumn()
   assessmentYear: AssessmentYear;
 
-  @ManyToOne((type) => Assessment ,{ cascade: false, nullable: true})
+  @ManyToOne((type) => Assessment, { cascade: false, nullable: true })
   @JoinColumn()
-  assement: Assessment;
+  assessment: Assessment;
 
-  @OneToMany(() => ProjectionResault, (projectiondata) => projectiondata.assementResult)
-  projectionResult: ProjectionResault[]
+  @OneToMany(
+    () => ProjectionResult,
+    (projectiondata) => projectiondata.assessmentResult,
+  )
+  projectionResult: ProjectionResult[];
 }

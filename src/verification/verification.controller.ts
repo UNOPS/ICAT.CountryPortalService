@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Put, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -16,10 +24,10 @@ import { VerificationService } from './verification.service';
 export class VerificationController
   implements CrudController<ParameterRequest>
 {
-  constructor(public service: VerificationService,
-    private readonly tokenDetails:TokenDetails,
-    ) {}
-
+  constructor(
+    public service: VerificationService,
+    private readonly tokenDetails: TokenDetails,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('verification/GetVRParameters/:page/:limit/:statusId/:filterText')
@@ -30,10 +38,10 @@ export class VerificationController
     @Query('statusId') statusId: number,
     @Query('filterText') filterText: string,
   ): Promise<any> {
-
-    let countryIdFromTocken:number ;
-    [countryIdFromTocken] =    this.tokenDetails.getDetails([TokenReqestType.countryId])
-   
+    let countryIdFromTocken: number;
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
 
     return await this.service.GetVRParameters(
       {
@@ -55,13 +63,12 @@ export class VerificationController
     @Query('statusId') statusId: number,
     @Query('filterText') filterText: string,
   ): Promise<any> {
-
-    let countryIdFromTocken:number ;
-    let userNameFromTocken:number ;
-    [countryIdFromTocken, userNameFromTocken] =    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.username ])
-
-  // let userId = 
-   
+    let countryIdFromTocken: number;
+    let userNameFromTocken: number;
+    [countryIdFromTocken, userNameFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.username,
+    ]);
 
     return await this.service.GetVerifierParameters(
       {
@@ -75,11 +82,11 @@ export class VerificationController
     );
   }
 
-  @Get('verification/GetVerificationDetails/:assesmentYearId')
+  @Get('verification/GetVerificationDetails/:assessmentYearId')
   async GetVerificationDetails(
-    @Query('assesmentYearId') assesmentYearId: number,
+    @Query('assessmentYearId') assessmentYearId: number,
   ) {
-    return await this.service.GetVerificationDetails(assesmentYearId);
+    return await this.service.GetVerificationDetails(assessmentYearId);
   }
 
   @Put('verification/SaveVerificationDetails')

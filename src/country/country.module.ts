@@ -8,9 +8,9 @@ import { CountrySector } from './entity/country-sector.entity';
 import { Country } from './entity/country.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Country,CountrySector,Sector])],
-    controllers: [CountryController],
-    providers: [CountryService,CountrySector,Sector,TokenDetails],
-    exports: [CountryService],
+  imports: [TypeOrmModule.forFeature([Country, CountrySector, Sector])],
+  controllers: [CountryController],
+  providers: [CountryService, CountrySector, Sector, TokenDetails],
+  exports: [CountryService],
 })
 export class CountryModule {}

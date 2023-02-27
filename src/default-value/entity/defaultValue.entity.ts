@@ -4,9 +4,6 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class DefaultValue extends BaseTrackingEntity {
-  /**
-   *
-   */
   constructor() {
     super();
   }
@@ -29,7 +26,7 @@ export class DefaultValue extends BaseTrackingEntity {
   @Column({ default: null })
   source: string;
 
-  @Column({ default: null }) 
+  @Column({ default: null })
   year: number;
 
   @Column({ default: null })
@@ -38,17 +35,14 @@ export class DefaultValue extends BaseTrackingEntity {
   @Column({ default: null })
   uniqueIdentification: string;
 
-  @ManyToOne(() => Country, country => country.defaultValue)
+  @ManyToOne(() => Country, (country) => country.defaultValue)
   country: Country;
 
   @Column({ default: null })
-  isMac: Number; //1
-  
-  @Column({ default: null })  // baseLine , project
+  isMac: number;
+
+  @Column({ default: null })
   scenario: string;
 
   name: string;
-  //   public setName() {
-  //     this.name = `${this.value} - ${this.unit} - ${this.administrationLevel} - ${this.source}  - ${this.year}`;
-  //   }
 }

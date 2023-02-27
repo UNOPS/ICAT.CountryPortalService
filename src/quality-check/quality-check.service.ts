@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CrudService } from '@nestjsx/crud';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AssesmentService } from 'src/assesment/assesment.service';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentService } from 'src/assessment/assessment.service';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
-import { DataRequestStatus } from 'src/data-request/entity/data-request-status.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
-import { ParameterHistoryAction } from 'src/parameter-history/entity/paeameter-history-action-history.entity';
-import { ParameterHistory } from 'src/parameter-history/entity/parameter-history.entity';
+import { ParameterHistoryAction } from 'src/parameter-history/entity/parameter-history-action-history.entity';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
-import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { TokenDetails } from 'src/utills/token_details';
 @Injectable()
 export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
   constructor(
@@ -29,10 +26,9 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private assesmentservice: AssesmentService,
+    private assessmentservice: AssessmentService,
     public parameterHistoryService: ParameterHistoryService,
-    private readonly tokenDetails:TokenDetails,
-    
+    private readonly tokenDetails: TokenDetails,
   ) {
     super(repo);
   }
@@ -43,11 +39,10 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     QAstatusId: number,
     NDCId: number,
     SubNdcId: number,
-    countryIdFromTocken:number,
+    countryIdFromTocken: number,
     ctAction: string,
   ): Promise<Pagination<AssessmentYear>> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-    let filter: string = `ae.qaStatus is not null`;
+    let filter = `ae.qaStatus is not null`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -59,26 +54,28 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     }
     if (ctAction != null && ctAction != undefined && ctAction != '') {
       filter = `${filter}  and p.climateActionName = '${ctAction}'`;
-      console.log("+++++++++++++" ,filter)
-  }
+    }
     if (NDCId != 0) {
       filter = `${filter}  and as.ndcId = :NDCId`;
     }
     if (SubNdcId != 0) {
       filter = `${filter}  and as.subNdcId = :SubNdcId`;
     }
-console.log("+++++++++++++" ,ctAction)
-    
 
-    let data = this.assessmentYearRepo
+    const data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',  //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id',
       )
-      .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken} ` )
+      .innerJoinAndMapOne(
+        'as.project',
+        Project,
+        'p',
+        `as.projectId = p.id and p.countryId = ${countryIdFromTocken} `,
+      )
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -86,15 +83,10 @@ console.log("+++++++++++++" ,ctAction)
         NDCId,
         SubNdcId,
       })
-      // .groupBy('ae.Assessmentid')
-      //  .groupBy('ae.AssessmentYear')
-      .orderBy('as.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    // console.log(data.getQuery());
 
-    let resualt = await paginate(data, options);
+      .orderBy('as.createdOn', 'DESC');
+
+    const resualt = await paginate(data, options);
 
     if (resualt) {
       return resualt;
@@ -103,52 +95,46 @@ console.log("+++++++++++++" ,ctAction)
 
   async UpdateQCStatus(
     paramId: number,
-    assementYearId: number,
+    assessmentYearId: number,
     qaStatus: QuAlityCheckStatus,
     comment: string,
-    userQc:string,
+    userQc: string,
   ) {
     try {
+      const assessmentYear = await this.assessmentYearRepo.findOne(
+        assessmentYearId,
+        {
+          relations: ['assessment'],
+        },
+      );
 
-     // let userObj = await this.userRepo.findOne({ }userQc);
-     // console.log("my user...",userObj);
-
-      let assementYear = await this.assessmentYearRepo.findOne(assementYearId, {
-        relations: ['assessment'],
-      });
-
-      
-     
-
-      if (assementYear.qaStatus === QuAlityCheckStatus.Pending) {
-        assementYear.qaStatus = QuAlityCheckStatus.InProgress;
-        this.assessmentYearRepo.save(assementYear);
+      if (assessmentYear.qaStatus === QuAlityCheckStatus.Pending) {
+        assessmentYear.qaStatus = QuAlityCheckStatus.InProgress;
+        this.assessmentYearRepo.save(assessmentYear);
       }
 
-      let param = new Parameter();
+      const param = new Parameter();
       param.id = paramId;
-      let dataRequset = await this.repo.findOne({
+      const dataRequset = await this.repo.findOne({
         where: { parameter: param },
       });
 
-      let originalStatus = dataRequset.qaStatus;
+      const originalStatus = dataRequset.qaStatus;
 
       if (dataRequset !== undefined && dataRequset !== null) {
         dataRequset.qaStatus = qaStatus;
         dataRequset.qaComment = comment;
         dataRequset.qcUserName = userQc;
-        dataRequset.dataRequestStatus=qaStatus==QuAlityCheckStatus.Fail? 30:11;
+        dataRequset.dataRequestStatus =
+          qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
         dataRequset.qaStatusUpdatedDate = new Date();
-        var dataRequestTo = dataRequset;
         await this.repo.save(dataRequset);
       }
 
-      let assesment = await this.assesmentservice.getAssessmentDetails(
-        assementYear.assessment.id,
-        assementYearId.toString(),
+      const assessment = await this.assessmentservice.getAssessmentDetails(
+        assessmentYear.assessment.id,
+        assessmentYearId.toString(),
       );
-
-     
 
       this.parameterHistoryService.SaveParameterHistory(
         dataRequset.id,
@@ -159,7 +145,7 @@ console.log("+++++++++++++" ,ctAction)
         QuAlityCheckStatus[originalStatus],
       );
 
-      return dataRequestTo;
+      return dataRequset;
     } catch (error) {
       throw error;
     }

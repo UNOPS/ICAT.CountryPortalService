@@ -9,7 +9,9 @@ describe('EmissionReductionDraftdataController', () => {
       controllers: [EmissionReductionDraftdataController],
     }).compile();
 
-    controller = module.get<EmissionReductionDraftdataController>(EmissionReductionDraftdataController);
+    controller = module.get<EmissionReductionDraftdataController>(
+      EmissionReductionDraftdataController,
+    );
   });
 
   it('should be defined', () => {

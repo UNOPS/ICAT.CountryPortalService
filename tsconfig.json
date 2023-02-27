@@ -13,7 +13,5 @@
     "incremental": true,
     "skipLibCheck": true
   },
-  "staticFolederName": "client",
-  "baseUrl": "http://localhost:7080/",
-  "calculationEngineUrl": "http://35.154.205.109:3600/"
+  "staticFolderName": "client"
 }

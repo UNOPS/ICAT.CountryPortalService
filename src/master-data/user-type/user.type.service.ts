@@ -11,7 +11,7 @@ export class UserTypeService extends TypeOrmCrudService<UserType> {
   }
 
   async GetUserTypes(): Promise<UserType[]> {
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('ae')
       .leftJoinAndMapMany(
         'ae.institutionType',
@@ -21,12 +21,8 @@ export class UserTypeService extends TypeOrmCrudService<UserType> {
       )
 
       .orderBy('ae.createdOn', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    //console.log(data.getQuery());
 
-    let resualt = data.getRawMany();
+    const resualt = data.getRawMany();
 
     if (resualt) {
       return resualt;

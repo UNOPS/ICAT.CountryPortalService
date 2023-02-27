@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { count } from 'console';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcript from 'bcrypt';
-import { ResetPassword } from 'src/auth/Dto/reset.password.dto';
-import { RSA_PSS_SALTLEN_MAX_SIGN } from 'constants';
 import { UserType } from './user.type.entity';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Institution } from 'src/institution/institution.entity';
 import { RecordStatus } from 'src/shared/entities/base.tracking.entity';
@@ -20,8 +15,6 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { InstitutionCategory } from 'src/institution/institution.category.entity';
-import { InstitutionType } from 'src/institution/institution.type.entity';
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -44,23 +37,15 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async create(createUserDto: User): Promise<User> {
-    console.log('dddddddddddddddd');
-    console.log(createUserDto);
-    let userType = await this.usersTypeRepository.findOne(
+    const userType = await this.usersTypeRepository.findOne(
       createUserDto.userType.id,
     );
 
-    console.log(userType);
-
-    let institution = await this.institutionRepository.findOne(
+    const institution = await this.institutionRepository.findOne(
       createUserDto.institution.id,
     );
 
-    //To-do get country id from current context
-    // let countryId = 1;
-    // let country = await this.countryRepo.findOne(countryId);
-
-    let newUser = new User();
+    const newUser = new User();
 
     newUser.firstName = createUserDto.firstName;
     newUser.lastName = createUserDto.lastName;
@@ -76,21 +61,22 @@ export class UsersService extends TypeOrmCrudService<User> {
 
     newUser.salt = await bcript.genSalt();
 
-    let newUUID = uuidv4();
-    let newPassword = ('' + newUUID).substr(0, 6);
+    const newUUID = uuidv4();
+    const newPassword = ('' + newUUID).substr(0, 6);
     createUserDto.password = newPassword;
     newUser.password = await this.hashPassword(
       createUserDto.password,
       newUser.salt,
     );
-    //newUser.password = '12345';
     newUser.resetToken = '';
 
-    var newUserDb = await this.usersRepository.save(newUser);
-    // get an environment variable
-    let systemLoginUrl = this.configService.get<string>('LOGIN_URL');
+    const newUserDb = await this.usersRepository.save(newUser);
 
-    var template =
+    const systemLoginUrl = this.configService.get<string>(
+      process.env.CLIENT_URL,
+    );
+
+    const template =
       'Dear ' +
       newUserDb.firstName +
       ' ' +
@@ -100,13 +86,9 @@ export class UsersService extends TypeOrmCrudService<User> {
       ' and your new login password is : ' +
       newPassword +
       ' <br/>System login url is ' +
-      systemLoginUrl
-      '<br/>' +
-      '<br/>Best regards'+ 
-      '<br/>Software support team'
-      ;
+      systemLoginUrl;
+    '<br/>' + '<br/>Best regards' + '<br/>Software support team';
 
-    // sned email with new password
     this.emaiService.sendMail(
       newUserDb.email,
       'Your credentials for ICAT system',
@@ -121,13 +103,13 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async chnagePassword(userId: number, newPassword: string): Promise<User> {
-    let user = await this.usersRepository.findOne(userId);
+    const user = await this.usersRepository.findOne(userId);
     user.password = newPassword;
     return this.usersRepository.save(user);
   }
 
   async chnageStatus(userId: number, status: number): Promise<User> {
-    let user = await this.usersRepository.findOne(userId);
+    const user = await this.usersRepository.findOne(userId);
     user.status = status;
     return this.usersRepository.save(user);
   }
@@ -136,19 +118,15 @@ export class UsersService extends TypeOrmCrudService<User> {
     userId: number,
     newToken: string,
   ): Promise<User> {
-    
-    let systemLoginUrl = this.configService.get<string>('ClientURl');
-    let user = await this.usersRepository.findOne(userId);
+    const systemLoginUrl = process.env.CLIENT_URL;
+    const user = await this.usersRepository.findOne(userId);
     user.resetToken = newToken;
-    let newUUID = uuidv4();
-    let newPassword = ('' + newUUID).substr(0, 6);
-    user.password = await this.hashPassword(
-      user.password,
-      user.salt,
-    );
-    user.password =newPassword;
+    const newUUID = uuidv4();
+    const newPassword = ('' + newUUID).substr(0, 6);
+    user.password = await this.hashPassword(user.password, user.salt);
+    user.password = newPassword;
     this.usersRepository.save(user);
-    var template =
+    const template =
       'Dear ' +
       user.firstName +
       ' ' +
@@ -157,13 +135,10 @@ export class UsersService extends TypeOrmCrudService<User> {
       user.email +
       ' and your new login password is : ' +
       newPassword +
-      ' <br/>System login url is ' +'<a href="systemLoginUrl">'+
-      systemLoginUrl
-      '<br/>' +
-      '<br/>Best regards'+ 
-      '<br/>Software support team'
-      ;
-
+      ' <br/>System login url is ' +
+      '<a href="systemLoginUrl">' +
+      systemLoginUrl;
+    '<br/>' + '<br/>Best regards' + '<br/>Software support team';
 
     this.emaiService.sendMail(
       user.email,
@@ -171,7 +146,7 @@ export class UsersService extends TypeOrmCrudService<User> {
       '',
       template,
     );
-  
+
     return this.usersRepository.save(user);
   }
 
@@ -186,37 +161,16 @@ export class UsersService extends TypeOrmCrudService<User> {
   async validateUser(userName: string, password: string): Promise<boolean> {
     const user = await this.usersRepository.findOne({ username: userName });
 
-    console.log('user',user);
-
-    if(user != undefined){
+    if (user != undefined) {
       return (await user).validatePassword(password);
     }
-    
   }
 
-  // findOne(id: string): Promise<User> {
-  //   return this.usersRepository.findOne(id);
-  // }
-
   async isUserAvailable(userName: string): Promise<any> {
-    // await this.usersRepository.count({username: userName}).then((value)=>{
-    //   if(value>0){
-    //     return true;
-    //   }
-    //   else{
-    //     return false;
-    //   }
-    // }).catch(()=>{
-    //   return false;
-    // });
-    let user = await this.usersRepository.findOne({ username: userName });
+    const user = await this.usersRepository.findOne({ username: userName });
     if (user) {
-      console.log('UsersService.findByUserName : true ===============');
-
       return user;
     } else {
-      console.log('UsersService.findByUserName : false ===============');
-
       return user;
     }
   }
@@ -225,10 +179,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     return await this.usersRepository
       .findOne({ username: userName })
       .then((value) => {
-        console.log(value);
         if (!!value) {
-          console.log('inside', value.id);
-
           return value;
         } else {
           return 0;
@@ -243,17 +194,13 @@ export class UsersService extends TypeOrmCrudService<User> {
     return await this.usersRepository
       .findOne({ email: email })
       .then((value) => {
-        console.log(value);
         if (!!value) {
-          console.log('inside', value.id);
-
           return value;
         } else {
           return false;
         }
       })
       .catch((e) => {
-        console.log('findUserByEmail error', e);
         return false;
       });
   }
@@ -267,40 +214,29 @@ export class UsersService extends TypeOrmCrudService<User> {
     token: string,
   ): Promise<boolean> {
     const user = await this.usersRepository.findOne({ email: email });
-    console.log(user);
 
     if (user && user.resetToken === token) {
-      console.log('in if ');
-
       return true;
     } else {
-      console.log('in else');
-
       return false;
     }
   }
 
   async resetPassword(email: string, password: string): Promise<boolean> {
-    let user = await this.usersRepository.findOne({ email: email });
-    console.log(user);
+    const user = await this.usersRepository.findOne({ email: email });
+
     if (user) {
-      let salt = await bcript.genSalt();
-      console.log('password', password, 'salt', salt);
+      const salt = await bcript.genSalt();
+
       user.salt = salt;
       user.password = await this.hashPassword(password, salt);
-      console.log('inside success');
 
       await this.usersRepository.save(user);
 
-      console.log('inside success2');
-
-      await this.updateChnagePasswordToken(user.id, ''); // clean the tocken
-
-      console.log('inside success3');
+      await this.updateChnagePasswordToken(user.id, '');
 
       return true;
     }
-    console.log('inside fail');
 
     return false;
   }
@@ -314,12 +250,11 @@ export class UsersService extends TypeOrmCrudService<User> {
     filterText: string,
     userTypeId: number,
     countryIdFromTocken: number,
-      sectorIdFromTocken: number,
-      institutionIdFromTocken: number,
-      role:string
+    sectorIdFromTocken: number,
+    institutionIdFromTocken: number,
+    role: string,
   ): Promise<Pagination<User>> {
-    console.log('calling......');
-    let filter: string = '';
+    let filter = '';
 
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -342,66 +277,23 @@ export class UsersService extends TypeOrmCrudService<User> {
       }
     }
 
-if(sectorIdFromTocken != 0){ 
-  console.log('sectorIdFromTocken')
- 
-  if (filter) {
-    filter = `${filter}  and ins.sectorId = :sectorIdFromTocken and type.id not in ( 1, 2)`;
-  } else {
-    filter = `ins.sectorId = :sectorIdFromTocken and type.id not in (1,2)`; 
-}
+    if (sectorIdFromTocken != 0) {
+      if (filter) {
+        filter = `${filter}  and ins.sectorId = :sectorIdFromTocken and type.id not in ( 1, 2)`;
+      } else {
+        filter = `ins.sectorId = :sectorIdFromTocken and type.id not in (1,2)`;
+      }
+    }
 
+    if (institutionIdFromTocken != 0) {
+      if (filter) {
+        filter = `${filter}  and user.institutionId = :institutionIdFromTocken `;
+      } else {
+        filter = `user.institutionId = :institutionIdFromTocken`;
+      }
+    }
 
-}
-
-if(institutionIdFromTocken != 0){
-  console.log("user Query")
-  if (filter) {
-    filter = `${filter}  and user.institutionId = :institutionIdFromTocken `;
-  } else {
-    filter = `user.institutionId = :institutionIdFromTocken`; 
-}
-
-}
-
-
-// if (role == "Country Admin") {
-   
-// }
-// else if (role == "Sector Admin") {
-//   console.log("Sector Admin")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId not in (1)`;
-//   } else {
-//     filter = `user.userTypeId not in (1) `; 
-//   }
-// }
-// else if (role == "MRV Admin") {
-//   console.log("MRV Admin")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId not in (1,2)`;
-//   } else {
-//     filter = `user.userTypeId not in (1,2) `; 
-//   }
-// }
-// else if (role == "Technical Team" ) {
-//   console.log("Technical Team")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId = 3 `;
-//   } else {
-//     filter = `user.userTypeId = 3 `; 
-//   }
-// }
-// else if ( role ==   "QC Team") {
-//   console.log("Technical Team")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId = 3 `;
-//   } else {
-//     filter = `user.userTypeId = 3 `; 
-//   }
-// }
-// else 
-    if (role == "Data Collection Team") {
+    if (role == 'Data Collection Team') {
       if (filter) {
         filter = `${filter}  and user.userTypeId = 8 or user.userTypeId = 9 `;
       } else {
@@ -409,12 +301,7 @@ if(institutionIdFromTocken != 0){
       }
     }
 
-// else {
-
- 
-// }
-
-    let data = this.repo
+    const data = this.repo
       .createQueryBuilder('user')
       .leftJoinAndMapOne(
         'user.institution',
@@ -433,17 +320,15 @@ if(institutionIdFromTocken != 0){
         filterText: `%${filterText}%`,
         userTypeId,
         countryIdFromTocken,
-      sectorIdFromTocken,
-      institutionIdFromTocken
+        sectorIdFromTocken,
+        institutionIdFromTocken,
       })
       .orderBy('user.status', 'ASC')
       .groupBy('user.id');
-      
 
-    let resualt = await paginate(data, options);
+    const resualt = await paginate(data, options);
 
     if (resualt) {
-      // console.log('reaslt...', resualt);
       return resualt;
     }
   }
@@ -455,25 +340,8 @@ if(institutionIdFromTocken != 0){
     userName: string,
   ): Promise<Pagination<User>> {
     const user = await this.usersRepository.findOne({ username: userName });
-    let institutionId = user ? user.institution.id : 0;
-
-    console.log('calling......');
-    let filter: string = '';
-
-    // if (filterText != null && filterText != undefined && filterText != '') {
-    //   filter =
-    //     '(user.firstName LIKE :filterText OR user.lastName LIKE :filterText OR user.telephone LIKE :filterText OR user.email LIKE :filterText OR ins.name LIKE :filterText OR type.name LIKE :filterText)';
-    // }
-
-    // if (userTypeId != 0) {
-    //   if (filter) {
-    //     filter = `${filter} and user.userTypeId = :userTypeId`;
-    //   } else {
-    //     filter = `user.userTypeId = :userTypeId`;
-    //   }
-    // }
-
-    let data = this.repo
+    const institutionId = user ? user.institution.id : 0;
+    const data = this.repo
       .createQueryBuilder('user')
       .leftJoinAndMapOne(
         'user.institution',
@@ -490,12 +358,11 @@ if(institutionIdFromTocken != 0){
 
       .where(' type.id=' + userTypeId + ' AND ins.id=' + institutionId)
       .orderBy('user.status', 'ASC');
-    let SQLString = data.getSql();
-    console.log('SQLString', SQLString);
-    let resualt = await paginate(data, options);
+    const SQLString = data.getSql();
+
+    const resualt = await paginate(data, options);
 
     if (resualt) {
-      console.log('reaslt...', resualt);
       return resualt;
     }
   }

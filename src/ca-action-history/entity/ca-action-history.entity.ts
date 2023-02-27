@@ -1,16 +1,6 @@
-
-
 import { Project } from 'src/project/entity/project.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'caActionHistory' })
 export class CaActionHistory extends BaseTrackingEntity {
@@ -23,42 +13,36 @@ export class CaActionHistory extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default:null})
+  @Column({ default: null })
   isNdcAndSubNdc: number;
 
-  @Column({default:null})
+  @Column({ default: null })
   isApprovalAction: number;
 
-  @Column({ default:null})
+  @Column({ default: null })
   previousNdcs: string;
 
-  @Column({ default:null})
+  @Column({ default: null })
   currentNdcs: string;
 
-  @Column({ default:null})
+  @Column({ default: null })
   previousSubNdcs: string;
 
-
-  @Column({ default:null})
+  @Column({ default: null })
   currentSubNdcs: string;
 
-  @Column({ default:null})
+  @Column({ default: null })
   previousAction: string;
 
-  @Column({ default:null})
+  @Column({ default: null })
   currentAction: string;
 
-  @Column({ default:null})
+  @Column({ default: null })
   actionUser: string;
 
-  
-
   @ManyToOne(() => Project, (project) => project.caActionHistories, {
-    cascade: false, nullable:true
+    cascade: false,
+    nullable: true,
   })
   project: Project;
-
-  
-   
 }
-

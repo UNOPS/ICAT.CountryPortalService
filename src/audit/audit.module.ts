@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { TokenDetails } from 'src/utills/token_details';
 import { AuditController } from './audit.controller';
@@ -9,9 +9,7 @@ import { Audit } from './entity/audit.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Audit, User])],
   controllers: [AuditController],
-  providers: [AuditService,TokenDetails],
-  exports: [AuditService]
+  providers: [AuditService, TokenDetails],
+  exports: [AuditService],
 })
-export class AuditModule {
-
-}
+export class AuditModule {}

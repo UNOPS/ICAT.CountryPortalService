@@ -1,8 +1,7 @@
-
 import { ApiHideProperty } from '@nestjs/swagger';
 
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
@@ -14,10 +13,9 @@ import {
   OneToMany,
   ManyToOne,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 
-@Entity({ name: 'assesmentYear' })
+@Entity({ name: 'assessmentYear' })
 export class AssessmentYear extends BaseTrackingEntity {
   constructor() {
     super();
@@ -61,23 +59,21 @@ export class AssessmentYear extends BaseTrackingEntity {
   @Column({ nullable: true })
   assessmentAssumption: string;
 
-
   @ManyToOne(() => Assessment, (assessment) => assessment.assessmentYear, {
     cascade: false,
-    // eager:true,
   })
   assessment: Assessment;
 
-  @OneToOne(() => AssessmentResault,(assessmentResault)=> assessmentResault.assessmentYear)
-  @ApiHideProperty() 
-  assessmentResault: AssessmentResault;
+  @OneToOne(
+    () => AssessmentResult,
+    (assessmentResult) => assessmentResult.assessmentYear,
+  )
+  @ApiHideProperty()
+  assessmentResult: AssessmentResult;
 
-  @OneToMany(() => VerificationDetail, verificationDetail => verificationDetail.assessmentYear)
-    public verificationDetail!: VerificationDetail[];
-
-
-    
-
-   
+  @OneToMany(
+    () => VerificationDetail,
+    (verificationDetail) => verificationDetail.assessmentYear,
+  )
+  public verificationDetail!: VerificationDetail[];
 }
-

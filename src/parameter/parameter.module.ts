@@ -13,9 +13,24 @@ import { TokenDetails } from 'src/utills/token_details';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Parameter, Institution, UnitConversion,ParameterRequest,User,Audit])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Parameter,
+      Institution,
+      UnitConversion,
+      ParameterRequest,
+      User,
+      Audit,
+    ]),
+  ],
   controllers: [ParameterController],
-  providers: [ParameterService,EmailNotificationService, Parameter,AuditService,TokenDetails],
-  exports: [ParameterService,AuditService],
+  providers: [
+    ParameterService,
+    EmailNotificationService,
+    Parameter,
+    AuditService,
+    TokenDetails,
+  ],
+  exports: [ParameterService, AuditService],
 })
 export class ParameterModule {}

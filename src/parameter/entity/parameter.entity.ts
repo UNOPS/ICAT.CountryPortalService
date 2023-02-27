@@ -1,20 +1,15 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
-import { Country } from 'src/country/entity/country.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,20 +33,10 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isAlternative: boolean;
 
-
   @Column({ default: false })
-  isEnabledAlternative:boolean;
+  isEnabledAlternative: boolean;
 
-
-  // @ManyToOne((type) => Parameter, {
-  //   cascade: false,
-  //   onDelete: 'RESTRICT',
-  //   onUpdate: 'RESTRICT',
-  //   nullable: true,
-  // })
-  // @JoinColumn({ name: 'ParentParameterId' })
   ParentParameter?: Parameter;
-  
 
   @Column({ nullable: true })
   ParentParameterId?: number;
@@ -71,7 +56,7 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isDefault: boolean;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   isHistorical: boolean;
 
   @Column({ nullable: true })
@@ -145,19 +130,17 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ nullable: true })
   isAcceptedByVerifier: number;
-  
+
   @Column({ nullable: true })
   defaultValueId: number;
-  
 
   @ManyToOne((type) => Institution, {
     cascade: false,
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
     nullable: true,
-    eager: true
+    eager: true,
   })
-  // @JoinColumn({ name: 'institutionId' })
   institution?: Institution;
 
   @ManyToOne(() => Assessment, (assessment) => assessment.parameters, {
@@ -173,29 +156,18 @@ export class Parameter extends BaseTrackingEntity {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
     nullable: true,
-    eager: true
+    eager: true,
   })
-  // @JoinColumn({ name: 'AssessmentId' })
   defaultValue?: DefaultValue;
 
-  // @OneToOne((type) => Parameter, { cascade: false, onUpdate: 'RESTRICT' })
-  // @JoinColumn()
   parameterRequest?: ParameterRequest;
 
-  @OneToMany(() => VerificationDetail,(verificationDetail) => verificationDetail.parameter)
+  @OneToMany(
+    () => VerificationDetail,
+    (verificationDetail) => verificationDetail.parameter,
+  )
   public verificationDetail: VerificationDetail[];
-
-
-
-  // @OneToOne((type) => DefaultValue,{ nullable: true })
-  // @JoinColumn()
-  // defaultValue?: DefaultValue
-
-  // @Column({ nullable: true })
-  // defaultValueId: number;
 
   @Column({ default: false })
   hasChild: boolean;
-
-
 }

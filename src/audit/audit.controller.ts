@@ -1,10 +1,7 @@
-import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Crud, CrudController } from '@nestjsx/crud';
-import * as moment from 'moment';
-import { audit } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { Repository } from 'typeorm';
@@ -34,8 +31,7 @@ export class AuditController implements CrudController<Audit> {
     @InjectRepository(Audit)
     private readonly projectRepository: Repository<Audit>,
     public configService: ConfigService,
-    private readonly tokenDetails:TokenDetails
-  
+    private readonly tokenDetails: TokenDetails,
   ) {}
 
   get base(): CrudController<Audit> {
@@ -49,7 +45,7 @@ export class AuditController implements CrudController<Audit> {
   }
 
   @Get('userCount')
-  async getUserCount(@Query('countryId') countryId: number){
+  async getUserCount(@Query('countryId') countryId: number) {
     return this.service.userCount(countryId);
   }
 
@@ -62,29 +58,27 @@ export class AuditController implements CrudController<Audit> {
     @Query('action') action: string,
     @Query('editedOn') editedOn: string,
     @Query('filterText') filterText: string,
-    // @Query('insitutionId') institutionId: number,
   ): Promise<any> {
-    //let editedOnnew= moment(editedOn, "DD/MM/YYYY");
+    let role: string;
+    let username: string;
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+    let institutionIdFromTocken: number;
 
-    var timestamp = Date.parse(editedOn);
-    var dateObject = new Date(timestamp);
+    [
+      role,
+      username,
+      countryIdFromTocken,
+      sectorIdFromTocken,
+      institutionIdFromTocken,
+    ] = this.tokenDetails.getDetails([
+      TokenReqestType.role,
+      TokenReqestType.username,
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+      TokenReqestType.InstitutionId,
+    ]);
 
-    // console.log(
-    //   'jjjjjjfffff',
-    //   moment(editedOn, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-    // );
-    // console.log('hhh', editedOn);
-
-    let role:string;
-    let username:string ;
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number ;
-    let institutionIdFromTocken:number ;
-
-  
-
-   [role,username,countryIdFromTocken,sectorIdFromTocken,institutionIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.role,TokenReqestType.username,TokenReqestType.countryId,TokenReqestType.sectorId,TokenReqestType.InstitutionId])
-    
     return await this.service.getAuditDetails(
       {
         limit: limit,
@@ -99,7 +93,6 @@ export class AuditController implements CrudController<Audit> {
       countryIdFromTocken,
       sectorIdFromTocken,
       institutionIdFromTocken,
-      // institutionId
     );
   }
 }

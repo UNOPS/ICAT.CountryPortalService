@@ -10,9 +10,9 @@ import { TokenDetails } from 'src/utills/token_details';
 import { Project } from 'src/project/entity/project.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Documents,User,Audit,Project])],
-  providers: [DocumentService,AuditService,TokenDetails],
+  imports: [TypeOrmModule.forFeature([Documents, User, Audit, Project])],
+  providers: [DocumentService, AuditService, TokenDetails],
   controllers: [DocumentController],
-  exports: [DocumentService,AuditService],
+  exports: [DocumentService, AuditService],
 })
 export class DocumentModule {}

@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Header,
   Post,
   Query,
   Request,
@@ -17,26 +16,26 @@ import {
   ParsedBody,
   ParsedRequest,
 } from '@nestjsx/crud';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { AuditDto } from 'src/audit/dto/audit-dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { Repository } from 'typeorm';
-import { AssesmentResaultService } from './assesment-resault.service';
-import { AssessmentResault } from './entity/assessment-resault.entity';
+import { AssessmentResultService } from './assessment-result.service';
+import { AssessmentResult } from './entity/assessment-result.entity';
 import { AssessmentResultType } from './entity/assessment-result-type.entity';
 import { getConnection } from 'typeorm';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 
 @Crud({
   model: {
-    type: AssessmentResault,
+    type: AssessmentResult,
   },
   query: {
     join: {
-      assement: {
+      assessment: {
         eager: true,
       },
       assessmentYear: {
@@ -48,89 +47,79 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
     },
   },
 })
-
-@Controller('assesment-resault')
-
-
-export class AssesmentResaultController
-  implements CrudController<AssessmentResault>
+@Controller('assessment-result')
+export class AssessmentResultController
+  implements CrudController<AssessmentResult>
 {
   constructor(
-    public service: AssesmentResaultService,
+    public service: AssessmentResultService,
     @InjectRepository(Assessment)
-    public assesmentRepo: Repository<Assessment>,
+    public assessmentRepo: Repository<Assessment>,
     private readonly auditService: AuditService,
     private readonly tokenDetails: TokenDetails,
   ) {}
 
-  get base(): CrudController<AssessmentResault> {
+  get base(): CrudController<AssessmentResult> {
     return this;
   }
 
   @UseGuards(LocalAuthGuard)
   @Get(
-    'assesment-resault/GetAssesmentResult/:AssessmentId/:AssessmentYearId/:calculate',
+    'assessment-result/GetAssessmentResult/:AssessmentId/:AssessmentYearId/:calculate',
   )
   @ApiHeader({
     name: 'api-key',
     description: 'A Custom Header',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 
-
-  async GetAssesmentResult(
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
+  async GetAssessmentResult(
     @Query('AssessmentId') AssessmentId: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
     @Query('calculate') calculate: boolean,
   ) {
-    let restult = await this.service.GetAssesmentResult(
+    const restult = await this.service.GetAssessmentResult(
       AssessmentId,
       AssessmentYearId,
       calculate,
     );
-    // console.log('dddddddddddddddddddddddddddddddddd');
-    console.log('reeeee-----', restult);
+
     return restult;
-  
   }
 
-  @Get('assesment-resault/GetAllAssesmentResult/:AssessmentYearId')
-  async GetAllAssesmentResult(
+  @Get('assessment-result/GetAllAssessmentResult/:AssessmentYearId')
+  async GetAllAssessmentResult(
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
   ) {
-    let restult = await this.service.GetAllAssesmentResult(
+    const restult = await this.service.GetAllAssessmentResult(
       {
         limit: limit,
         page: page,
       },
       AssessmentYearId,
     );
-    // console.log('dddddddddddddddddddddddddddddddddd');
-    // console.log(restult);
+
     return restult;
   }
 
   @Post(
-    'assesment-resault/updateQCStatusAssesmentResult/:resultId/:yearId/:qcStatus/:assessmentResultType/:comment',
+    'assessment-result/updateQCStatusAssessmentResult/:resultId/:yearId/:qcStatus/:assessmentResultType/:comment',
   )
   @UseGuards(JwtAuthGuard)
-  async updateQCStatusAssesmentResult(
+  async updateQCStatusAssessmentResult(
     @Query('resultId') resultId: number,
     @Query('yearId') yearId: number,
     @Query('qcStatus') qcStatus: number,
     @Query('assessmentResultType') assessmentResultType: number,
     @Query('comment') comment: string,
-  ): Promise<AssessmentResault> {
-    let audit: AuditDto = new AuditDto();
-    audit.action = 'QC Status Assesment Result Updated';
-    audit.comment = 'QC Status Assesment Result Updated';
+  ): Promise<AssessmentResult> {
+    const audit: AuditDto = new AuditDto();
+    audit.action = 'QC Status Assessment Result Updated';
+    audit.comment = 'QC Status Assessment Result Updated';
     audit.actionStatus = 'Updated';
 
     this.auditService.create(audit);
-    console.log('QC Status Assesment Result Updated');
-    console.log('*******************');
 
     return await this.service.updateQCStatus(
       resultId,
@@ -141,71 +130,48 @@ export class AssesmentResaultController
     );
   }
 
-
-  @Get('macassesment-resault/qcupdate/:yearId/:qcStatus')
+  @Get('macassessment-result/qcupdate/:yearId/:qcStatus')
   async UpdateQcStatusForMac(
     @Query('yearId') yearId: number,
     @Query('qcStatus') qcStatus: number,
   ) {
-    return await this.service.updateQCStatusforMac(
-      
-      yearId,
-      qcStatus
-     
-    );
+    return await this.service.updateQCStatusforMac(yearId, qcStatus);
   }
   @Get('checkAllQCApprovmentAssessmentResult')
   async checkAllQCApprovmentAssessmentResult(
     @Query('assersltId') assersltId: number,
-    
-  ):Promise<boolean> {
-    return await this.service.checkAllQCApprovmentAssessmentResult(
-      assersltId
-    );
+  ): Promise<boolean> {
+    return await this.service.checkAllQCApprovmentAssessmentResult(assersltId);
   }
 
-  @Get('macassesment-resault/verificationupdate/:yearId/:VRStatus')
+  @Get('macassessment-result/verificationupdate/:yearId/:VRStatus')
   async UpdateVRStatusForMac(
     @Query('yearId') yearId: number,
     @Query('VRStatus') VRStatus: number,
   ) {
-    return await this.service.updateVRStatusforMac(
-      
-      yearId,
-      VRStatus
-     
-    );
+    return await this.service.updateVRStatusforMac(yearId, VRStatus);
   }
 
   @Override()
   async createOne(
     @Request() request,
     @ParsedRequest() req: CrudRequest,
-    @ParsedBody() dto: AssessmentResault,
-  ): Promise<AssessmentResault> {
-    //console.log("came to inside...",dto);
-   // console.log('req1----', dto);
-  
-    //console.log(asr);
-
+    @ParsedBody() dto: AssessmentResult,
+  ): Promise<AssessmentResult> {
     const queryRunner = getConnection().createQueryRunner();
     await queryRunner.startTransaction();
 
     try {
-      let asr= await queryRunner.manager.save(AssessmentResault, dto);
-      // let asr = await this.base.createOneBase(req, dto);
-      var assement = await this.assesmentRepo.findOne(asr.assement.id);
-      assement.macValue = asr.macResult;
+      const asr = await queryRunner.manager.save(AssessmentResult, dto);
 
-      await queryRunner.manager.save(Assessment, assement);
-      // this.assesmentRepo.save(assement);
-      
+      const assessment = await this.assessmentRepo.findOne(asr.assessment.id);
+      assessment.macValue = asr.macResult;
+
+      await queryRunner.manager.save(Assessment, assessment);
+
       await queryRunner.commitTransaction();
       return asr;
-    }
-    catch (err) {
-      console.log("worktran2")
-      console.log(err);
+    } catch (err) {
       await queryRunner.rollbackTransaction();
       return err;
     } finally {
@@ -213,42 +179,39 @@ export class AssesmentResaultController
     }
   }
 
-
   @Get('trackpage/assessmentsResults/byAssessmentId/:id')
   async getAssessmentResultBYAssessmentId(
     @Request() request,
     @Query('id') id: number,
-    
   ): Promise<any> {
-    return await this.service.getAssessmentResultBYAssessmentId(
-      id,
-    );
+    return await this.service.getAssessmentResultBYAssessmentId(id);
   }
   @UseGuards(JwtAuthGuard)
   @Get('dashboaremission')
   async getAssessmentResultforDashboard(
     @Request() request,
     @Query('assesYear') assesYear: number,
-    
   ): Promise<any> {
-    // console.log("work")
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
     let institutionIdFromTocken: number;
     let moduleLevelsFromTocken: number[];
-    [countryIdFromTocken, sectorIdFromTocken, institutionIdFromTocken,moduleLevelsFromTocken] =
-      this.tokenDetails.getDetails([
-        TokenReqestType.countryId,
-        TokenReqestType.sectorId,
-        TokenReqestType.InstitutionId,
-        TokenReqestType.moduleLevels
-      ]);
+    [
+      countryIdFromTocken,
+      sectorIdFromTocken,
+      institutionIdFromTocken,
+      moduleLevelsFromTocken,
+    ] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+      TokenReqestType.InstitutionId,
+      TokenReqestType.moduleLevels,
+    ]);
     return await this.service.getAssessmentResultforDashboard(
       assesYear,
       countryIdFromTocken,
       sectorIdFromTocken,
-      moduleLevelsFromTocken
+      moduleLevelsFromTocken,
     );
   }
-
 }

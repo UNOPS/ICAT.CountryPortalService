@@ -1,12 +1,10 @@
 import {
-  BaseEntity,
   Column,
   DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcript from 'bcrypt';
@@ -14,9 +12,8 @@ import { UserType } from './user.type.entity';
 import { Exclude } from 'class-transformer';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { Institution } from 'src/institution/institution.entity';
-import { Audit } from 'src/audit/entity/audit.entity';
 import { Country } from 'src/country/entity/country.entity';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 
 @Entity()
 export class User extends BaseTrackingEntity {
@@ -26,7 +23,6 @@ export class User extends BaseTrackingEntity {
     this.status = 0;
     this.password = '';
     this.resetToken = '';
-    //  this.abc = this.firstName + this.lastName;
   }
 
   @PrimaryGeneratedColumn()
@@ -55,8 +51,8 @@ export class User extends BaseTrackingEntity {
   @JoinColumn()
   institution: Institution;
 
-  @OneToMany(() => Assessment, assessment => assessment.user)
-    assessments: Assessment[];
+  @OneToMany(() => Assessment, (assessment) => assessment.user)
+  assessments: Assessment[];
 
   @Column()
   telephone: string;
@@ -67,11 +63,7 @@ export class User extends BaseTrackingEntity {
   @Column({ nullable: true })
   designation: string;
 
-
-  // @Column({ name: 'countryId' })
-  // countryId: number;
-
-  @ManyToOne((type) => Country, {eager: true})
+  @ManyToOne((type) => Country, { eager: true })
   @JoinColumn()
   country: Country;
 
@@ -94,15 +86,13 @@ export class User extends BaseTrackingEntity {
   canNotDelete?: boolean;
 
   @Column({ default: null })
-    uniqueIdentification: string;
+  uniqueIdentification: string;
 
   fullName: string;
 
   updateFullName() {
     this.fullName = this.firstName + (this.lastName ? ' ' + this.lastName : '');
   }
-
-  // abc: string = ()=>{  this.firstName + this.lastName};
 
   get fullname2() {
     return this.firstName;
@@ -120,7 +110,6 @@ export class User extends BaseTrackingEntity {
   async validatePassword(password: string): Promise<boolean> {
     const hashPassword = await bcript.hash(password, this.salt);
     return hashPassword === this.password;
-    // return true;
   }
 
   async validateResetToken(token: string): Promise<boolean> {

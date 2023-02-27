@@ -1,36 +1,32 @@
-import { AssessmentApplicability } from 'src/assesment-applicability/entity/assesment-applicability';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import { AssessmentObjective } from 'src/assessment-objective/entity/assessment-objective.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { ApplicabilityEntity } from 'src/master-data/applicability/entity/applicability.entity';
 import { MitigationActionType } from 'src/master-data/mitigation-action/mitigation-action.entity';
-import { NdcSet } from 'src/master-data/ndc/ndc-set.entity';
 import { Ndc } from 'src/master-data/ndc/ndc.entity';
 import { SubNdc } from 'src/master-data/ndc/sub-ndc.entity';
 import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { Project } from 'src/project/entity/project.entity';
-import { ProjectionResault } from 'src/projection-resault/entity/projection-resault.entity';
+import { ProjectionResult } from 'src/projection-result/entity/projection-result.entity';
 import { ProjectionYear } from 'src/projection-year/entity/projection-year.entity';
 import { ReportAssessment } from 'src/report/entity/report-assessment.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
 import { User } from 'src/users/user.entity';
-import { VerificationDetail } from 'src/verification/entity/verification-detail.entity';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-  OneToOne,
   JoinColumn,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
 import { AssessmentStatus } from './assessment-status.entity';
 
-@Entity({ name: 'assesment' })
+@Entity({ name: 'assessment' })
 export class Assessment extends BaseTrackingEntity {
   constructor() {
     super();
@@ -50,20 +46,20 @@ export class Assessment extends BaseTrackingEntity {
   @Column({ nullable: true })
   projectDuration: number;
 
-  @Column({ nullable: true }) // renamed entity 
-  ghgAssessTypeForMac: string; 
+  @Column({ nullable: true })
+  ghgAssessTypeForMac: string;
 
   @Column({ default: 0 })
-  assessmentStatus: AssessmentStatus; // Published or Report Generation or Data Collection or QA or QD ...
+  assessmentStatus: AssessmentStatus;
 
   @Column({ nullable: true })
-  assessmentType: string; // assessmentType :- MAC, Ex-Post, Ex-Ante, Tracking
+  assessmentType: string;
 
   @Column({ nullable: true })
-  emmisionReductionValue: number; // a numerical value with a Unit
+  emmisionReductionValue: number;
 
   @Column({ nullable: true })
-  macValue: number; // a numerical value with a Unit
+  macValue: number;
 
   @Column({ nullable: true })
   baselineScenario: string;
@@ -75,7 +71,7 @@ export class Assessment extends BaseTrackingEntity {
   isGuided: boolean;
 
   @Column({ nullable: true })
-  isProposal: boolean;     
+  isProposal: boolean;
 
   @Column({ nullable: true })
   lekageScenario: string;
@@ -95,7 +91,7 @@ export class Assessment extends BaseTrackingEntity {
   @Column({ nullable: true })
   methodologyVersion: string;
 
-  @ManyToOne((type) => Country, { cascade: false, nullable: true ,eager:true})
+  @ManyToOne((type) => Country, { cascade: false, nullable: true, eager: true })
   country?: Country;
 
   @ManyToOne(() => Methodology, (methodology) => methodology.assessments, {
@@ -110,9 +106,8 @@ export class Assessment extends BaseTrackingEntity {
   @ManyToOne(() => Project, (project) => project.assessments, {
     cascade: false,
     nullable: true,
-    eager:true
+    eager: true,
   })
-  // @JoinColumn()
   project: Project;
 
   @ManyToMany(() => AssessmentObjective, {
@@ -132,20 +127,16 @@ export class Assessment extends BaseTrackingEntity {
       nullable: true,
     },
   )
-  // @JoinColumn()
   assessmentYear: AssessmentYear[];
 
   @OneToMany(
-    () => AssessmentResault,
-    (assessmentResult) => assessmentResult.assement,
-    { cascade: false, nullable: true }
+    () => AssessmentResult,
+    (assessmentResult) => assessmentResult.assessment,
+    { cascade: false, nullable: true },
   )
-  //  @JoinColumn()
-  assessmentResult: AssessmentResault[];
-
+  assessmentResult: AssessmentResult[];
 
   @ManyToOne(() => MitigationActionType, { cascade: false, nullable: true })
-  // @JoinColumn()
   mitigationActionType: MitigationActionType;
 
   @ManyToOne(() => Ndc, { cascade: false, nullable: true })
@@ -164,12 +155,6 @@ export class Assessment extends BaseTrackingEntity {
   @JoinColumn()
   parameters: Parameter[];
 
-
-
-  // @ManyToOne(() => AssesmentApplication, { cascade: false, nullable: true })
-  // // @JoinColumn()
-  // assessmentApplication: AssesmentApplication;
-
   @OneToMany(() => ProjectionYear, (pe) => pe.assessment, {
     cascade: false,
     nullable: true,
@@ -183,11 +168,16 @@ export class Assessment extends BaseTrackingEntity {
   @JoinTable()
   applicability?: ApplicabilityEntity[];
 
-  @OneToMany(() => ReportAssessment,(reportAssessment) => reportAssessment.assessment ,{nullable: true})
+  @OneToMany(
+    () => ReportAssessment,
+    (reportAssessment) => reportAssessment.assessment,
+    { nullable: true },
+  )
   public reportAssessment!: ReportAssessment[];
 
-  @OneToMany(() => ProjectionResault, (projectiondata) => projectiondata.assement)
-  projectionResult: ProjectionResault[]
-
-
+  @OneToMany(
+    () => ProjectionResult,
+    (projectiondata) => projectiondata.assessment,
+  )
+  projectionResult: ProjectionResult[];
 }

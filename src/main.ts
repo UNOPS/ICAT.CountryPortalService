@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as bodyParser from 'body-parser';
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {
@@ -18,6 +17,6 @@ async function bootstrap() {
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.enableCors();
-  await app.listen(7080);
+  await app.listen(parseInt(process.env.PORT) || 8080);
 }
 bootstrap();

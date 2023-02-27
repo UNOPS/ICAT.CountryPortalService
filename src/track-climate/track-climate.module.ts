@@ -9,9 +9,14 @@ import { TrackClimateController } from './track-climate.controller';
 import { TrackClimateService } from './track-climate.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TrackcaEntity,Project])],
+  imports: [TypeOrmModule.forFeature([TrackcaEntity, Project])],
   controllers: [TrackClimateController],
-  providers: [TrackClimateService,TokenDetails,ProjectService,EmailNotificationService],
+  providers: [
+    TrackClimateService,
+    TokenDetails,
+    ProjectService,
+    EmailNotificationService,
+  ],
   exports: [TrackClimateService],
 })
 export class TrackClimateModule {}

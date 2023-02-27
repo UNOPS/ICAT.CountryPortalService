@@ -7,7 +7,9 @@ import { ParameterHistoryController } from './parameter-history.controller';
 import { ParameterHistoryService } from './parameter-history.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ParameterHistory, Parameter, ParameterRequest])],
+  imports: [
+    TypeOrmModule.forFeature([ParameterHistory, Parameter, ParameterRequest]),
+  ],
   controllers: [ParameterHistoryController],
   providers: [ParameterHistoryService],
   exports: [ParameterHistoryService],

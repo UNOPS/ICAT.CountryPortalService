@@ -1,24 +1,17 @@
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
-import { Sector } from 'src/master-data/sector/sector.entity';
-import { type } from 'src/ormconfig';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import { MasterData } from 'src/shared/entities/master.data.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CountrySector } from './country-sector.entity';
 import { countryStatus } from './country-status.entity';
 
-@Entity({name: 'country'})
-export class Country extends BaseTrackingEntity{
-    
+@Entity({ name: 'country' })
+export class Country extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -38,7 +31,7 @@ export class Country extends BaseTrackingEntity{
   sortOrder: number;
 
   @Column()
-  submissions: string; // add as string for document upload 
+  submissions: string;
 
   @Column({ default: null })
   emissionSummary: string;
@@ -55,14 +48,10 @@ export class Country extends BaseTrackingEntity{
   @Column({ default: null })
   registeredDate: Date;
 
-  
   @Column({ default: null })
   isMember: boolean;
 
- // @Column({ default: null })
- // isRegister: boolean;
-
-  @Column({ default: null })  // enum 
+  @Column({ default: null })
   countryStatus: countryStatus;
 
   @Column({ default: null })
@@ -89,18 +78,12 @@ export class Country extends BaseTrackingEntity{
   @Column({ default: null })
   uniqueIdentification: string;
 
-
   @OneToMany(() => DefaultValue, (defaultValue) => defaultValue.country)
-  defaultValue: DefaultValue[]
+  defaultValue: DefaultValue[];
 
-
-  @OneToMany(() => CountrySector, countrySector => countrySector.country,{eager:true})
+  @OneToMany(() => CountrySector, (countrySector) => countrySector.country, {
+    eager: true,
+  })
   @JoinColumn()
   countrysector: CountrySector[];
-  // @ManyToMany((type) => Sector, {
-  //   eager: true,
-  //   cascade: false,
-  // })
-  // @JoinTable({ name: 'country_sector' })
-  // Sector?: Sector[];
 }

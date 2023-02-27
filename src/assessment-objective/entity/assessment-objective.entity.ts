@@ -1,15 +1,7 @@
-import { Assessment } from 'src/assesment/entity/assesment.entity';
 import { BaseTrackingEntity } from 'src/shared/entities/base.tracking.entity';
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'assesmentObjective' })
+@Entity({ name: 'assessmentObjective' })
 export class AssessmentObjective extends BaseTrackingEntity {
   constructor() {
     super();
@@ -22,15 +14,6 @@ export class AssessmentObjective extends BaseTrackingEntity {
 
   @Column()
   objective: string;
-
-  // @ManyToOne(() => Assessment, (assessment) => assessment.assessmentObjective, {
-  //   nullable: true,
-  //   cascade: false,
-  //   onDelete: 'RESTRICT',
-  //   onUpdate: 'RESTRICT',
-  // })
-  // // @JoinColumn()
-  // assessment?: Assessment;
 
   @Column({ nullable: true })
   assessmentId: number;

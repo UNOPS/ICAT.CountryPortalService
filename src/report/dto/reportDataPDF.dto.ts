@@ -1,21 +1,14 @@
 export class ReportDataPDF {
   reportName: string;
-  //executiveSummery: any;
   years: number[] = [];
-  // projects: string[] = [];
-  // types: string[] = [];
   sectors: string[] = [];
   climateActionIds: number[] = [];
-  country: string = '';
-
-  selectAllSectors: boolean=false;
-  sectorIds:number[]=[];
-
-
-  //Report Parameters
+  country = '';
+  selectAllSectors = false;
+  sectorIds: number[] = [];
   projIds: string[] = [];
   assessType: string[] = [];
   yearIds: string[] = [];
-  macAssecmentType:string[] = [];
-  ndcIdList:string[] = [];
+  macAssecmentType: string[] = [];
+  ndcIdList: string[] = [];
 }

@@ -1,9 +1,7 @@
-import { User } from 'src/users/user.entity';
 import {
   Body,
   Controller,
   Get,
-  Post,
   Put,
   Query,
   Request,
@@ -37,7 +35,7 @@ export class ParameterRequestController
   implements CrudController<ParameterRequest>
 {
   constructor(
-    private readonly tokenDetails:TokenDetails,
+    private readonly tokenDetails: TokenDetails,
     public service: ParameterRequestService,
     private readonly auditService: AuditService,
   ) {}
@@ -48,7 +46,10 @@ export class ParameterRequestController
     @Query('assessmentId') assessmentId: number,
     @Query('assessmentYear') assessmentYear: number,
   ): Promise<any> {
-    return await this.service.getDateRequestToManageDataStatus(assessmentId,assessmentYear);
+    return await this.service.getDateRequestToManageDataStatus(
+      assessmentId,
+      assessmentYear,
+    );
   }
 
   @UseGuards(LocalAuthGuard)
@@ -57,10 +58,8 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 	
-  
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
   @UseGuards(JwtAuthGuard)
   async getNewDataRequest(
     @Request() request,
@@ -71,11 +70,13 @@ export class ParameterRequestController
     @Query('year') year: string,
     @Query('dataProvider') dataProvider: number,
   ): Promise<any> {
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number;
-
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
     return await this.service.getNewDataRequest(
       {
@@ -91,16 +92,14 @@ export class ParameterRequestController
     );
   }
 
-
   @UseGuards(LocalAuthGuard)
   @Get(
     'getNewDataRequestForClimateList/:page/:limit/:filterText/:climateActionId/:year/:dataProvider',
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 	
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
   @UseGuards(JwtAuthGuard)
   async getNewDataRequestForClimateList(
     @Request() request,
@@ -111,11 +110,13 @@ export class ParameterRequestController
     @Query('year') year: string,
     @Query('dataProvider') dataProvider: number,
   ): Promise<any> {
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
-    let countryIdFromTocken:number;
-    let sectorIdFromTocken:number;
-
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
     return await this.service.getNewDataRequestForClimateList(
       {
@@ -137,9 +138,8 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 	
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
   async getAssignDateRequest(
     @Request() request,
     @Query('page') page: number,
@@ -162,9 +162,8 @@ export class ParameterRequestController
   @Get('getEnterDataRequest/:page/:limit/:filterText/:climateActionId/:year')
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 	
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
   async getEnterDataParameter(
     @Request() request,
     @Query('page') page: number,
@@ -192,9 +191,8 @@ export class ParameterRequestController
   )
   @ApiHeader({
     name: 'api-key',
-    schema: { type: 'string', default: '1234'} 
-   
-  }) 	
+    schema: { type: 'string', default: process.env.API_KEY_1 },
+  })
   async getReviewDataRequest(
     @Request() request,
     @Query('page') page: number,
@@ -224,12 +222,12 @@ export class ParameterRequestController
     @Request() request,
     @Body() updateDeadlineDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    let audit: AuditDto=new AuditDto();
-    audit.action='Deadline Updated';
-    audit.comment='Deadline Updated';
-    audit.actionStatus ='Updated'
+    const audit: AuditDto = new AuditDto();
+    audit.action = 'Deadline Updated';
+    audit.comment = 'Deadline Updated';
+    audit.actionStatus = 'Updated';
     this.auditService.create(audit);
-    console.log(updateDeadlineDto);
+
     return this.service.updateDeadlineForIds(updateDeadlineDto);
   }
 
@@ -238,12 +236,12 @@ export class ParameterRequestController
   updateDeadlineDataEntry(
     @Body() updateDeadlineDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    let audit: AuditDto=new AuditDto();
-    audit.action='Deadline Updated';
-    audit.comment=updateDeadlineDto.comment+' Updated';
-    audit.actionStatus ='Updated'
+    const audit: AuditDto = new AuditDto();
+    audit.action = 'Deadline Updated';
+    audit.comment = updateDeadlineDto.comment + ' Updated';
+    audit.actionStatus = 'Updated';
     this.auditService.create(audit);
-    console.log(updateDeadlineDto);
+
     return this.service.updateDataEntryDeadlineForIds(updateDeadlineDto);
   }
 
@@ -252,13 +250,13 @@ export class ParameterRequestController
   acceptReviewData(
     @Body() updateDeadlineDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    let audit: AuditDto=new AuditDto();
-    audit.action='Review Data Accepted';
-    audit.comment=updateDeadlineDto.comment+' Accepted';
-    audit.actionStatus ='Approved'
-  
+    const audit: AuditDto = new AuditDto();
+    audit.action = 'Review Data Accepted';
+    audit.comment = updateDeadlineDto.comment + ' Accepted';
+    audit.actionStatus = 'Approved';
+
     this.auditService.create(audit);
-    console.log("================",updateDeadlineDto);
+
     return this.service.acceptReviewDataForIds(updateDeadlineDto);
   }
 
@@ -267,13 +265,13 @@ export class ParameterRequestController
   rejectReviewData(
     @Body() updateDeadlineDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    let audit: AuditDto=new AuditDto();
-    audit.action='Review Data Rejected';
-    audit.comment=updateDeadlineDto.comment+' Rejected';
-    audit.actionStatus ='Rejected'
-  
+    const audit: AuditDto = new AuditDto();
+    audit.action = 'Review Data Rejected';
+    audit.comment = updateDeadlineDto.comment + ' Rejected';
+    audit.actionStatus = 'Rejected';
+
     this.auditService.create(audit);
-    console.log("==========",updateDeadlineDto);
+
     return this.service.rejectReviewDataForIds(updateDeadlineDto);
   }
 
@@ -282,39 +280,25 @@ export class ParameterRequestController
   rejectEnterData(
     @Body() updateDeadlineDto: UpdateDeadlineDto,
   ): Promise<boolean> {
-    let audit: AuditDto = new AuditDto();
+    const audit: AuditDto = new AuditDto();
     audit.action = 'Review Data Rejected';
     audit.comment = updateDeadlineDto.comment + ' Rejected';
     audit.actionStatus = 'Rejected';
 
     this.auditService.create(audit);
-    console.log("==========",updateDeadlineDto);
+
     return this.service.rejectEnterDataForIds(updateDeadlineDto);
   }
 
   @Get('climateaction/bydatRequestStatsu2')
-  async getClimateActionByDataRequestStatus(
-    @Request() request,
-    
-    
-  ): Promise<any> {
-    return await this.service.getClimateActionByDataRequestStatus(
-     
-    );
+  async getClimateActionByDataRequestStatus(@Request() request): Promise<any> {
+    return await this.service.getClimateActionByDataRequestStatus();
   }
-
-
 
   @Get('climateaction/bydatRequestStatsusSix')
   async getClimateActionByDataRequestStatusSix(
     @Request() request,
-    
-    
   ): Promise<any> {
-    return await this.service.getClimateActionByDataRequestStatusSix(
-     
-    );
+    return await this.service.getClimateActionByDataRequestStatusSix();
   }
-
-
 }

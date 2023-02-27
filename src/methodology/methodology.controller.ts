@@ -6,7 +6,6 @@ import { MethodologyService } from './methodology.service';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-
 @Crud({
   model: {
     type: Methodology,
@@ -45,9 +44,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 })
 @Controller('methodology')
 export class MethodologyController implements CrudController<Methodology> {
-  constructor(public service: MethodologyService,
-    private readonly tokenDetails:TokenDetails,
-    ) {}
+  constructor(
+    public service: MethodologyService,
+    private readonly tokenDetails: TokenDetails,
+  ) {}
 
   get base(): CrudController<Methodology> {
     return this;
@@ -61,15 +61,13 @@ export class MethodologyController implements CrudController<Methodology> {
     @Query('limit') limit: number,
     @Query('filterText') filterText: string,
   ): Promise<any> {
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
 
-
-    let countryIdFromTocken:number ;
-    let sectorIdFromTocken:number;
-
-    [countryIdFromTocken,sectorIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId,TokenReqestType.sectorId])
-
-    console.log("countryIdFromTocken==",countryIdFromTocken)
-    console.log("sectorIdFromTocken==",sectorIdFromTocken)
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+      TokenReqestType.sectorId,
+    ]);
 
     return await this.service.getMethodologyDetails(
       {
@@ -78,8 +76,7 @@ export class MethodologyController implements CrudController<Methodology> {
       },
       filterText,
       countryIdFromTocken,
-      sectorIdFromTocken
-
+      sectorIdFromTocken,
     );
   }
 }

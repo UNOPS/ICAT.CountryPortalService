@@ -1,6 +1,4 @@
-import { ApiProperty, ApiBody } from '@nestjs/swagger';
-import { type } from 'os';
-import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { CaActionHistory } from 'src/ca-action-history/entity/ca-action-history.entity';
 import { Country } from 'src/country/entity/country.entity';
 import { Institution } from 'src/institution/institution.entity';
@@ -26,9 +24,6 @@ import {
 
 @Entity({ name: 'climateAction' })
 export class Project extends BaseTrackingEntity {
-  /**
-   *
-   */
   constructor() {
     super();
     this.createdBy = '';
@@ -66,8 +61,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   mappedInstitution?: Institution;
 
-
-  @ManyToOne((type) => Country, { cascade: false,eager:true })
+  @ManyToOne((type) => Country, { cascade: false, eager: true })
   @JoinColumn({ name: 'countryId' })
   country?: Country;
 
@@ -75,7 +69,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   projectStatus?: ProjectStatus;
 
-  @ManyToOne((type) => Sector, { cascade: false ,eager:true})
+  @ManyToOne((type) => Sector, { cascade: false, eager: true })
   @JoinColumn()
   sector?: Sector;
 
@@ -97,7 +91,10 @@ export class Project extends BaseTrackingEntity {
   @OneToMany(() => Assessment, (assessment) => assessment.project)
   assessments: Assessment[];
 
-  @OneToMany(() => CaActionHistory, (caActionHistory) => caActionHistory.project)
+  @OneToMany(
+    () => CaActionHistory,
+    (caActionHistory) => caActionHistory.project,
+  )
   caActionHistories?: CaActionHistory[];
 
   @Column({ default: null })
@@ -106,18 +103,17 @@ export class Project extends BaseTrackingEntity {
   @Column()
   proposeDateofCommence: Date;
 
-  @Column({ default: 0})
-  duration: number;   // project life (project scenario)
-
-
-  @Column({ default: 0})
-  baseScenarioProjectLife: number;   // project life (baseline scenario)
+  @Column({ default: 0 })
+  duration: number;
 
   @Column({ default: 0 })
-  projectScenarioTotalInvestment: number;  // total investement (project scenario)
+  baseScenarioProjectLife: number;
 
   @Column({ default: 0 })
-  baseScenarioTotalInvestment: number;  // total investement (baseline scenario)
+  projectScenarioTotalInvestment: number;
+
+  @Column({ default: 0 })
+  baseScenarioTotalInvestment: number;
 
   @Column({ length: 500, default: null, nullable: true })
   objective: string;
@@ -209,13 +205,11 @@ export class Project extends BaseTrackingEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
   expectedRecurrentExpenditure;
 
-  //For mistgation actions - related to climate action table in future
-
   @ManyToOne((type) => MitigationActionType, { cascade: false })
   @JoinColumn()
   mitigationActionType?: MitigationActionType;
 
-  @ManyToOne((type) => ProjectApprovalStatus, { cascade: false})
+  @ManyToOne((type) => ProjectApprovalStatus, { cascade: false })
   @JoinColumn()
   projectApprovalStatus?: ProjectApprovalStatus;
 
@@ -233,11 +227,13 @@ export class Project extends BaseTrackingEntity {
 
   @Column({ default: null, nullable: true })
   gdp: string;
-  
+
   @Column({ default: null, nullable: true })
   assumption: string;
 
-  @OneToMany(() => ReportProject,(reportProject) => reportProject.project ,{nullable: true})
+  @OneToMany(() => ReportProject, (reportProject) => reportProject.project, {
+    nullable: true,
+  })
   public reportProject!: ReportProject[];
 
   @Column({ default: null })
@@ -266,5 +262,4 @@ export class Project extends BaseTrackingEntity {
 
   @Column({ default: null })
   actionJustification: string;
-
 }
