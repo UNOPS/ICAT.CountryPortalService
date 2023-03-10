@@ -463,7 +463,7 @@ export class ProjectController implements CrudController<Project> {
         );
         emailTemplate = emailTemplate.replace(
           '[CA_URL]',
-          baseurl + 'propose-project?id=' + dto.id + '&flag=1',
+          baseurl + '/propose-project?id=' + dto.id + '&flag=1',
         );
 
         this.mailService.sendMail(
@@ -489,7 +489,7 @@ export class ProjectController implements CrudController<Project> {
         );
         emailTemplate = emailTemplate.replace(
           '[CA_URL]',
-          baseurl + 'propose-project?id=' + dto.id + '&flag=1',
+          baseurl + '/propose-project?id=' + dto.id + '&flag=1',
         );
         this.mailService.sendMail(
           project.email,
@@ -518,7 +518,7 @@ export class ProjectController implements CrudController<Project> {
         );
         emailTemplate = emailTemplate.replace(
           '[CA_URL]',
-          baseurl + 'propose-project?id=' + dto.id + '&flag=1',
+          baseurl + '/propose-project?id=' + dto.id + '&flag=1',
         );
         this.mailService.sendMail(
           project.email,

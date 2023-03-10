@@ -88,9 +88,9 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       },
     });
 
-    const base = process.env.DOWNLOAD_BASE_URL;
+    const base = process.env.BASE_URL;
     documenst.forEach((a) => {
-      a.url = `${base}document/downloadDocument/attachment/${a.id}`;
+      a.url = `${base}/document/downloadDocument/attachment/${a.id}`;
     });
 
     return documenst;
@@ -108,7 +108,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
 
     const base = process.env.BASE_URL;
     documenst.forEach((a) => {
-      a.url = `${base}document/downloadDocument/attachment/${a.id}`;
+      a.url = `${base}/document/downloadDocument/attachment/${a.id}`;
     });
 
     return documenst;
