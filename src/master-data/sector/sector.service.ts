@@ -46,15 +46,15 @@ export class SectorService extends TypeOrmCrudService<Sector> {
       })
       .orderBy('sr.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
   async getCountrySector(countryId: number) {
-    const resualt = [];
+    const result = [];
     const ids = await this.CountrySectorRepo.find({
       where: { countryId: countryId },
     });
@@ -62,9 +62,9 @@ export class SectorService extends TypeOrmCrudService<Sector> {
     for await (const a of ids) {
       const sector = await this.repo.findOne({ where: { id: a.sectorId } });
 
-      resualt.push(sector);
+      result.push(sector);
     }
 
-    return resualt;
+    return result;
   }
 }

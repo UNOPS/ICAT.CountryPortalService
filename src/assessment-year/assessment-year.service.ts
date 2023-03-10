@@ -757,10 +757,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       )
       .where(filter, { year, projectId, type, stage });
 
-    const resualt = await data.getOne();
+    const result = await data.getOne();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -843,10 +843,10 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       })
       .orderBy('asse.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

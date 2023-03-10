@@ -224,10 +224,10 @@ export class ReportService extends TypeOrmCrudService<Report> {
       })
       .orderBy('rep.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

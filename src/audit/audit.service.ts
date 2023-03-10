@@ -185,10 +185,10 @@ export class AuditService extends TypeOrmCrudService<Audit> {
       })
       .orderBy('dr.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

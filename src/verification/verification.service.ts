@@ -80,10 +80,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
       .orderBy('ae.qaDeadline', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -132,10 +132,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           VRstatusId,
         },
       );
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -230,10 +230,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       )
       .where('vd.assessmentYearId = :assessmentYearId', { assessmentYearId });
 
-    const resualt = data.getMany();
+    const result = data.getMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

@@ -326,10 +326,10 @@ export class UsersService extends TypeOrmCrudService<User> {
       .orderBy('user.status', 'ASC')
       .groupBy('user.id');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -360,10 +360,10 @@ export class UsersService extends TypeOrmCrudService<User> {
       .orderBy('user.status', 'ASC');
     const SQLString = data.getSql();
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

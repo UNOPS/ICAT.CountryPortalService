@@ -137,10 +137,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -226,10 +226,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.id', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -339,10 +339,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -452,10 +452,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -581,10 +581,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       })
       .orderBy('dr.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -614,10 +614,10 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         filterText: `%${filterText}%`,
       })
       .orderBy('dr.createdOn', 'DESC');
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

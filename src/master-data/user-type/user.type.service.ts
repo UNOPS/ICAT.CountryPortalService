@@ -22,10 +22,10 @@ export class UserTypeService extends TypeOrmCrudService<UserType> {
 
       .orderBy('ae.createdOn', 'DESC');
 
-    const resualt = data.getRawMany();
+    const result = data.getRawMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

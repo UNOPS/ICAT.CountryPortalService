@@ -1387,13 +1387,13 @@ INSERT INTO `project_owner` VALUES (NULL,NULL,NULL,NULL,0,1,'Private','Private',
 UNLOCK TABLES;
 
 --
--- Table structure for table `projectionResualt`
+-- Table structure for table `projectionResult`
 --
 
-DROP TABLE IF EXISTS `projectionResualt`;
+DROP TABLE IF EXISTS `projectionResult`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `projectionResualt` (
+CREATE TABLE `projectionResult` (
   `createdBy` varchar(255) DEFAULT NULL,
   `createdOn` datetime DEFAULT NULL,
   `editedBy` varchar(255) DEFAULT NULL,
@@ -1411,7 +1411,7 @@ CREATE TABLE `projectionResualt` (
   `emissionReductionUnit` varchar(255) DEFAULT NULL,
   `qcStatus` int DEFAULT NULL,
   `qcComment` varchar(255) DEFAULT NULL,
-  `projectionResualt` int NOT NULL,
+  `projectionResult` int NOT NULL,
   `assessmentResultId` int DEFAULT NULL,
   `assessmentId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1423,12 +1423,12 @@ CREATE TABLE `projectionResualt` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `projectionResualt`
+-- Dumping data for table `projectionResult`
 --
 
-LOCK TABLES `projectionResualt` WRITE;
-/*!40000 ALTER TABLE `projectionResualt` DISABLE KEYS */;
-/*!40000 ALTER TABLE `projectionResualt` ENABLE KEYS */;
+LOCK TABLES `projectionResult` WRITE;
+/*!40000 ALTER TABLE `projectionResult` DISABLE KEYS */;
+/*!40000 ALTER TABLE `projectionResult` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

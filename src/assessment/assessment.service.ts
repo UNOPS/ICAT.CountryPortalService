@@ -150,9 +150,9 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
         sectorId,
       })
       .orderBy('asse.createdOn', 'ASC');
-    const resualt = await paginate(data, options);
-    if (resualt) {
-      return resualt;
+    const result = await paginate(data, options);
+    if (result) {
+      return result;
     }
   }
   async assessmentForMAC(projectId: number): Promise<any> {
@@ -195,10 +195,10 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
         projectId,
       });
 
-    const resualt = await data.execute();
+    const result = await data.execute();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -314,10 +314,10 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       )
       .addOrderBy('asse.editedOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -339,10 +339,10 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
 
     arr.push(data);
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -652,10 +652,10 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       )
       .where(filter, { id });
 
-    const resualt = await data.getOneOrFail();
+    const result = await data.getOneOrFail();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -689,10 +689,10 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       )
       .where(filter, {});
 
-    const resualt = await data.getOneOrFail();
+    const result = await data.getOneOrFail();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }
