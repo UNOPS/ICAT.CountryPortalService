@@ -175,7 +175,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
         projectionResult.baselineResult = p.baselineEmission;
         projectionResult.leakageResult = p.leakegeEmission;
         projectionResult.emissionReduction = p.emissionReduction;
-        projectionResult.projectionResualt = 0;
+        projectionResult.projectionResult = 0;
 
         if (projectionResult.id > 0) {
           await this.projectionResultRepo.save(projectionResult);
@@ -418,10 +418,10 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
       })
       .orderBy('dr.id', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

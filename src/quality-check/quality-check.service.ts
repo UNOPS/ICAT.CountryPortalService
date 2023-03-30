@@ -86,10 +86,10 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
 
       .orderBy('as.createdOn', 'DESC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 

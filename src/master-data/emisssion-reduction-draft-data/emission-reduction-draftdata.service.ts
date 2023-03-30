@@ -55,17 +55,17 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       )
       .leftJoinAndMapOne('ert.sector', Sector, 'sec', 'sec.id = ert.sectorId')
       .where(filter, { countryIdFromTocken, sectorIdFromTocken });
-    const resualt = await data.getOne();
+    const result = await data.getOne();
 
-    if (sectorIdFromTocken && !resualt) {
+    if (sectorIdFromTocken && !result) {
       return this.getEmissionEeductionDraftDataForCountry(
         countryIdFromTocken,
         undefined,
       );
     }
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -108,9 +108,9 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       .where(filter, { countryIdFromTocken, sectorIdFromTocken, sectorId })
       .orderBy('id', 'ASC');
 
-    const resualt = await data.getOne();
+    const result = await data.getOne();
 
-    if (sectorIdFromTocken && !resualt) {
+    if (sectorIdFromTocken && !result) {
       return this.getEmissionReductionDraftDataForReport(
         0,
         countryIdFromTocken,
@@ -118,8 +118,8 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
       );
     }
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

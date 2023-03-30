@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'projectionResualt' })
+@Entity({ name: 'projectionResult' })
 export class ProjectionResult extends BaseTrackingEntity {
   constructor() {
     super();
@@ -62,7 +62,7 @@ export class ProjectionResult extends BaseTrackingEntity {
   qcComment: string;
 
   @Column()
-  projectionResualt: number;
+  projectionResult: number;
 
   @ManyToOne((type) => Assessment, (assessment) => assessment.projectionResult)
   @JoinColumn()

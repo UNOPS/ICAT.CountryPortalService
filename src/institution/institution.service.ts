@@ -135,10 +135,10 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       .orderBy('ins.status', 'ASC')
       .groupBy('ins.id');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -175,10 +175,10 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
         userType,
       });
 
-    const resualt = await data.getCount();
+    const result = await data.getCount();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -202,10 +202,10 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       .where('type.id = 3')
       .orderBy('ins.name', 'ASC');
 
-    const resualt = await data.getMany();
+    const result = await data.getMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -235,10 +235,10 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       )
       .orderBy('ins.name', 'ASC');
 
-    const resualt = await data.getMany();
+    const result = await data.getMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -323,10 +323,10 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       })
       .orderBy('ins.status', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

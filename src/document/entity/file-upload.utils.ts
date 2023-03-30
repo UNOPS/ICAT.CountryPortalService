@@ -12,7 +12,7 @@ export class FileUpload {
   }
 
   getbaseUrl() {
-    return this.configService.get<string>(process.env.BASE_URL);
+    return process.env.BASE_URL;
   }
 }
 

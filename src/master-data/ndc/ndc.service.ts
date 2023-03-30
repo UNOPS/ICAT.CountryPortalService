@@ -60,10 +60,10 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -110,10 +110,10 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       })
       .orderBy('dr.createdOn', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -208,10 +208,10 @@ export class NdcService extends TypeOrmCrudService<Ndc> {
       })
       .orderBy('ndc.createdOn', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

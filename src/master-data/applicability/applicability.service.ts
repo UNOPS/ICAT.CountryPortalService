@@ -21,10 +21,10 @@ export class ApplicabilityService extends TypeOrmCrudService<ApplicabilityEntity
       )
       .orderBy('appli.createdOn', 'ASC');
 
-    const resualt = await data.getMany();
+    const result = await data.getMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }

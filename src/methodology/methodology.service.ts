@@ -57,10 +57,10 @@ export class MethodologyService extends TypeOrmCrudService<Methodology> {
       })
       .orderBy('me.displayName', 'ASC');
 
-    const resualt = await paginate(data, options);
+    const result = await paginate(data, options);
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 }
