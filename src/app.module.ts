@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuditModule } from './audit/audit.module';
 import { Audit } from './audit/entity/audit.entity';
-import { ClimateChangeDataCategory } from './master-data/cimate-change-data-category/climate.change.data.category.entity';
+import { ClimateChangeDataCategory } from './master-data/climate-change-data-category/climate.change.data.category.entity';
 import { Ndc } from './master-data/ndc/ndc.entity';
 import { SubNdc } from './master-data/ndc/sub-ndc.entity';
 import { ProjectStatus } from './master-data/project-status/project-status.entity';
