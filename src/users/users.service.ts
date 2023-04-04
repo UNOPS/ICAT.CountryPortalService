@@ -134,7 +134,6 @@ export class UsersService extends TypeOrmCrudService<User> {
       ' and your new login password is : ' +
       newPassword +
       ' <br/>System login url is ' +
-      '<a href="systemLoginUrl">' +
       systemLoginUrl;
     '<br/>' + '<br/>Best regards' + '<br/>Software support team';
 
