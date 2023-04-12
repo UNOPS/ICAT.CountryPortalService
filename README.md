@@ -95,16 +95,21 @@ After the application installation, the API Documentation is available in the ap
 
 ## Default Users
 Some default users are provided for the application test. The `Admin` user can create, edit or delete new users.
+
 | Role                  | Username         | Password            | Description                           |
 | --------------------- |----------------- | ------------------- | ------------------------------------- |
 | Country Admin         | country_admin    | country1234         | User with administrative permissions  |
 | Data Collection Team  | country_dct      | country1234         | Normal user                           |
+
 >  We recommend deleting the default users before deploying the application to production.
 
 
 ## Dependencies
 This application provides API service to CountryPortalWeb application and consumes data from CalculationEngine application API.
 
+![Alt text](https://drive.google.com/file/d/1OM5LBvhUKWW7l8jxGPozBzbe4b3-otwG/view?usp=share_link)
+
+The complete dependency diagram of TraCAD Country and PMU applications.
 
 ## License
 TraCAD - CountryPortalService is [MIT licensed](LICENSE).
