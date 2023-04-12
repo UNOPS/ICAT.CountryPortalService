@@ -1,34 +1,87 @@
-## Country Portal Service
+# TraCAD - Country Portal Service
 
-Backend service for ICAT Climate Action Assessment Tool. Suported by [Initiative for Climate Action Transparency - ICAT](https://climateactiontransparency.org/).
+Backend service for ICAT Climate Action Assessment Tool for Transport Sector - TraCAD. 
+
+![Alt text](https://climateactiontransparency.org/wp-content/themes/custom/assets/i/logo/logo_text.svg)
+
+Suported by [Initiative for Climate Action Transparency - ICAT](https://climateactiontransparency.org/).
+
 Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Nest](https://github.com/nestjs/nest) framework.
 
-## Installation
+## Local Manual Installation
+
+1. Download and install the [Node.js 18 LTS version](https://nodejs.org/en/download) for your operational system. 
+
+2. Download or clone this repository.
+
+3. In the terminal, go to this repository main folder.
+
+4. Install the NPM dependencies (including Nest) with the command:
 
 ```bash
 $ npm install --force
 ```
 
-## Environment Variables 
+5. Set up the Environment Variables
+    * Windows: using `set` command in the terminal
+    * Linux/MacOS: using `export` command in the terminal
 
-SOCKET_PATH	/cloudsql/unops-cpit-icat-prod:europe-west3:icat-qa	
-DATABASE_PORT	3306	
-DATABASE_USER	root	
-DATABASE_PASSWORD	9?6h>DeF=H|52uBf	
-DATABASE_NAME	icat_country	
-BASE_URL	https://icat-countryportalservice-qa-2sshj5de3a-ey.a.run.app	
-CLIENT_URL	https://icat-countryportalweb-qa-2sshj5de3a-ey.a.run.app	
-PWD_RESET_URL	https://icat-countryportalweb-qa-2sshj5de3a-ey.a.run.app/login	
-CAL_ENGINE_BASE_URL	https://icat-calculationengine-qa-2sshj5de3a-ey.a.run.app	
-API_KEY_1	1234	
-API_KEY_2	56789
-
-## Running the app
+6. Running the app:
 
 ```bash
 $ npm run start
-
 ```
+
+## Google Cloud Installation with Docker
+
+1. In GCP Console, enable the Artifact Registry API
+
+2. Go to [Artifact Registry](https://console.cloud.google.com/artifacts) and create a new repository:
+    * Format: Docker
+    * Type: Standard
+    * Location: desired application location
+    * Encryption: Google-managed key
+
+3. Download and install [gcloud CLI](https://cloud.google.com/sdk/docs/install).
+
+4. Download or clone this repository.
+
+5. In the terminal, go to this repository main folder.
+
+6. Build your container in Artifacts Register using the provided `Dockerfile`. Usually the container path is compose by `location/project/repository_created/image_name`
+```bash
+$ gcloud builds submit --tag [ADD THE CONTAINER PATH HERE]
+```
+
+7. Go to [Cloud Run](https://console.cloud.google.com/run) and create a New Service:
+    * Choose the option `Deploy one revision from an existing container image` and select the container image updated in the step 6
+    * Add a service name
+    * Select the application region
+    * Select `Allow unauthenticated invocations` in Authentication option
+    * In Container, Networking, Security section
+
+> Noticed that some [special permissions in GCP](https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration) can be necessary to perform this task
+
+## Environment Variables 
+
+The environment variables should be declared 
+
+| Variable name         | Description                                     |
+| --------------------- | ----------------------------------------------- |
+| `SOCKET_PATH`         | Database Socket Path                            |
+| `DATABASE_PORT`       | Database Port                                   |
+| `DATABASE_USER`       | Database Socket User                            |
+| `DATABASE_PASSWORD`   | Database Password                               |
+| `DATABASE_NAME`       | Database Name                                   |
+| `BASE_URL`            | Current Application URL                         |
+| `CLIENT_URL`          | Country Service Web URL                         |
+| `PWD_RESET_URL`       | Country Service Web URL + `/login`              |
+| `CAL_ENGINE_BASE_URL` | Calculation Engine URL                          |
+| `API_KEY_1`           | API key. Should be the same as used by clients  |
+| `API_KEY_2`           | API key. Should be the same as used by clients  |
+
+## API Documentation
+After the application install, the API Documentation is available in the application URL + `/api/` with [Swagger](https://swagger.io/solutions/api-documentation/).
 
 ## License
 
