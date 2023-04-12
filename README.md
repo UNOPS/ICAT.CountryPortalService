@@ -26,8 +26,8 @@ $ npm install --force
 ```
 
 5. Set up the Environment Variables
-   * Windows: using the `set` command in the terminal
-   * Linux/MacOS: using the `export` command in the terminal
+   * **Windows:** using the `set` command in the terminal
+   * **Linux/MacOS:** using the `export` command in the terminal
 
 6. Run the app:
 
@@ -42,10 +42,10 @@ $ npm run start
 1. In GCP Console, go to [Artifact Registry](https://console.cloud.google.com/artifacts) and enable the Artifact Registry API
 
 2. In the Artifact Registry, create a new repository:
-   * Format: Docker
-   * Type: Standard
-   * Location: desired application location
-   * Encryption: Google-managed key
+   * **Format:** Docker
+   * **Type:** Standard
+   * **Location:** desired application location
+   * **Encryption:** Google-managed key
 
 3. Download and install [gcloud CLI](https://cloud.google.com/sdk/docs/install).
 
@@ -64,7 +64,7 @@ $ gcloud builds submit --tag [CONTAINER PATH]
    * Add a service name
    * Select the application region
    * Select `Allow unauthenticated invocations` in the Authentication option
-   * In the Container section:
+   * In the **Container section**:
        * Select Container port 8080
        * Add the Environment Variables
        * Add the Cloud SQL connections
@@ -96,12 +96,12 @@ After the application installation, the API Documentation is available in the ap
 ## Default Users
 Some default users are provided for the application test. The `Admin` user can create, edit or delete new users.
 
+>  We recommend deleting the default users before deploying the application to production.
+
 | Role                  | Username         | Password            | Description                           |
 | --------------------- |----------------- | ------------------- | ------------------------------------- |
 | Country Admin         | country_admin    | country1234         | User with administrative permissions  |
 | Data Collection Team  | country_dct      | country1234         | Normal user                           |
-
->  We recommend deleting the default users before deploying the application to production.
 
 
 ## Dependencies
@@ -109,7 +109,7 @@ This application provides API service to CountryPortalWeb application and consum
 
 The complete dependency diagram of TraCAD Country and PMU applications:
 
-<p align="center">
+<p align="left">
   <img src="https://lucid.app/publicSegments/view/9a6fb822-be5a-47d7-ad67-0434a4025234/image.png" width="800" alt="TraCAD Diagram" /></a>
 </p>
 
