@@ -2,11 +2,17 @@
 
 Backend service for ICAT Climate Action Assessment Tool for Transport Sector - TraCAD. 
 
-![Alt text](https://climateactiontransparency.org/wp-content/themes/custom/assets/i/logo/logo_text.svg)
+<p align="center">
+  <a href="https://climateactiontransparency.org/" target="blank"><img src="https://climateactiontransparency.org/wp-content/themes/custom/assets/i/logo/logo_text.svg" width="320" alt="ICAT Logo" /></a>
+</p>
+<p align="center">Suported by <a href="https://climateactiontransparency.org/" target="_blank">Initiative for Climate Action Transparency - ICAT</a>.</p>
+<p align="center">
 
-Suported by [Initiative for Climate Action Transparency - ICAT](https://climateactiontransparency.org/).
-
-Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Nest](https://github.com/nestjs/nest) framework.
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /><a>
+</p>
+<p align="center">Built using <a href="http://nestjs.com/" target="_blank">Nest</a>: a progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+<p align="center">
 
 ## Local Manual Installation
 
@@ -60,29 +66,29 @@ $ gcloud builds submit --tag [ADD THE CONTAINER PATH HERE]
     * Select `Allow unauthenticated invocations` in Authentication option
     * In Container, Networking, Security section
 
-> Noticed that some [special permissions in GCP](https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration) can be necessary to perform this task
+> Noticed that some [special permissions in GCP](https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration) can be necessary to perform this task.
 
 ## Environment Variables 
 
 The environment variables should be declared 
 
-| Variable name         | Description                                     |
-| --------------------- | ----------------------------------------------- |
-| `SOCKET_PATH`         | Database Socket Path                            |
-| `DATABASE_PORT`       | Database Port                                   |
-| `DATABASE_USER`       | Database Socket User                            |
-| `DATABASE_PASSWORD`   | Database Password                               |
-| `DATABASE_NAME`       | Database Name                                   |
-| `BASE_URL`            | Current Application URL                         |
-| `CLIENT_URL`          | Country Service Web URL                         |
-| `PWD_RESET_URL`       | Country Service Web URL + `/login`              |
-| `CAL_ENGINE_BASE_URL` | Calculation Engine URL                          |
-| `API_KEY_1`           | API key. Should be the same as used by clients  |
-| `API_KEY_2`           | API key. Should be the same as used by clients  |
+| Variable name            | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| `SOCKET_PATH`            | Database Socket Path                               |
+| `DATABASE_PORT`          | Database Port                                      |
+| `DATABASE_USER`          | Database Socket User                               |
+| `DATABASE_PASSWORD`      | Database Password                                  |
+| `DATABASE_NAME`          | Database Name                                      |
+| `BASE_URL`               | Current Application URL                            |
+| `CLIENT_URL`             | Country Service Web URL                            |
+| `PWD_RESET_URL`          | Country Service Web URL + `/login`                 |
+| `CAL_ENGINE_BASE_URL`    | Calculation Engine URL                             |
+| `API_KEY_1`              | API key. Should be the same as used by clients     |
+| `API_KEY_2`              | API key. Should be the same as used by clients     |
 
 ## API Documentation
 After the application install, the API Documentation is available in the application URL + `/api/` with [Swagger](https://swagger.io/solutions/api-documentation/).
 
-## License
 
-CountryPortalService is [MIT licensed](LICENSE).
+## License
+TraCAD - CountryPortalService is [MIT licensed](LICENSE).
