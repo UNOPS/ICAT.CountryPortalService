@@ -107,9 +107,12 @@ Some default users are provided for the application test. The `Admin` user can c
 ## Dependencies
 This application provides API service to CountryPortalWeb application and consumes data from CalculationEngine application API.
 
-![Alt text](https://lucid.app/publicSegments/view/9a6fb822-be5a-47d7-ad67-0434a4025234/image.png)
+The complete dependency diagram of TraCAD Country and PMU applications:
 
-The complete dependency diagram of TraCAD Country and PMU applications.
+<p align="center">
+  <img src="https://lucid.app/publicSegments/view/9a6fb822-be5a-47d7-ad67-0434a4025234/image.png" width="800" alt="TraCAD Diagram" /></a>
+</p>
+
 
 ## License
 TraCAD - CountryPortalService is [MIT licensed](LICENSE).
