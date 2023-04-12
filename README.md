@@ -107,7 +107,7 @@ Some default users are provided for the application test. The `Admin` user can c
 ## Dependencies
 This application provides API service to CountryPortalWeb application and consumes data from CalculationEngine application API.
 
-![Alt text](https://drive.google.com/file/d/1OM5LBvhUKWW7l8jxGPozBzbe4b3-otwG/view?usp=share_link)
+![Alt text](https://lucid.app/publicSegments/view/9a6fb822-be5a-47d7-ad67-0434a4025234/image.png)
 
 The complete dependency diagram of TraCAD Country and PMU applications.
 
