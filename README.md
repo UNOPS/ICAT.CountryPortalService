@@ -1,10 +1,12 @@
 # TraCAD - Country Portal Service
 
-##### Backend service for ICAT Climate Action Assessment Tool for Transport Sector - TraCAD. 
+Backend service for ICAT Climate Action Assessment Tool for Transport Sector - TraCAD. 
 
 Suported by [Initiative for Climate Action Transparency - ICAT](https://climateactiontransparency.org/).
 
 Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Nest](https://github.com/nestjs/nest) framework.
+
+---------------------------------
 
 ## Local Manual Installation
 
@@ -29,6 +31,8 @@ $ npm install --force
 ```bash
 $ npm run start
 ```
+
+---------------------------------
 
 ## Google Cloud Installation with Docker
 
@@ -59,6 +63,8 @@ $ gcloud builds submit --tag [ADD THE CONTAINER PATH HERE]
     * In Container, Networking, Security section
 
 > Noticed that some [special permissions in GCP](https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration) can be necessary to perform this task.
+
+---------------------------------
 
 ## Environment Variables 
 
