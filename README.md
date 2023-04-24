@@ -8,7 +8,7 @@ Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Ne
 
 ## Database Configuration
 
-This application uses a [MySQL Database](https://www.mysql.com/). A .sql configuration file containing the database schema and some dummy data is provided in the root folder. This database is also used by the CountryScheduler application.
+This application uses a [MySQL Database](https://www.mysql.com/). ICAT-country.sql configuration file containing the database schema and some dummy data is provided in the root folder. This database is also used by the CountryScheduler application.
 
 ## Manual Installation
 
