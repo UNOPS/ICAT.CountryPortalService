@@ -54,7 +54,7 @@ $ npm run start
 
 5. In the terminal, go to this repository's main folder.
 
-6. Build your container in the Artifacts Register using the provided `Dockerfile`. Usually, the container path is composed of `location/project/repository_created/image_name`
+6. Build your container in the Artifacts Register using the provided `Dockerfile`. The container path can be found in the Artifact Registry's repository page.
 
 ```bash
 $ gcloud builds submit --tag [CONTAINER PATH]
