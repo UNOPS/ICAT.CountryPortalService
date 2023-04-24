@@ -8,7 +8,7 @@ Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Ne
 
 ## Database Configuration
 
-This application uses a [MySQL Database](https://www.mysql.com/). ICAT-country.sql configuration file containing the database schema and some dummy data is provided in the root folder. This database is also used by the CountryScheduler application.
+This application uses a [MySQL Database](https://www.mysql.com/). The `ICAT-country.sql` configuration file containing the database schema and some dummy data is provided in the root folder. This database is also used by the CountryScheduler application.
 
 ## Manual Installation
 
@@ -54,14 +54,14 @@ $ npm run start
 
 5. In the terminal, go to this repository's main folder.
 
-6. Build your container in the Artifacts Register using the provided `Dockerfile`. The container path can be found in the Artifact Registry's repository page.
+6. Build your container in the Artifacts Register using the provided `Dockerfile`. The container path can be found on the Artifact Registry's repository page.
 
 ```bash
 $ gcloud builds submit --tag [CONTAINER PATH]
 ```
 
 7. Go to [Cloud Run](https://console.cloud.google.com/run) and create a New Service:
-   - Choose the option `Deploy one revision from an existing container image` and select the container image updated in Step 6
+   - Choose the option `Deploy one revision from an existing container image` and select the container image updated in the previous step
    - Add a service name
    - Select the application region
    - Select `Allow unauthenticated invocations` in the Authentication option
