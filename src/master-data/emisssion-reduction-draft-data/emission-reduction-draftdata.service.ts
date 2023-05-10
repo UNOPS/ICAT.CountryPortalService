@@ -153,12 +153,14 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
 
         if(sectorIdFromTocken && !resualt){
           return this.getEmissionReductionDraftDataForReport(0,countryIdFromTocken,undefined)
+        }else  if(sectorId && !resualt){
+          return this.getEmissionReductionDraftDataForReport(0,countryIdFromTocken,undefined)
         }
         
         // let resualt = await this.repo.findOne(countryIdFromTocken);
-    // console.log("emission",resualt)
+    console.log("emission",resualt)
         if (resualt) {
-          // console.log("emission",resualt)
+          console.log("emission",resualt)
           return resualt;
         }
       }

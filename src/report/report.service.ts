@@ -2048,7 +2048,7 @@ let yrList:number[]=[];
     var year = d.getUTCFullYear();
 
     let coverPage = `
-    <div style="display:flex;flex-direction:column;height:1500px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
+    <div style="display:flex;flex-direction:column;height:1450px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
               <h1 style="font-size: 50px;color: white">${reportData.reportName}</h1>
             </div>
