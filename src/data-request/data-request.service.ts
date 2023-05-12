@@ -849,6 +849,12 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
       let dataRequestItem = await this.repo.findOne({ where: { id: id } });
+
+      //update parameter
+      let parameter = dataRequestItem.parameter
+      parameter.value = null
+      await this.paramterRepo.save(parameter)
+
       let originalStatus = dataRequestItem.dataRequestStatus;
 
       let user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
