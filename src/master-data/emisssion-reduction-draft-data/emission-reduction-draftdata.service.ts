@@ -142,8 +142,18 @@ export class EmissionReductionDraftdataService extends TypeOrmCrudService<Emissi
     
         let data = this.repo
           .createQueryBuilder('ert')
+
+          .leftJoinAndMapOne('ert.country',
+          Country,
+          'con',
+          'con.id = ert.countryId')
+          .leftJoinAndMapOne('ert.sector',
+          Sector,
+          'sec',
+          'sec.id = ert.sectorId')
+
           .where(filter, { countryIdFromTocken,sectorIdFromTocken,sectorId })
-          .orderBy('id', 'ASC');
+          .orderBy('ert.id', 'ASC');
          
         console.log(
           '=====================================================================',
