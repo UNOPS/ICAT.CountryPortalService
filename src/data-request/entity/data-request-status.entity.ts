@@ -6,6 +6,7 @@ export enum DataRequestStatus {
   Assign_Data_Request_Saved = 3,
   Assign_Data_Request_Sent = 4,
   Data_Entered = 5,
+  Rejected_entered_data = -8,
   QA_Assign = 20,
   QAPass = 21,
   QAFail = 22,

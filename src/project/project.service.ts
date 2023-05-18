@@ -1458,9 +1458,8 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'asse',
         'asse.projectId = dr.id',
       )
-      .leftJoinAndMapOne(
+      .leftJoinAndSelect(
         'dr.projectStatus',
-        ProjectStatus,
         'ps',
         'dr.projectStatusId = ps.id',
       )

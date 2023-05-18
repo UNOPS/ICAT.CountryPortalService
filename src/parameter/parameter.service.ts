@@ -230,7 +230,7 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
 
         dataStatusItem.forEach(async(e) => {
           console.log("++++++++eeeee=======", e.dataRequestStatus);
-          if (e.dataRequestStatus === 4 || e.dataRequestStatus === 5) {
+          if (e.dataRequestStatus === 4 || e.dataRequestStatus === 5 || e.dataRequestStatus === -8) {
             dataEnterItem.value = key.value;
             dataEnterItem.uomDataEntry = key.unit
 
@@ -251,7 +251,11 @@ export class ParameterService extends TypeOrmCrudService<Parameter> {
             }
 
 
-            this.repo.save(dataEnterItem);
+            let res = await this.repo.save(dataEnterItem);
+            if (res){
+              e.dataRequestStatus = 5
+              await this.parameterRequestRepository.save(e)
+            }
           }
         })
       });
