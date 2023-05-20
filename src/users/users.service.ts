@@ -143,11 +143,11 @@ export class UsersService extends TypeOrmCrudService<User> {
     let newUUID = uuidv4();
     let newPassword = ('' + newUUID).substr(0, 6);
     user.password = await this.hashPassword(
-      user.password,
+      newPassword,
       user.salt,
     );
-    user.password =newPassword;
-    this.usersRepository.save(user);
+    // user.password =newPassword;
+    await this.usersRepository.save(user);
     var template =
       'Dear ' +
       user.firstName +
