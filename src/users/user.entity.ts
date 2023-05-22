@@ -87,7 +87,7 @@ export class User extends BaseTrackingEntity {
   @Column()
   resetToken: string;
 
-  @DeleteDateColumn()
+  @Column({ default: null, nullable: true })
   deletedAt?: Date;
 
   @Column({ default: 0 })
