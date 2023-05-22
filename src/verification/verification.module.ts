@@ -11,6 +11,8 @@ import { TokenDetails } from 'src/utills/token_details';
 import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerificationController } from './verification.controller';
 import { VerificationService } from './verification.service';
+import { Parameter } from 'src/parameter/entity/parameter.entity';
+import { ParameterModule } from 'src/parameter/parameter.module';
 
 @Module({
   imports: [
@@ -21,9 +23,11 @@ import { VerificationService } from './verification.service';
       ParameterRequest,
       Institution,
       User,
+      Parameter
     ]),
     ParameterHistoryModule,
     AssesmentModule,
+    ParameterModule
   ],
   controllers: [VerificationController],
   providers: [

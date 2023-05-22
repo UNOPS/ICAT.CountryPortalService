@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {
@@ -20,6 +20,8 @@ import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { VerificationDetail } from './entity/verification-detail.entity';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
+import { ResposeDto } from './dto/response.dto';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -35,6 +37,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     public userRepo: Repository<User>,
     @InjectRepository(ParameterRequest)
     private readonly ParameterRequestRepo: Repository<ParameterRequest>,
+    @InjectRepository(Parameter)
+    private parameterRepo: Repository<Parameter>,
     private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly emaiService: EmailNotificationService,
@@ -260,5 +264,73 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (resualt) {
       return resualt;
     }
+  }
+
+  async ChangeParameterValue(parameter: Parameter, isDataEntered: boolean, concern: string, correctData: any){
+    /**
+     * Steps:
+     * 1. Set status (verifierAcceptance) in existing parameter as 'REJECTED'
+     * 2. Send new parameter request. Save verifier concern and previous parameter id as parent parameter id.
+     * 3. Update assessment status into the initial statuses (verification status and qastatus)
+     * 
+     * Additional: 
+     * Load parameters in DC and QC which are not isVerifierAccepted = true or verifierAcceptance REJECTED or ACCEPTED.
+     * 
+     * However the NC report need to be submitted to go for the next level of verification
+     */
+    let response = new ResposeDto()
+
+    try {
+      if (isDataEntered){
+        //direct data enter
+        // parameter = (await this.parameterRepo.find({id: parameter.id}))[0]
+        parameter = await this.parameterRepo.createQueryBuilder('para')
+            .innerJoinAndSelect(
+              'para.assessment',
+              'assessment',
+              'assessment.id = para.assessmentId'
+            )
+            .innerJoinAndSelect(
+              'para.institution',
+              'institution',
+              'institution.id = para.institutionId'
+            )
+            .where('para.id = :id', {id: parameter.id})
+            .getOne()
+        parameter.verifierAcceptance = VerifierAcceptance.REJECTED
+        parameter.verifierConcern = concern
+  
+        let newPara = new Parameter()
+        newPara = {...parameter}
+        newPara.id = undefined
+        let assessment = new Assessment()
+        assessment.id = parameter.assessment.id
+        let institution = new Institution()
+        institution.id = parameter.institution.id
+        newPara.value = correctData.value
+        newPara.conversionValue = correctData.value
+        newPara.uomDataEntry = correctData.unit
+        newPara.verifierAcceptance = VerifierAcceptance.PENDING
+        newPara.previouseParameterId = parameter.id
+  
+        let res = await this.parameterRepo.save([parameter, newPara])
+        if (res){
+          response.status = 'saved'
+          return response
+        } else {
+          response.status = 'failed to save'
+          return response
+        }
+      } else {
+        //data collection path
+        return response
+      }
+    } catch(error){
+      return new InternalServerErrorException()
+    }
+
+    
+
+    
   }
 }
