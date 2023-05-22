@@ -64,7 +64,7 @@ export class AuthService {
           return {error: "Institution is deactivated"};
         }
       } else {
-        return {error: "User is deactivated"};
+        return {error: "Sorry. Your account has been deactivated. Please contact the user who created your account for re-activation."};
       }
     } else {
       return {error: "Invalid credentials"};

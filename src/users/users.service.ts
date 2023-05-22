@@ -488,7 +488,7 @@ if(institutionIdFromTocken != 0){
         'type.id = user.userTypeId',
       )
 
-      .where(' type.id=' + userTypeId + ' AND ins.id=' + institutionId)
+      .where(' type.id=' + userTypeId + ' AND ins.id=' + institutionId + ' AND ins.status=0')
       .orderBy('user.status', 'ASC');
     let SQLString = data.getSql();
     console.log('SQLString', SQLString);
