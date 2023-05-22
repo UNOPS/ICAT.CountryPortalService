@@ -63,7 +63,7 @@ export class AuthService {
         } else {
           return {error: "Institution is deactivated"};
         }
-      } else {
+      } else if(selectedUser.status === -10){
         return {error: "Sorry. Your account has been deactivated. Please contact the user who created your account for re-activation."};
       }
     } else {
