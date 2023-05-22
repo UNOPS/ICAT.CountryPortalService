@@ -94,9 +94,9 @@ export class Country extends BaseTrackingEntity{
   defaultValue: DefaultValue[]
 
 
-  // @OneToMany(() => CountrySector, countrySector => countrySector.country,{eager:true,cascade:false})
+  @OneToMany(() => CountrySector, countrySector => countrySector.country,{cascade:false})
   // @JoinColumn()
-  // countrysector: CountrySector[];
+  countrysector: CountrySector[];
   // @ManyToMany((type) => Sector, {
   //   eager: true,
   //   cascade: false,
