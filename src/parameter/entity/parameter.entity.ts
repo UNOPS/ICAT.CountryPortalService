@@ -199,7 +199,7 @@ export class Parameter extends BaseTrackingEntity {
   hasChild: boolean;
 
   @Column({default: VerifierAcceptance.PENDING})
-  verifierAcceptance: string
+  verifierAcceptance: VerifierAcceptance
 
   @Column({nullable: true})
   verifierConcern: string
