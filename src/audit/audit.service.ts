@@ -27,11 +27,14 @@ export class AuditService extends TypeOrmCrudService<Audit> {
 
   async create(auditDto: AuditDto) {
     const contextUser = this.request.user;
+   
     if (!contextUser) {
       let user = await this.userRepo.findOne({
         where: { email: auditDto.userName },
       });
+      console.log('useradit',user)
       if(user != undefined){
+        
         user.updateFullName();
         let newAudit = new Audit();
         newAudit.action = auditDto.action;
@@ -51,7 +54,7 @@ export class AuditService extends TypeOrmCrudService<Audit> {
       let user = await this.userRepo.findOne({
         where: { email: contextUser.username },
       });
-
+     
       user.updateFullName();
 
       let newAudit = new Audit();
