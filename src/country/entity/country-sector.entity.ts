@@ -15,8 +15,12 @@ export class CountrySector extends BaseTrackingEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Country, country => country.countrysector,{cascade:false})
-    public country: Country;
+    // @ManyToOne(() => Country, country => country.countrysector,{cascade:false})
+    // public country: Country;
+
+    @ManyToOne(type => Country)
+    @JoinColumn({ name: "countryId" })
+    country:Country;
 
     @ManyToOne(() => Sector, sector => sector.countrysector,{cascade:false})
     public sector: Sector;
