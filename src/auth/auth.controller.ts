@@ -77,14 +77,21 @@ export class AuthController {
     @Res() response: any,
   ): Promise<any> {
     //return req.user;
-    console.log('forgotPassword=========', forgotparam);
+    // console.log('forgotPassword=========', forgotparam);
     let user = await this.usersService.findUserByEmail(forgotparam.email);
-    console.log('resultData=========', user);
+    // console.log('resultData=========', user);
 
     if (!user) {
       const errorResponse: any = {
         status: 0,
         message: 'Invalid Email/User Id',
+      };
+      return response.status(400).send(errorResponse);
+    }
+  else if(user.status !=0){
+      const errorResponse: any = {
+        status: 0,
+        message: 'Sorry. Your account has been deactivated. Please contact the user who created your account for re-activation.',
       };
       return response.status(400).send(errorResponse);
     }
