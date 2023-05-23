@@ -22,6 +22,7 @@ import { Repository } from 'typeorm';
 import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 import { ResposeDto } from './dto/response.dto';
+import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -281,40 +282,36 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     let response = new ResposeDto()
 
     try {
-      if (isDataEntered){
+      parameter = await this.parameterRepo.createQueryBuilder('para')
+        .innerJoinAndSelect(
+          'para.assessment',
+          'assessment',
+          'assessment.id = para.assessmentId'
+        )
+        .innerJoinAndSelect(
+          'para.institution',
+          'institution',
+          'institution.id = para.institutionId'
+        )
+        .where('para.id = :id', { id: parameter.id })
+        .getOne()
+      console.log("---", parameter)
+      parameter.verifierAcceptance = VerifierAcceptance.REJECTED
+      parameter.verifierConcern = concern
+      if (isDataEntered) {
         //direct data enter
-        // parameter = (await this.parameterRepo.find({id: parameter.id}))[0]
-        parameter = await this.parameterRepo.createQueryBuilder('para')
-            .innerJoinAndSelect(
-              'para.assessment',
-              'assessment',
-              'assessment.id = para.assessmentId'
-            )
-            .innerJoinAndSelect(
-              'para.institution',
-              'institution',
-              'institution.id = para.institutionId'
-            )
-            .where('para.id = :id', {id: parameter.id})
-            .getOne()
-        parameter.verifierAcceptance = VerifierAcceptance.REJECTED
-        parameter.verifierConcern = concern
-  
+
         let newPara = new Parameter()
-        newPara = {...parameter}
+        newPara = { ...parameter }
         newPara.id = undefined
-        let assessment = new Assessment()
-        assessment.id = parameter.assessment.id
-        let institution = new Institution()
-        institution.id = parameter.institution.id
         newPara.value = correctData.value
         newPara.conversionValue = correctData.value
         newPara.uomDataEntry = correctData.unit
-        newPara.verifierAcceptance = VerifierAcceptance.PENDING
+        newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
         newPara.previouseParameterId = parameter.id
-  
+
         let res = await this.parameterRepo.save([parameter, newPara])
-        if (res){
+        if (res) {
           response.status = 'saved'
           return response
         } else {
@@ -323,9 +320,52 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         }
       } else {
         //data collection path
-        return response
+        // 1. Duplicate parameter
+        // 2. create new data request
+        // 3. Set assessmentYear qaStatus ->   Pending = 1
+        let newPara = new Parameter()
+        newPara = {...parameter}
+        newPara.id = undefined  
+        newPara.institution = correctData.institution
+        newPara.uomDataEntry = correctData.unit
+        newPara.verifierAcceptance = VerifierAcceptance.RETURNED
+        newPara.previouseParameterId = parameter.id
+        newPara.value = undefined
+        newPara.conversionValue = undefined
+
+        let res = await this.parameterRepo.save([parameter, newPara])
+
+        let request = new ParameterRequest()
+        request.parameter = newPara
+        request.dataRequestStatus = DataRequestStatus.initiate
+
+        let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        console.log("assessmentYear----", assessmentYear[0].id)
+        assessmentYear[0].qaStatus = undefined
+        assessmentYear[0].qaDeadline = undefined
+        assessmentYear[0].verificationAssighnDate = undefined
+        assessmentYear[0].verificationDeadline = undefined
+        assessmentYear[0].isVerificationSuccess = false
+        assessmentYear[0].qaAssighnDate = undefined
+        assessmentYear[0].verificationStatus = undefined
+
+        let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+
+        console.log(assessmentYear)
+        console.log("result", asy)
+
+        let res2 = await this.ParameterRequestRepo.save(request)
+
+        if (res && res2) {
+          response.status = 'saved'
+          return response
+        } else {
+          response.status = 'failed to save'
+          return response
+        }
       }
-    } catch(error){
+    } catch (error){
+      console.log(error)
       return new InternalServerErrorException()
     }
 
