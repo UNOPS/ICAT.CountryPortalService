@@ -23,6 +23,7 @@ import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 import { ResposeDto } from './dto/response.dto';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
+import { VerificationStatus } from './entity/verification-status.entity';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -267,7 +268,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     }
   }
 
-  async ChangeParameterValue(parameter: Parameter, isDataEntered: boolean, concern: string, correctData: any){
+  async ChangeParameterValue(parameter: Parameter, isDataEntered: boolean, concern: string, correctData: any, user: User){
     /**
      * Steps:
      * 1. Set status (verifierAcceptance) in existing parameter as 'REJECTED'
@@ -288,7 +289,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           'assessment',
           'assessment.id = para.assessmentId'
         )
-        .innerJoinAndSelect(
+        .leftJoinAndSelect(
           'para.institution',
           'institution',
           'institution.id = para.institutionId'
@@ -311,6 +312,20 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         newPara.previouseParameterId = parameter.id
 
         let res = await this.parameterRepo.save([parameter, newPara])
+
+        let request = new ParameterRequest()
+        request.parameter = newPara
+        request.dataRequestStatus = DataRequestStatus.Data_Approved
+        request.UserDataEntry = user.id 
+
+        let req = await this.ParameterRequestRepo.save(request)
+
+        let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
+        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
+
+        let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+
         if (res) {
           response.status = 'saved'
           return response
@@ -340,19 +355,11 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         request.dataRequestStatus = DataRequestStatus.initiate
 
         let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
-        console.log("assessmentYear----", assessmentYear[0].id)
-        assessmentYear[0].qaStatus = undefined
-        assessmentYear[0].qaDeadline = undefined
-        assessmentYear[0].verificationAssighnDate = undefined
-        assessmentYear[0].verificationDeadline = undefined
+        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
         assessmentYear[0].isVerificationSuccess = false
-        assessmentYear[0].qaAssighnDate = undefined
-        assessmentYear[0].verificationStatus = undefined
+        assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
 
         let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
-
-        console.log(assessmentYear)
-        console.log("result", asy)
 
         let res2 = await this.ParameterRequestRepo.save(request)
 

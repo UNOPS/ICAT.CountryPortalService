@@ -98,6 +98,6 @@ export class VerificationController
 
   @Post('change-parameter-value')
   async ChangeParameterValue(@Body()req: ChangeParameterValue): Promise<ResposeDto|InternalServerErrorException>{
-    return await this.service.ChangeParameterValue(req.parameter, req.isDataEntered, req.concern, req.correctData)
+    return await this.service.ChangeParameterValue(req.parameter, req.isDataEntered, req.concern, req.correctData, req.user)
   } 
 }
