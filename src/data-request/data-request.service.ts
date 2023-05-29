@@ -668,7 +668,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     let parameters = await this.paramterRepo.findByIds(updateDataRequestDto.ids)
     parameters = parameters.map(para => {
-      para.verifierAcceptance = VerifierAcceptance.PENDING
+      para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
       return para
     })
 

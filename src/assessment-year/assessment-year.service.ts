@@ -1142,6 +1142,7 @@ async assessmentYearForManageDataStatus(
       'assesYr.id',
       'assesYr.assessmentYear',
       'assesYr.qaStatus',
+      'assesYr.verificationStatus',
       'asse.assessmentType',
       'proj.climateActionName',
     ])
