@@ -17,6 +17,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { VerifierAcceptance } from '../enum/verifier-acceptance.enum';
 
 @Entity({ name: 'parameter' })
 export class Parameter extends BaseTrackingEntity {
@@ -196,6 +197,15 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ default: false })
   hasChild: boolean;
+
+  @Column({default: VerifierAcceptance.PENDING})
+  verifierAcceptance: VerifierAcceptance
+
+  @Column({nullable: true})
+  verifierConcern: string
+
+  @Column({ nullable: true })
+  previouseParameterId: number;
 
 
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {
@@ -20,6 +20,11 @@ import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { VerificationDetail } from './entity/verification-detail.entity';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
+import { ResposeDto } from './dto/response.dto';
+import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
+import { VerificationStatus } from './entity/verification-status.entity';
+import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -35,6 +40,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     public userRepo: Repository<User>,
     @InjectRepository(ParameterRequest)
     private readonly ParameterRequestRepo: Repository<ParameterRequest>,
+    @InjectRepository(Parameter)
+    private parameterRepo: Repository<Parameter>,
+    @InjectRepository(AssessmentResault)
+    private assessmentResultRepo: Repository<AssessmentResault>,
     private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly emaiService: EmailNotificationService,
@@ -260,5 +269,142 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (resualt) {
       return resualt;
     }
+  }
+
+  async ChangeParameterValue(parameter: Parameter, isDataEntered: boolean, concern: string, correctData: any, user: User){
+    /**
+     * Steps:
+     * 1. Set status (verifierAcceptance) in existing parameter as 'REJECTED'
+     * 2. Send new parameter request. Save verifier concern and previous parameter id as parent parameter id.
+     * 3. Update assessment status into the initial statuses (verification status and qastatus)
+     * 
+     * Additional: 
+     * Load parameters in DC and QC which are not isVerifierAccepted = true or verifierAcceptance REJECTED or ACCEPTED.
+     * 
+     * However the NC report need to be submitted to go for the next level of verification
+     */
+    let response = new ResposeDto()
+
+    try {
+      parameter = await this.parameterRepo.createQueryBuilder('para')
+        .innerJoinAndSelect(
+          'para.assessment',
+          'assessment',
+          'assessment.id = para.assessmentId'
+        )
+        .leftJoinAndSelect(
+          'para.institution',
+          'institution',
+          'institution.id = para.institutionId'
+        )
+        .where('para.id = :id', { id: parameter.id })
+        .getOne()
+      console.log("---", parameter)
+      parameter.verifierAcceptance = VerifierAcceptance.REJECTED
+      parameter.verifierConcern = concern
+      if (isDataEntered) {
+        //direct data enter
+
+        let newPara = new Parameter()
+        newPara = { ...parameter }
+        newPara.id = undefined
+        newPara.value = correctData.value
+        newPara.conversionValue = correctData.value
+        newPara.uomDataEntry = correctData.unit
+        newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+        newPara.previouseParameterId = parameter.id
+
+        let res = await this.parameterRepo.save([parameter, newPara])
+
+        let request = new ParameterRequest()
+        request.parameter = newPara
+        request.dataRequestStatus = DataRequestStatus.Data_Approved
+        request.UserDataEntry = user.id 
+
+        let req = await this.ParameterRequestRepo.save(request)
+
+        let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
+        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
+
+        let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+
+        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+        assessmentResult[0].isResultupdated = false
+        assessmentResult[0].qcStatuProjectResult = undefined
+        assessmentResult[0].qcStatusBaselineResult = undefined
+        assessmentResult[0].qcStatusLekageResult = undefined
+        assessmentResult[0].qcStatusTotalEmission = undefined
+        assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+        assessmentResult[0].qcStatuscostDifference = undefined
+        assessmentResult[0].qcStatusmacResult = undefined
+        assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+        let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+
+        if (res) {
+          response.status = 'saved'
+          return response
+        } else {
+          response.status = 'failed to save'
+          return response
+        }
+      } else {
+        //data collection path
+        // 1. Duplicate parameter
+        // 2. create new data request
+        // 3. Set assessmentYear qaStatus ->   Pending = 1
+        let newPara = new Parameter()
+        newPara = {...parameter}
+        newPara.id = undefined  
+        newPara.institution = correctData.institution
+        newPara.uomDataEntry = correctData.unit
+        newPara.verifierAcceptance = VerifierAcceptance.RETURNED
+        newPara.previouseParameterId = parameter.id
+        newPara.value = undefined
+        newPara.conversionValue = undefined
+
+        let res = await this.parameterRepo.save([parameter, newPara])
+
+        let request = new ParameterRequest()
+        request.parameter = newPara
+        request.dataRequestStatus = DataRequestStatus.initiate
+
+        let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
+        assessmentYear[0].isVerificationSuccess = false
+        assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
+
+        let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+
+        let res2 = await this.ParameterRequestRepo.save(request)
+
+        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+        assessmentResult[0].isResultupdated = false
+        assessmentResult[0].qcStatuProjectResult = undefined
+        assessmentResult[0].qcStatusBaselineResult = undefined
+        assessmentResult[0].qcStatusLekageResult = undefined
+        assessmentResult[0].qcStatusTotalEmission = undefined
+        assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+        assessmentResult[0].qcStatuscostDifference = undefined
+        assessmentResult[0].qcStatusmacResult = undefined
+        assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+        let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+
+        if (res && res2) {
+          response.status = 'saved'
+          return response
+        } else {
+          response.status = 'failed to save'
+          return response
+        }
+      }
+    } catch (error){
+      console.log(error)
+      return new InternalServerErrorException()
+    }
+
+    
+
+    
   }
 }

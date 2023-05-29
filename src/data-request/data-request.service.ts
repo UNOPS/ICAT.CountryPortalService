@@ -26,6 +26,7 @@ import { UserType } from 'src/users/user.type.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { Country } from 'src/country/entity/country.entity';
 import { Sector } from 'src/master-data/sector/sector.entity';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 
 @Injectable()
 export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest> {
@@ -664,6 +665,18 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     let insSec: any;
     let inscon: any;
+
+
+    let paraRequests = await this.repo.findByIds(updateDataRequestDto.ids)
+
+    let parameters = paraRequests.map(req =>{ return req.parameter})
+    parameters = parameters.map(para => {
+      para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+      return para
+    })
+
+
+    await this.paramterRepo.save(parameters)
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];

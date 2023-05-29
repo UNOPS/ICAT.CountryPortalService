@@ -70,7 +70,9 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentYear = await this.assessmentYearRepo.findOne(assesmentYearId);
 
     if (isCalculate.toString() == 'false') {
-      return assessmentResault;
+      if (assessmentResault.isResultupdated !== false){
+        return assessmentResault;
+      }
     } else {
 
       let asseDetail = await this.assesmentRepo.findOne(assesmentId);
@@ -108,7 +110,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             let saveEntity = await this.saveAssesmentResult(
               a.data,
               assesmentId,
-              assesmentYearId,
+              assesmentYear,
             );
             console.log('ddddddddddddddddd');
             console.log(saveEntity);
@@ -127,7 +129,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
             return this.saveAssesmentResult(
               a.data,
               assesmentId,
-              assesmentYearId,
+              assesmentYear,
             );
           },
         );
@@ -138,13 +140,13 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
   async saveAssesmentResult(
     data: any,
     assesmentId: number,
-    assesmentYearId: number,
+    assesmentYearObj: AssessmentYear,
   ) {
     let assesment = new Assessment();
     assesment.id = assesmentId;
 
     let assesmentYear = new AssessmentYear();
-    assesmentYear.id = assesmentYearId;
+    assesmentYear.id = assesmentYearObj.id;
 
     let assesmentResult = await this.repo.findOne({
       where: { assement: assesment, assessmentYear: assesmentYear },
@@ -160,6 +162,11 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentResult.baselineResult = data.baseLineEmission;
     assesmentResult.lekageResult = data.leakegeEmission;
     assesmentResult.totalEmission = data.emissionReduction;
+
+
+    if (assesmentYearObj.verificationStatus === VerificationStatus.AssessmentReturned){
+      assesmentResult.isResultupdated = true
+    }
 
     if (assesmentResult.id > 0) {
       let responce = await this.repo.save(assesmentResult);

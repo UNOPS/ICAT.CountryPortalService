@@ -8,12 +8,15 @@ import { User } from 'src/users/user.entity';
 import { TokenDetails } from 'src/utills/token_details';
 import { QualityCheckController } from './quality-check.controller';
 import { QualityCheckService } from './quality-check.service';
+import { Parameter } from 'src/parameter/entity/parameter.entity';
+import { ParameterModule } from 'src/parameter/parameter.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ParameterRequest, AssessmentYear,User]),
+    TypeOrmModule.forFeature([ParameterRequest, AssessmentYear,User, Parameter]),
     ParameterHistoryModule,
     AssesmentModule,
+    ParameterModule
   ],
   controllers: [QualityCheckController],
   providers: [QualityCheckService, AssessmentYear,TokenDetails,User],
