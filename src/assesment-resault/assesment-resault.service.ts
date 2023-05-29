@@ -67,10 +67,16 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
       relations: ['assessmentYear'],
     });
 
+    console.log(assessmentResault)
+
     assesmentYear = await this.assessmentYearRepo.findOne(assesmentYearId);
 
     if (isCalculate.toString() == 'false') {
-      if (assessmentResault.isResultupdated !== false){
+      if (assesmentYear.verificationStatus === VerificationStatus.AssessmentReturned){
+        if (assessmentResault?.isResultupdated !== false){
+          return assessmentResault;
+        }
+      } else {
         return assessmentResault;
       }
     } else {
@@ -164,9 +170,9 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentResult.totalEmission = data.emissionReduction;
 
 
-    if (assesmentYearObj.verificationStatus === VerificationStatus.AssessmentReturned){
-      assesmentResult.isResultupdated = true
-    }
+    // if (assesmentYearObj.verificationStatus === VerificationStatus.AssessmentReturned){
+    // }
+    assesmentResult.isResultupdated = true
 
     if (assesmentResult.id > 0) {
       let responce = await this.repo.save(assesmentResult);

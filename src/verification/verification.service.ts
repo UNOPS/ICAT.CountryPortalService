@@ -323,7 +323,13 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
         let req = await this.ParameterRequestRepo.save(request)
 
-        let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        // let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+        let assessmentYear = await this.assessmentYearRepo.find(
+          {
+            where: {assessment: {id: parameter.assessment.id}},
+            relations: ['assessment']
+          }
+        )
         assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
         assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
 
