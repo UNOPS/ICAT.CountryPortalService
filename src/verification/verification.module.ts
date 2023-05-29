@@ -13,6 +13,8 @@ import { VerificationController } from './verification.controller';
 import { VerificationService } from './verification.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
 import { ParameterModule } from 'src/parameter/parameter.module';
+import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssesmentResaultModule } from 'src/assesment-resault/assesment-resault.module';
 
 @Module({
   imports: [
@@ -23,11 +25,13 @@ import { ParameterModule } from 'src/parameter/parameter.module';
       ParameterRequest,
       Institution,
       User,
-      Parameter
+      Parameter,
+      AssessmentResault
     ]),
     ParameterHistoryModule,
     AssesmentModule,
-    ParameterModule
+    ParameterModule,
+    AssesmentResaultModule
   ],
   controllers: [VerificationController],
   providers: [

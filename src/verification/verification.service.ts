@@ -24,6 +24,7 @@ import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum'
 import { ResposeDto } from './dto/response.dto';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { VerificationStatus } from './entity/verification-status.entity';
+import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -41,6 +42,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     private readonly ParameterRequestRepo: Repository<ParameterRequest>,
     @InjectRepository(Parameter)
     private parameterRepo: Repository<Parameter>,
+    @InjectRepository(AssessmentResault)
+    private assessmentResultRepo: Repository<AssessmentResault>,
     private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly emaiService: EmailNotificationService,
@@ -326,6 +329,18 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
         let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
 
+        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+        assessmentResult[0].isResultupdated = false
+        assessmentResult[0].qcStatuProjectResult = undefined
+        assessmentResult[0].qcStatusBaselineResult = undefined
+        assessmentResult[0].qcStatusLekageResult = undefined
+        assessmentResult[0].qcStatusTotalEmission = undefined
+        assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+        assessmentResult[0].qcStatuscostDifference = undefined
+        assessmentResult[0].qcStatusmacResult = undefined
+        assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+        let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+
         if (res) {
           response.status = 'saved'
           return response
@@ -362,6 +377,18 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
 
         let res2 = await this.ParameterRequestRepo.save(request)
+
+        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+        assessmentResult[0].isResultupdated = false
+        assessmentResult[0].qcStatuProjectResult = undefined
+        assessmentResult[0].qcStatusBaselineResult = undefined
+        assessmentResult[0].qcStatusLekageResult = undefined
+        assessmentResult[0].qcStatusTotalEmission = undefined
+        assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+        assessmentResult[0].qcStatuscostDifference = undefined
+        assessmentResult[0].qcStatusmacResult = undefined
+        assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+        let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
 
         if (res && res2) {
           response.status = 'saved'

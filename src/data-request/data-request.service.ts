@@ -666,11 +666,15 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     let insSec: any;
     let inscon: any;
 
-    let parameters = await this.paramterRepo.findByIds(updateDataRequestDto.ids)
+
+    let paraRequests = await this.repo.findByIds(updateDataRequestDto.ids)
+
+    let parameters = paraRequests.map(req =>{ return req.parameter})
     parameters = parameters.map(para => {
       para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
       return para
     })
+
 
     await this.paramterRepo.save(parameters)
 
