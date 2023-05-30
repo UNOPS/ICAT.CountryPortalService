@@ -667,16 +667,18 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     let inscon: any;
 
 
-    let paraRequests = await this.repo.findByIds(updateDataRequestDto.ids)
+    if (updateDataRequestDto.verificationStatus && updateDataRequestDto.verificationStatus === 8){
+      let paraRequests = await this.repo.findByIds(updateDataRequestDto.ids)
+  
+      let parameters = paraRequests.map(req =>{ return req.parameter})
+      parameters = parameters.map(para => {
+        para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+        return para
+      })
+      await this.paramterRepo.save(parameters)
+    }
 
-    let parameters = paraRequests.map(req =>{ return req.parameter})
-    parameters = parameters.map(para => {
-      para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
-      return para
-    })
 
-
-    await this.paramterRepo.save(parameters)
 
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
