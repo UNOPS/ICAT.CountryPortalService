@@ -88,7 +88,7 @@ export class UsersService extends TypeOrmCrudService<User> {
 
     var newUserDb = await this.usersRepository.save(newUser);
     // get an environment variable
-    let systemLoginUrl = this.configService.get<string>('LOGIN_URL');
+    let systemLoginUrl = this.configService.get<string>('Reset_URL');
 
     var template =
       'Dear ' +
@@ -97,9 +97,9 @@ export class UsersService extends TypeOrmCrudService<User> {
       newUserDb.lastName +
       ' <br/>Your username is ' +
       newUserDb.email +
-      ' and your new login password is : ' +
+      ' <br/> your login Code is : ' +
       newPassword +
-      ' <br/>System login url is ' +
+      ' <br/>System login url is ' +   '<a href="systemLoginUrl">' +
       systemLoginUrl
       '<br/>' +
       '<br/>Best regards'+ 
@@ -280,25 +280,46 @@ export class UsersService extends TypeOrmCrudService<User> {
     }
   }
 
-  async resetPassword(email: string, password: string): Promise<boolean> {
+  async resetPassword(email: string, password: string, code: string): Promise<boolean> {
     let user = await this.usersRepository.findOne({ email: email });
-    console.log(user);
+    // console.log(user);
+    
     if (user) {
-      let salt = await bcript.genSalt();
-      console.log('password', password, 'salt', salt);
-      user.salt = salt;
-      user.password = await this.hashPassword(password, salt);
-      console.log('inside success');
+      let url = "https://icat-ca-tool.climatesi.com/icat-country-app/"
+      const hashPassword = await bcript.hash(code, user.salt);
+      if(hashPassword ==user.password){
+        let salt = await bcript.genSalt();
+        console.log('password', password, 'salt', salt);
+        user.salt = salt;
+        user.password = await this.hashPassword(password, salt);
+        console.log('inside success');
+  
+        await this.usersRepository.save(user);
+  
+        console.log('inside success2');
+  
+        // await this.updateChnagePasswordToken(user.id, ''); // clean the tocken
+  
+        console.log('inside success3');
+        var template =
+        'Dear ' + user.firstName + " " + user.lastName +
+        ' <br/>Your username is ' +
+        user.email +
+        '<br/> your login password is : ' +
+        password +
+        ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
+        url;
 
-      await this.usersRepository.save(user);
-
-      console.log('inside success2');
-
-      await this.updateChnagePasswordToken(user.id, ''); // clean the tocken
-
-      console.log('inside success3');
-
-      return true;
+      this.emaiService.sendMail(
+        user.email,
+        'Your credentials for ICAT system',
+        '',
+        template,
+      );
+  
+        return true;
+      }
+      return false;
     }
     console.log('inside fail');
 
