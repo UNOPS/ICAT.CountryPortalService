@@ -93,6 +93,9 @@ export class AssessmentResault extends BaseTrackingEntity {
   @Column({default: false})
   isResultupdated: boolean;
 
+  @Column({default: false})
+  isResultRecalculating: boolean;
+
   @ManyToOne((type) => Assessment ,{ cascade: false, nullable: true})
   @JoinColumn()
   assement: Assessment;

@@ -173,6 +173,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     // if (assesmentYearObj.verificationStatus === VerificationStatus.AssessmentReturned){
     // }
     assesmentResult.isResultupdated = true
+    assesmentResult.isResultRecalculating = false
 
     if (assesmentResult.id > 0) {
       let responce = await this.repo.save(assesmentResult);

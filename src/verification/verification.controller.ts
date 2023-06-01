@@ -100,4 +100,11 @@ export class VerificationController
   async ChangeParameterValue(@Body()req: ChangeParameterValue): Promise<ResposeDto|InternalServerErrorException>{
     return await this.service.ChangeParameterValue(req.parameter, req.isDataEntered, req.concern, req.correctData, req.user)
   } 
+
+  @Post('send-result-to-recalculate')
+  async sendResultToRecalculate(
+    @Query('assessmentYearId') assessmentYearId: number
+  ) {
+    return await this.service.sendResultToRecalculate(assessmentYearId)
+  }
 }
