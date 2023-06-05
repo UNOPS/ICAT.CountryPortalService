@@ -12,4 +12,6 @@ export enum DataRequestStatus {
   QAFail = 22,
   Verifier_Data_Request = 23,
   Data_Approved = 11,
+  Data_Rejected = -9,
+  Data_Reviewed = 9
 }
