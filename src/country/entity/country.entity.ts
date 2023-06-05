@@ -89,6 +89,10 @@ export class Country extends BaseTrackingEntity{
   @Column({ default: null })
   uniqueIdentification: string;
 
+  @Column({ default: null })
+  telephoneLength: number;
+  @Column({ default: null })
+  uniqtelephone: number;
 
   @OneToMany(() => DefaultValue, (defaultValue) => defaultValue.country,{cascade:false})
   defaultValue: DefaultValue[]

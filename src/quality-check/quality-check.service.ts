@@ -21,6 +21,7 @@ import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 @Injectable()
 export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
   constructor(
@@ -29,6 +30,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Parameter) private parameterRepo: Repository<Parameter>,
     private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly tokenDetails:TokenDetails,
@@ -131,7 +133,7 @@ console.log("+++++++++++++" ,ctAction)
         where: { parameter: param },
       });
 
-      let originalStatus = dataRequset.qaStatus;
+      let originalStatus = dataRequset?.qaStatus;
 
       if (dataRequset !== undefined && dataRequset !== null) {
         dataRequset.qaStatus = qaStatus;
@@ -141,6 +143,11 @@ console.log("+++++++++++++" ,ctAction)
         dataRequset.qaStatusUpdatedDate = new Date();
         var dataRequestTo = dataRequset;
         await this.repo.save(dataRequset);
+      } 
+
+      if (param.verifierAcceptance !== VerifierAcceptance.PENDING){
+        param.verifierAcceptance = VerifierAcceptance.PENDING
+        await this.parameterRepo.update(param.id, param)
       }
 
       let assesment = await this.assesmentservice.getAssessmentDetails(
