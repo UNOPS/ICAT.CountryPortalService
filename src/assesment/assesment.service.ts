@@ -400,7 +400,9 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     let resualt = await paginate(data, options);
 
     if (resualt) {
+      console.log("+++++++++", resualt)
       return resualt;
+      
     }
   }
 
