@@ -271,7 +271,15 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     }
   }
 
-  async ChangeParameterValue(parameter: Parameter, isDataEntered: boolean, concern: string, correctData: any, user: User){
+  async ChangeParameterValue(
+    parameter: Parameter,
+    isDataEntered: boolean,
+    concern: string,
+    correctData: any,
+    user: User,
+    isDefault: boolean,
+    isHistorical: boolean
+  ) {
     /**
      * Steps:
      * 1. Set status (verifierAcceptance) in existing parameter as 'REJECTED'
@@ -284,6 +292,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
      * However the NC report need to be submitted to go for the next level of verification
      */
     let response = new ResposeDto()
+    let res
 
     try {
       parameter = await this.parameterRepo.createQueryBuilder('para')
@@ -305,47 +314,68 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       if (isDataEntered) {
         //direct data enter
 
-        let newPara = new Parameter()
-        newPara = { ...parameter }
-        newPara.id = undefined
-        newPara.value = correctData.value
-        newPara.conversionValue = correctData.value
-        newPara.uomDataEntry = correctData.unit
-        newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
-        newPara.previouseParameterId = parameter.id
+        if (isDefault){
+          console.log("isDefault", isDefault)
+          //handle default
+          let newPara = new Parameter()
+          newPara = { ...parameter }
+          newPara.id = undefined
+          newPara.value = correctData.defaultValue.value
+          newPara.conversionValue = correctData.defaultValue.value
+          newPara.defaultValue = correctData.defaultValue
+          newPara.defaultValueId = correctData.defaultValue.id
+          newPara.uomDataEntry = correctData.unit
+          newPara.previouseParameterId = parameter.id
+          newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
 
-        let res = await this.parameterRepo.save([parameter, newPara])
+          res = await this.parameterRepo.save([parameter, newPara])
 
-        let request = new ParameterRequest()
-        request.parameter = newPara
-        request.dataRequestStatus = DataRequestStatus.Data_Approved
-        request.UserDataEntry = user.id 
-
-        let req = await this.ParameterRequestRepo.save(request)
-
-        // let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
-        let assessmentYear = await this.assessmentYearRepo.find(
-          {
-            where: {assessment: {id: parameter.assessment.id}},
-            relations: ['assessment']
-          }
-        )
-        assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
-        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
-
-        let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
-
-        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
-        assessmentResult[0].isResultupdated = false
-        assessmentResult[0].qcStatuProjectResult = undefined
-        assessmentResult[0].qcStatusBaselineResult = undefined
-        assessmentResult[0].qcStatusLekageResult = undefined
-        assessmentResult[0].qcStatusTotalEmission = undefined
-        assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
-        assessmentResult[0].qcStatuscostDifference = undefined
-        assessmentResult[0].qcStatusmacResult = undefined
-        assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
-        let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+        } else if (isHistorical){
+          //handle historical value
+        } else {
+          let newPara = new Parameter()
+          newPara = { ...parameter }
+          newPara.id = undefined
+          newPara.value = correctData.value
+          newPara.conversionValue = correctData.value
+          newPara.uomDataEntry = correctData.unit
+          newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+          newPara.previouseParameterId = parameter.id
+  
+          res = await this.parameterRepo.save([parameter, newPara])
+  
+          let request = new ParameterRequest()
+          request.parameter = newPara
+          request.dataRequestStatus = DataRequestStatus.Data_Reviewed
+          request.UserDataEntry = user.id 
+  
+          let req = await this.ParameterRequestRepo.save(request)
+  
+          // let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
+          let assessmentYear = await this.assessmentYearRepo.find(
+            {
+              where: {assessment: {id: parameter.assessment.id}},
+              relations: ['assessment']
+            }
+          )
+          assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
+          assessmentYear[0].qaStatus = undefined
+          assessmentYear[0].qaDeadline = undefined
+  
+          let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+  
+          let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+          assessmentResult[0].isResultupdated = false
+          assessmentResult[0].qcStatuProjectResult = undefined
+          assessmentResult[0].qcStatusBaselineResult = undefined
+          assessmentResult[0].qcStatusLekageResult = undefined
+          assessmentResult[0].qcStatusTotalEmission = undefined
+          assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+          assessmentResult[0].qcStatuscostDifference = undefined
+          assessmentResult[0].qcStatusmacResult = undefined
+          assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+          let asr = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+        }
 
         if (res) {
           response.status = 'saved'

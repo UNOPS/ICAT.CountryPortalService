@@ -7,4 +7,6 @@ export class ChangeParameterValue{
     concern: string
     correctData: any
     user: User
+    isDefault: boolean = false
+    isHistorical: boolean = false
 }
