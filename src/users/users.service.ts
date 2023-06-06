@@ -99,10 +99,10 @@ export class UsersService extends TypeOrmCrudService<User> {
       newUserDb.email +
       ' <br/> your login Code is : ' +
       newPassword +
-      ' <br/>System login url is ' +   '<a href="systemLoginUrl">' +
+      ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
       systemLoginUrl
-      '<br/>' +
-      '<br/>Best regards'+ 
+    '<br/>' +
+      '<br/>Best regards' +
       '<br/>Software support team'
       ;
 
@@ -136,7 +136,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     userId: number,
     newToken: string,
   ): Promise<User> {
-    
+
     let systemLoginUrl = this.configService.get<string>('ClientURl');
     let user = await this.usersRepository.findOne(userId);
     user.resetToken = newToken;
@@ -157,10 +157,10 @@ export class UsersService extends TypeOrmCrudService<User> {
       user.email +
       ' and your new login password is : ' +
       newPassword +
-      ' <br/>System login url is ' +'<a href="systemLoginUrl">'+
+      ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
       systemLoginUrl
-      '<br/>' +
-      '<br/>Best regards'+ 
+    '<br/>' +
+      '<br/>Best regards' +
       '<br/>Software support team'
       ;
 
@@ -171,7 +171,7 @@ export class UsersService extends TypeOrmCrudService<User> {
       '',
       template,
     );
-  
+
     return this.usersRepository.save(user);
   }
 
@@ -186,12 +186,12 @@ export class UsersService extends TypeOrmCrudService<User> {
   async validateUser(userName: string, password: string): Promise<boolean> {
     const user = await this.usersRepository.findOne({ username: userName });
 
-    console.log('user',user);
+    console.log('user', user);
 
-    if(user != undefined){
+    if (user != undefined) {
       return (await user).validatePassword(password);
     }
-    
+
   }
 
   // findOne(id: string): Promise<User> {
@@ -283,43 +283,56 @@ export class UsersService extends TypeOrmCrudService<User> {
   async resetPassword(email: string, password: string, code: string): Promise<boolean> {
     let user = await this.usersRepository.findOne({ email: email });
     // console.log(user);
-    
+    console.log('inside success');
     if (user) {
       let url = "https://icat-ca-tool.climatesi.com/icat-country-app/"
-      const hashPassword = await bcript.hash(code, user.salt);
-      if(hashPassword ==user.password){
+      if (code) {
+        const hashPassword = await bcript.hash(code, user.salt);
+        if (hashPassword == user.password) {
+          let salt = await bcript.genSalt();
+          user.salt = salt;
+          user.password = await this.hashPassword(password, salt);
+          await this.usersRepository.save(user);
+          var template =
+            'Dear ' + user.firstName + " " + user.lastName +
+            ' <br/>Your username is ' +
+            user.email +
+            '<br/> your login password is : ' +
+            password +
+            ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
+            url;
+
+          this.emaiService.sendMail(
+            user.email,
+            'Your credentials for ICAT system',
+            '',
+            template,
+          );
+          return true;
+        }
+        else  return false
+      }
+      else {
         let salt = await bcript.genSalt();
-        console.log('password', password, 'salt', salt);
         user.salt = salt;
         user.password = await this.hashPassword(password, salt);
-        console.log('inside success');
-  
         await this.usersRepository.save(user);
-  
-        console.log('inside success2');
-  
-        // await this.updateChnagePasswordToken(user.id, ''); // clean the tocken
-  
-        console.log('inside success3');
         var template =
-        'Dear ' + user.firstName + " " + user.lastName +
-        ' <br/>Your username is ' +
-        user.email +
-        '<br/> your login password is : ' +
-        password +
-        ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
-        url;
+          'Dear ' + user.firstName + " " + user.lastName +
+          ' <br/>Your username is ' +
+          user.email +
+          '<br/> your login password is : ' +
+          password +
+          ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
+          url;
 
-      this.emaiService.sendMail(
-        user.email,
-        'Your credentials for ICAT system',
-        '',
-        template,
-      );
-  
-        return true;
+        this.emaiService.sendMail(
+          user.email,
+          'Your credentials for ICAT system',
+          '',
+          template,)
+          return true;
       }
-      return false;
     }
     console.log('inside fail');
 
@@ -335,9 +348,9 @@ export class UsersService extends TypeOrmCrudService<User> {
     filterText: string,
     userTypeId: number,
     countryIdFromTocken: number,
-      sectorIdFromTocken: number,
-      institutionIdFromTocken: number,
-      role:string
+    sectorIdFromTocken: number,
+    institutionIdFromTocken: number,
+    role: string
   ): Promise<Pagination<User>> {
     console.log('calling......');
     let filter: string = '';
@@ -363,65 +376,65 @@ export class UsersService extends TypeOrmCrudService<User> {
       }
     }
 
-if(sectorIdFromTocken != 0){ 
-  console.log('sectorIdFromTocken')
- 
-  if (filter) {
-    filter = `${filter}  and ins.sectorId = :sectorIdFromTocken and type.id not in ( 1, 2)`;
-  } else {
-    filter = `ins.sectorId = :sectorIdFromTocken and type.id not in (1,2)`; 
-}
+    if (sectorIdFromTocken != 0) {
+      console.log('sectorIdFromTocken')
+
+      if (filter) {
+        filter = `${filter}  and ins.sectorId = :sectorIdFromTocken and type.id not in ( 1, 2)`;
+      } else {
+        filter = `ins.sectorId = :sectorIdFromTocken and type.id not in (1,2)`;
+      }
 
 
-}
+    }
 
-if(institutionIdFromTocken != 0){
-  console.log("user Query")
-  if (filter) {
-    filter = `${filter}  and user.institutionId = :institutionIdFromTocken `;
-  } else {
-    filter = `user.institutionId = :institutionIdFromTocken`; 
-}
+    if (institutionIdFromTocken != 0) {
+      console.log("user Query")
+      if (filter) {
+        filter = `${filter}  and user.institutionId = :institutionIdFromTocken `;
+      } else {
+        filter = `user.institutionId = :institutionIdFromTocken`;
+      }
 
-}
+    }
 
 
-// if (role == "Country Admin") {
-   
-// }
-// else if (role == "Sector Admin") {
-//   console.log("Sector Admin")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId not in (1)`;
-//   } else {
-//     filter = `user.userTypeId not in (1) `; 
-//   }
-// }
-// else if (role == "MRV Admin") {
-//   console.log("MRV Admin")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId not in (1,2)`;
-//   } else {
-//     filter = `user.userTypeId not in (1,2) `; 
-//   }
-// }
-// else if (role == "Technical Team" ) {
-//   console.log("Technical Team")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId = 3 `;
-//   } else {
-//     filter = `user.userTypeId = 3 `; 
-//   }
-// }
-// else if ( role ==   "QC Team") {
-//   console.log("Technical Team")
-//   if (filter) {
-//     filter = `${filter}  and user.userTypeId = 3 `;
-//   } else {
-//     filter = `user.userTypeId = 3 `; 
-//   }
-// }
-// else 
+    // if (role == "Country Admin") {
+
+    // }
+    // else if (role == "Sector Admin") {
+    //   console.log("Sector Admin")
+    //   if (filter) {
+    //     filter = `${filter}  and user.userTypeId not in (1)`;
+    //   } else {
+    //     filter = `user.userTypeId not in (1) `; 
+    //   }
+    // }
+    // else if (role == "MRV Admin") {
+    //   console.log("MRV Admin")
+    //   if (filter) {
+    //     filter = `${filter}  and user.userTypeId not in (1,2)`;
+    //   } else {
+    //     filter = `user.userTypeId not in (1,2) `; 
+    //   }
+    // }
+    // else if (role == "Technical Team" ) {
+    //   console.log("Technical Team")
+    //   if (filter) {
+    //     filter = `${filter}  and user.userTypeId = 3 `;
+    //   } else {
+    //     filter = `user.userTypeId = 3 `; 
+    //   }
+    // }
+    // else if ( role ==   "QC Team") {
+    //   console.log("Technical Team")
+    //   if (filter) {
+    //     filter = `${filter}  and user.userTypeId = 3 `;
+    //   } else {
+    //     filter = `user.userTypeId = 3 `; 
+    //   }
+    // }
+    // else 
     if (role == "Data Collection Team") {
       if (filter) {
         filter = `${filter}  and user.userTypeId = 8 or user.userTypeId = 9 `;
@@ -430,10 +443,10 @@ if(institutionIdFromTocken != 0){
       }
     }
 
-// else {
+    // else {
 
- 
-// }
+
+    // }
 
     let data = this.repo
       .createQueryBuilder('user')
@@ -454,12 +467,12 @@ if(institutionIdFromTocken != 0){
         filterText: `%${filterText}%`,
         userTypeId,
         countryIdFromTocken,
-      sectorIdFromTocken,
-      institutionIdFromTocken
+        sectorIdFromTocken,
+        institutionIdFromTocken
       })
       .orderBy('user.status', 'ASC')
       .groupBy('user.id');
-      
+
 
     let resualt = await paginate(data, options);
 
