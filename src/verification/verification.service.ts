@@ -332,6 +332,17 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
         } else if (isHistorical){
           //handle historical value
+          let newPara = new Parameter()
+          newPara = { ...parameter }
+          newPara.id = undefined
+          newPara.value = correctData.historicalValue.value
+          newPara.conversionValue = correctData.historicalValue.value
+          newPara.isHistorical = true
+          newPara.uomDataEntry = correctData.unit
+          newPara.previouseParameterId = parameter.id
+          newPara.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+
+          res = await this.parameterRepo.save([parameter, newPara])
         } else {
           let newPara = new Parameter()
           newPara = { ...parameter }
