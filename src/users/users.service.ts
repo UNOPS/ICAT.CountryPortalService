@@ -88,7 +88,8 @@ export class UsersService extends TypeOrmCrudService<User> {
 
     var newUserDb = await this.usersRepository.save(newUser);
     // get an environment variable
-    let systemLoginUrl = this.configService.get<string>('Reset_URL');
+    let systemLoginUrl = "https://icat-ca-tool.climatesi.com/icat-country-app/reset-password";
+    let url = "https://icat-ca-tool.climatesi.com/icat-country-app/reset-password";
 
     var template =
       'Dear ' +
@@ -99,8 +100,8 @@ export class UsersService extends TypeOrmCrudService<User> {
       newUserDb.email +
       ' <br/> your login Code is : ' +
       newPassword +
-      ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
-      systemLoginUrl
+      ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
+      // url
     '<br/>' +
       '<br/>Best regards' +
       '<br/>Software support team'
@@ -157,8 +158,8 @@ export class UsersService extends TypeOrmCrudService<User> {
       user.email +
       ' and your new login password is : ' +
       newPassword +
-      ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
-      systemLoginUrl
+      ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
+      // systemLoginUrl
     '<br/>' +
       '<br/>Best regards' +
       '<br/>Software support team'
@@ -299,7 +300,7 @@ export class UsersService extends TypeOrmCrudService<User> {
             user.email +
             '<br/> your login password is : ' +
             password +
-            ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
+            ' <br/>System login url is' + ' <a href="' + url + '">' + url + '</a>' +
             url;
 
           this.emaiService.sendMail(
@@ -323,8 +324,8 @@ export class UsersService extends TypeOrmCrudService<User> {
           user.email +
           '<br/> your login password is : ' +
           password +
-          ' <br/>System login url is ' + '<a href="systemLoginUrl">' +
-          url;
+          ' <br/>System login url is' + ' <a href="' + url + '">' + url + '</a>' +
+          // url;
 
         this.emaiService.sendMail(
           user.email,
