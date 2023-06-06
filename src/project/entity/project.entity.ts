@@ -47,7 +47,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ length: 50, default: null, nullable: true })
   contactPersoFullName: string;
 
-  @Column({ length: 30, default: null, nullable: true })
+  @Column({ length: 100, default: null, nullable: true })
   email: string;
 
   @Column({ length: 30, default: null, nullable: true })
@@ -106,7 +106,7 @@ export class Project extends BaseTrackingEntity {
   @Column()
   proposeDateofCommence: Date;
 
-  @Column({ default: 0})
+  @Column({ default: 0, type: "double"})
   duration: number;   // project life (project scenario)
 
 
