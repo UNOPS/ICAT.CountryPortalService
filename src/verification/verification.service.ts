@@ -413,9 +413,48 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       console.log(error)
       return new InternalServerErrorException()
     }
+  }
 
-    
-
+  async sendResultToRecalculate(assessmentYearId: number){
+    let response = new ResposeDto()
+    try{
+      let assessmentYear = await this.assessmentYearRepo.find(
+        {
+          where: {id: assessmentYearId},
+          relations: ['assessment']
+        }
+      )
+      assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
+      assessmentYear[0].isVerificationSuccess = false
+      assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
+  
+      let res1 = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
+  
+  
+      let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+      
+      assessmentResult[0].isResultRecalculating = true
+      assessmentResult[0].qcStatuProjectResult = undefined
+      assessmentResult[0].qcStatusBaselineResult = undefined
+      assessmentResult[0].qcStatusLekageResult = undefined
+      assessmentResult[0].qcStatusTotalEmission = undefined
+      assessmentResult[0].qcStatusbsTotalAnnualCost = undefined
+      assessmentResult[0].qcStatuscostDifference = undefined
+      assessmentResult[0].qcStatusmacResult = undefined
+      assessmentResult[0].qcStatuspsTotalAnnualCost = undefined
+      let res2 = await this.assessmentResultRepo.update(assessmentResult[0].id, assessmentResult[0])
+  
+      if (res1 && res2) {
+        response.status = 'saved'
+        return response
+      } else {
+        response.status = 'failed to save'
+        return response
+      }
+    } catch(error){
+      console.log(error)
+      return new InternalServerErrorException()
+    }
     
   }
 }
