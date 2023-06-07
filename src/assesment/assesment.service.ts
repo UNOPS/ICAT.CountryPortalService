@@ -680,7 +680,7 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     //   'as.id =' + //'par.dataRequestStatus in (9,-9,11) AND as.id ='
     //     assessmentId.toString() + ` AND (para.isEnabledAlternative = true AND para.isAlternative = true OR para.isEnabledAlternative = false AND para.isAlternative = false ) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmenYear }`,
     // );
-    console.log('data1SQL', data.getSql());
+    // console.log('data1SQL', data.getSql());
     let totalRecordsAllStatus: any[] = await data.execute();
 
     ///////////////////////////////////////////////////////////
