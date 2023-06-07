@@ -100,11 +100,10 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
 
    
 
-     
 
     // console.log('data.....',data)
     //console.log('query...', data.getQueryAndParameters());
-    return [...previouseParameterhistry,...await data1.getMany()];
+    return [...await data1.getMany(),...previouseParameterhistry];
   }
 
 
