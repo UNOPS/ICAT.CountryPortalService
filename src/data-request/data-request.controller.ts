@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -314,6 +315,19 @@ export class ParameterRequestController
     return await this.service.getClimateActionByDataRequestStatusSix(
      
     );
+  }
+
+  // @UseGuards(JwtAuthGuard)
+
+  @Get('getQCpassParameterRequest/:parameteIds')
+  async getQCpassParameterRequest(
+    @Request() request,
+    @Query('parameteIds') parameteIds:string[]
+    
+  ): Promise<any> {
+    console.log(parameteIds);
+
+    return await this.service.getQCpassParameterRequest(parameteIds)
   }
 
 
