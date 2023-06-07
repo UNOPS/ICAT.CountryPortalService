@@ -839,6 +839,9 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
       this.repo.save(dataRequestItem).then((res) => {
         console.log('res', res);
+
+
+        
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.EnterData,
