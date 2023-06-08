@@ -200,18 +200,23 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             if (a.explanation) {
               description = 'Verifier raised concern.';
               comment = a.rootCause;
-              let dataRequest = await this.ParameterRequestRepo.findOne({
-                where: { parameter: a.parameter },
-              });
-              this.parameterHistoryService.SaveParameterHistory(
-                dataRequest.id,
-                ParameterHistoryAction.RaisedConcern,
-                'Verifier - Concern  raised',
-                dataRequest.noteDataRequest,
-                dataRequest.dataRequestStatus.toString(),
-                dataRequest.dataRequestStatus.toString(),
-              );
+              // if (!a.parameter.isDefault || !a.parameter.isHistorical){
+              // }
             }
+          }
+          let dataRequest = await this.ParameterRequestRepo.findOne({
+            where: { parameter: a.parameter },
+          });
+          let para = await this.parameterRepo.findOne({id: a.parameter.id})
+          if (!para.isDefault && !para.isHistorical) {
+            this.parameterHistoryService.SaveParameterHistory(
+              dataRequest.id,
+              ParameterHistoryAction.RaisedConcern,
+              'Verifier - Concern  raised',
+              dataRequest.noteDataRequest,
+              dataRequest.dataRequestStatus.toString(),
+              dataRequest.dataRequestStatus.toString(),
+            );
           }
 
 
@@ -249,7 +254,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             await this.ParameterRequestRepo.save(dataRequest);
 
 
-          
+
           }
         }
       });
