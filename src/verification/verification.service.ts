@@ -362,12 +362,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
           res = await this.parameterRepo.save([parameter, newPara])
         } else {
-
-          
-
-
-
-          
           let newPara = new Parameter()
           newPara = { ...parameter }
           newPara.id = undefined
@@ -456,7 +450,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             relations: ['assessment']
           }
         )
-        assessmentYear[0].qaStatus = QuAlityCheckStatus.Pending
+        assessmentYear[0].qaStatus = undefined
         assessmentYear[0].isVerificationSuccess = false
         assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
 
