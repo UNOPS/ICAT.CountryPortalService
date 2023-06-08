@@ -18,6 +18,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VerifierAcceptance } from '../enum/verifier-acceptance.enum';
+import { ParameterHistory } from 'src/parameter-history/entity/parameter-history.entity';
 
 @Entity({ name: 'parameter' })
 export class Parameter extends BaseTrackingEntity {
@@ -74,6 +75,9 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({nullable: true})
   isHistorical: boolean;
+
+  @Column({nullable: true})
+  historicalParaID: number;
 
   @Column({ nullable: true })
   vehical?: string;
