@@ -84,6 +84,7 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
       .orderBy('as.createdOn', 'DESC');
 
   let parameter = await  this.parameterRepo.findOne(id);
+  console.log('query.111111111111..', parameter);
   let previouseParameterhistry=[];
   if(parameter.previouseParameterId){
     const previouseParameterId=parameter.previouseParameterId
@@ -96,13 +97,20 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
       })
       .orderBy('as.createdOn', 'DESC');
       previouseParameterhistry=await data2.getMany();
+  } 
+  else if(parameter.historicalParaID){
+    const historicalParaID=parameter.historicalParaID
+    let filter3: string = 'as.parameterId = :historicalParaID';
+    var data3 = this.repo
+    .createQueryBuilder('as')
+    .where(filter3, {
+      historicalParaID
+      
+    })
+    .orderBy('as.createdOn', 'DESC');
+    previouseParameterhistry=await data3.getMany();
   }
-
-   
-
-
     // console.log('data.....',data)
-    //console.log('query...', data.getQueryAndParameters());
     return [...await data1.getMany(),...previouseParameterhistry];
   }
 
