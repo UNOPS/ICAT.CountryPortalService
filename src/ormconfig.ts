@@ -29,7 +29,7 @@ const config: ConnectionOptions = {
   //database: 'nccdsndb',
   username: 'root',
   password: '7860150',
-  database: 'portelservice',
+  database: 'portelservice2',
   // password: '12345',
   // database: 'portelservice',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
