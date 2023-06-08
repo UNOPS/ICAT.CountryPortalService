@@ -73,19 +73,37 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
 
   async getHistory(id: number): Promise<any> 
   {
-    let filter: string = 'as.parameterId = :id';
-    var data = this.repo
+
+    let filter1: string = 'as.parameterId = :id';
+    var data1 = this.repo
       .createQueryBuilder('as')
-      .where(filter, {
+      .where(filter1, {
         id,
         
       })
-      .orderBy('as.createdOn', 'DESC');;
+      .orderBy('as.createdOn', 'DESC');
+
+  let parameter = await  this.parameterRepo.findOne(id);
+  let previouseParameterhistry=[];
+  if(parameter.previouseParameterId){
+    const previouseParameterId=parameter.previouseParameterId
+    let filter2: string = 'as.parameterId = :previouseParameterId';
+    var data2 = this.repo
+      .createQueryBuilder('as')
+      .where(filter2, {
+        previouseParameterId
+        
+      })
+      .orderBy('as.createdOn', 'DESC');
+      previouseParameterhistry=await data2.getMany();
+  }
+
+   
 
 
     // console.log('data.....',data)
     //console.log('query...', data.getQueryAndParameters());
-    return await data.getMany();
+    return [...await data1.getMany(),...previouseParameterhistry];
   }
 
 

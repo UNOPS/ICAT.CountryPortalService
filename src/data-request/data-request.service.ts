@@ -839,6 +839,9 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
       this.repo.save(dataRequestItem).then((res) => {
         console.log('res', res);
+
+
+        
         this.parameterHistoryService.SaveParameterHistory(
           res.id,
           ParameterHistoryAction.EnterData,
@@ -1004,5 +1007,41 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     let result = await data.getMany();
 
     return result;
+  }
+
+
+
+
+  async getQCpassParameterRequest(
+    paraIds: string[],
+   
+  ): Promise<any> {
+  
+
+    let data = this.repo
+      .createQueryBuilder('dr')
+      .leftJoinAndMapOne(
+        'dr.parameter',
+        Parameter,
+        'para',
+        'para.id = dr.parameterId',
+      )
+      .where(
+     'dr.qaStatus=4  and para.id in (:...paraIds)',{paraIds}
+      )
+      
+
+    let result = await data.getMany();
+
+    // let pageResult = data
+    //   .skip((options.limit as number) * ((options.page as number) - 1))
+    //   .take(options.limit as number);
+    //console.log('data2', data);
+
+    // let result = await data.execute();
+    //   console.log('result2', result2);
+    if (result) {
+      return result;
+    }
   }
 }

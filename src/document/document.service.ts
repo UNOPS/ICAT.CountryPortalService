@@ -131,6 +131,8 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     const base = this.configService.get<string>('downloadbaseUrl');
     documenst.forEach((a) => {
       // a.url = `${base}${a.relativePath}`;
+      // a.viewUrl=`http://localhost:7080/document/downloadDocument/inline/${a.id}`;
+      a.viewUrl=`https://icat-ca-tool.climatesi.com/web-api/document/downloadDocument/inline/${a.id}`;
       a.url = `https://icat-ca-tool.climatesi.com/web-api/document/downloadDocument/attachment/${a.id}`;
     });
 

@@ -200,6 +200,17 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             if (a.explanation) {
               description = 'Verifier raised concern.';
               comment = a.rootCause;
+              let dataRequest = await this.ParameterRequestRepo.findOne({
+                where: { parameter: a.parameter },
+              });
+              this.parameterHistoryService.SaveParameterHistory(
+                dataRequest.id,
+                ParameterHistoryAction.RaisedConcern,
+                'Verifier - Concern  raised',
+                dataRequest.noteDataRequest,
+                dataRequest.dataRequestStatus.toString(),
+                dataRequest.dataRequestStatus.toString(),
+              );
             }
           }
 
@@ -236,6 +247,9 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
             dataRequest.dataRequestStatus =
               DataRequestStatus.Verifier_Data_Request;
             await this.ParameterRequestRepo.save(dataRequest);
+
+
+          
           }
         }
       });
@@ -311,6 +325,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       console.log("---", parameter)
       parameter.verifierAcceptance = VerifierAcceptance.REJECTED
       parameter.verifierConcern = concern
+
+      let oldDatarqst=await this.ParameterRequestRepo.findOne({where:{parameter:parameter}})
+
+
       if (isDataEntered) {
         //direct data enter
 
@@ -344,6 +362,12 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
           res = await this.parameterRepo.save([parameter, newPara])
         } else {
+
+          
+
+
+
+          
           let newPara = new Parameter()
           newPara = { ...parameter }
           newPara.id = undefined
@@ -360,8 +384,18 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           request.dataRequestStatus = DataRequestStatus.Data_Reviewed
           request.UserDataEntry = user.id 
   
-          let req = await this.ParameterRequestRepo.save(request)
-  
+          let req = await this.ParameterRequestRepo.save(request);
+
+     
+            this.parameterHistoryService.SaveParameterHistory(
+              req.id,
+              ParameterHistoryAction.EnterData,
+              'Sector admin - Revised the value',
+              req.noteDataRequest,
+              req.dataRequestStatus.toString(),
+              oldDatarqst.dataRequestStatus.toString(),
+            );
+         
           // let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
           let assessmentYear = await this.assessmentYearRepo.find(
             {
@@ -429,6 +463,19 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
 
         let res2 = await this.ParameterRequestRepo.save(request)
+       
+        this.parameterHistoryService.SaveParameterHistory(
+          res2.id,
+          ParameterHistoryAction.EnterData,
+          'Sector admin - Reassigned data provider',
+          res2.noteDataRequest,
+          res2.dataRequestStatus.toString(),
+          oldDatarqst.dataRequestStatus.toString(),
+        );
+
+
+
+
 
         let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
         assessmentResult[0].isResultupdated = false
