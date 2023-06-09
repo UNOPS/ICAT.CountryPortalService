@@ -474,6 +474,10 @@ export class AssessmentYearController
     // @Query('countryId') countryId: number,
     // @Query('sectorId') sectorId: number,
     @Query('isProposal') isProposal: number,
+    @Query('climateActionId') climateActionId: number,
+    @Query('year') year: string,
+    @Query('getAll') getAll: string,
+    @Query('approveStatus') approveStatus: string
 
   ): Promise<any> {
 
@@ -498,6 +502,10 @@ export class AssessmentYearController
       isProposal,
       countryIdFromTocken,
       sectorIdFromTocken,
+      climateActionId,
+      year,
+      getAll,
+      approveStatus
 
     );
   }
