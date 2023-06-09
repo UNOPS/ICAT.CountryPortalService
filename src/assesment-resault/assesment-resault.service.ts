@@ -53,6 +53,7 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     assesmentId: number,
     assesmentYearId: number,
     isCalculate: boolean,
+    flag = ''
   ): Promise<any> {
     console.log("qastatus..1");
     let assement = new Assessment();
@@ -73,7 +74,11 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
 
     if (isCalculate.toString() == 'false') {
       if (assesmentYear.verificationStatus === VerificationStatus.AssessmentReturned){
-        if (assessmentResault?.isResultupdated !== false){
+        if (flag === ''){
+          if (assessmentResault?.isResultupdated !== false){
+            return assessmentResault;
+          }
+        } else {
           return assessmentResault;
         }
       } else {

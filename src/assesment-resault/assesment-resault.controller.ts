@@ -82,11 +82,13 @@ export class AssesmentResaultController
     @Query('AssessmentId') AssessmentId: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
     @Query('calculate') calculate: boolean,
+    @Query('flag') flag: string 
   ) {
     let restult = await this.service.GetAssesmentResult(
       AssessmentId,
       AssessmentYearId,
       calculate,
+      flag
     );
     // console.log('dddddddddddddddddddddddddddddddddd');
     console.log('reeeee-----', restult);
