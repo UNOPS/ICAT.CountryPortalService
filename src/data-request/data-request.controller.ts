@@ -327,7 +327,7 @@ export class ParameterRequestController
   ): Promise<any> {
     console.log(parameteIds);
 
-    return await this.service.getQCpassParameterRequest(parameteIds)
+    return parameteIds? await this.service.getQCpassParameterRequest(parameteIds):[];
   }
 
 
