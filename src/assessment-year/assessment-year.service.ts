@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { AssessmentYear } from './entity/assessment-year.entity';
 import { Project } from 'src/project/entity/project.entity';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { IPaginationMeta, IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { User } from 'src/users/user.entity';
 import { DataVerifierDto } from './Dto/dataVerifier.dto';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
@@ -1053,124 +1053,164 @@ else{
 
 }
 
-async assessmentYearForManageDataStatus(
-  options: IPaginationOptions,
-  filterText: string,
-  projectStatusId: number,
-  projectApprovalStatusId: number,
-  // assessmentStatusName: string,
-  // Active: number,
- // countryId: number,
-  //sectorId: number,
-  isProposal: number,
-  countryIdFromTocken: number,
-  sectorIdFromTocken:number,
+  async assessmentYearForManageDataStatus(
+    options: IPaginationOptions,
+    filterText: string,
+    projectStatusId: number,
+    projectApprovalStatusId: number,
+    // assessmentStatusName: string,
+    // Active: number,
+    // countryId: number,
+    //sectorId: number,
+    isProposal: number,
+    countryIdFromTocken: number,
+    sectorIdFromTocken: number,
+    climateActionId: number,
+    year: string,
+    getAll: string = 'false',
+    approveStatus: string
 
-): Promise<any> {
+  ): Promise<any> {
+    climateActionId = Number(climateActionId)
 
-  let filter: string = '';
-  if (filterText != null && filterText != undefined && filterText != '') {
-    filter =
-      // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR para.AssessmentYear LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
-      '(proj.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR assesYr.assessmentYear LIKE :filterText)';
-  }
-  if (isProposal != undefined) {
-    if (filter) {
-      filter = `${filter}  and asse.isProposal = :isProposal`;
+    let filter: string = '';
+    if (filterText != null && filterText != undefined && filterText != '') {
+      filter =
+        // '(dr.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR para.AssessmentYear LIKE :filterText OR dr.institution LIKE :filterText OR pas.name LIKE :filterText OR pst.name LIKE :filterText OR dr.contactPersoFullName LIKE :filterText  OR dr.editedOn LIKE :filterText OR dr.createdOn LIKE :filterText OR dr.acceptedDate LIKE :filterText)';
+        '(proj.climateActionName LIKE :filterText OR asse.assessmentType LIKE :filterText OR assesYr.assessmentYear LIKE :filterText)';
+    }
+    if (isProposal != undefined) {
+      if (filter) {
+        filter = `${filter}  and asse.isProposal = :isProposal`;
+      } else {
+        filter = ` asse.isProposal = :isProposal`;
+      }
+    }
+
+    if (projectStatusId != 0) {
+      if (filter) {
+        filter = `${filter}  and proj.projectStatusId = :projectStatusId`;
+      } else {
+        filter = ` proj.projectStatusId = :projectStatusId`;
+      }
+    }
+
+    if (projectApprovalStatusId != 0) {
+      if (filter) {
+        filter = `${filter}  and proj.projectApprovalStatusId = :projectApprovalStatusId`;
+      } else {
+        filter = `proj.projectApprovalStatusId = :projectApprovalStatusId`;
+      }
+    }
+
+    if (climateActionId !== 0) {
+      console.log("susccs")
+      if (filter) {
+        filter = `${filter}  and proj.id = :climateActionId`;
+      } else {
+        filter = `proj.id = :climateActionId`;
+      }
+    }
+
+    if (year !== '') {
+      if (filter) {
+        filter = `${filter}  and assesYr.assessmentYear = :year`;
+      } else {
+        filter = `assesYr.assessmentYear = :year`;
+      }
+    }
+
+    if (approveStatus !== ''){
+      if (approveStatus === 'approved'){
+        if (filter) {
+          filter = `${filter}  and assesYr.qaStatus IN (1,4)`;
+        } else {
+          filter = `assesYr.qaStatus IN (1,4)`;
+        }
+      } else {
+        if (filter) {
+          filter = `${filter}  and assesYr.qaStatus IS NULL`;
+        } else {
+          filter = `assesYr.qaStatus IS NULL`;
+        }
+      }
+    }
+
+    // if (countryId != 0) {
+    //   if (filter) {
+    //     filter = `${filter}  and proj.countryId = :countryId`;
+    //   } else {
+    //     filter = `proj.countryId = :countryId`;
+    //   }
+    // }
+
+    if (sectorIdFromTocken != 0) {
+      if (filter) {
+        filter = `${filter}  and proj.sectorId = :sectorIdFromTocken`;
+      } else {
+        filter = `proj.sectorId = :sectorIdFromTocken`;
+      }
+    }
+    let select: string[];
+
+
+    let data = this.repo
+      .createQueryBuilder('assesYr')
+
+      .leftJoinAndSelect(
+        'assesYr.assessment',
+        'asse',
+        'asse.id = assesYr.assessmentId',
+      )
+      .leftJoinAndSelect(
+        'asse.project',
+        'proj',
+        `proj.id = asse.projectId and  proj.countryId = ${countryIdFromTocken}`,
+      )
+      .select([
+        'asse.id',
+        'assesYr.id',
+        'assesYr.assessmentYear',
+        'assesYr.qaStatus',
+        'assesYr.verificationStatus',
+        'asse.assessmentType',
+        'proj.climateActionName',
+        'proj.id'
+      ])
+      .where(filter, {
+        filterText: `%${filterText}%`,
+        isProposal,
+        projectStatusId,
+        projectApprovalStatusId,
+        climateActionId: climateActionId,
+        year: year,
+        // assessmentStatusName,
+        // Active,
+        //  countryId,
+        // sectorId,
+        sectorIdFromTocken,
+      })
+      .orderBy('asse.editedOn', 'DESC')
+      .addOrderBy('asse.createdOn', 'DESC');
+
+    console.log(
+      '=====================================================================',
+    );
+
+    let resualt: AssessmentYear[] | Pagination<AssessmentYear, IPaginationMeta>
+    if (getAll === 'false') {
+      resualt = await paginate(data, options);
     } else {
-      filter = ` asse.isProposal = :isProposal`;
+      resualt = await data.getMany()
+    }
+
+    // console.log("query",data.getQuery())
+    // console.log('my result...', resualt);
+    if (resualt) {
+      console.log('results for manage..');
+      return resualt;
     }
   }
-
-  if (projectStatusId != 0) {
-    if (filter) {
-      filter = `${filter}  and proj.projectStatusId = :projectStatusId`;
-    } else {
-      filter = ` proj.projectStatusId = :projectStatusId`;
-    }
-  }
-
-  if (projectApprovalStatusId != 0) {
-    if (filter) {
-      filter = `${filter}  and proj.projectApprovalStatusId = :projectApprovalStatusId`;
-    } else {
-      filter = `proj.projectApprovalStatusId = :projectApprovalStatusId`;
-    }
-  }
-
-  
-
-  // if (countryId != 0) {
-  //   if (filter) {
-  //     filter = `${filter}  and proj.countryId = :countryId`;
-  //   } else {
-  //     filter = `proj.countryId = :countryId`;
-  //   }
-  // }
-
-  if (sectorIdFromTocken != 0) {
-    if (filter) {
-      filter = `${filter}  and proj.sectorId = :sectorIdFromTocken`;
-    } else {
-      filter = `proj.sectorId = :sectorIdFromTocken`;
-    }
-  }
-  let select: string[];
-
-
-
-
-
-
-  let data = this.repo
-    .createQueryBuilder('assesYr')
-
-    .leftJoinAndMapOne(
-      'assesYr.assesment',
-      Assessment,
-      'asse',
-      'asse.id = assesYr.assessmentId',
-    )
-    .leftJoinAndMapOne(
-      'asse.project',
-      Project,
-      'proj',
-      `proj.id = asse.projectId and  proj.countryId = ${countryIdFromTocken}`,
-    )
-    .select([
-      'asse.id',
-      'assesYr.id',
-      'assesYr.assessmentYear',
-      'assesYr.qaStatus',
-      'assesYr.verificationStatus',
-      'asse.assessmentType',
-      'proj.climateActionName',
-    ])
-    .where(filter, {
-      filterText: `%${filterText}%`,
-      isProposal,
-      projectStatusId,
-      projectApprovalStatusId,
-      // assessmentStatusName,
-      // Active,
-    //  countryId,
-     // sectorId,
-     sectorIdFromTocken,
-    })
-    .orderBy('asse.createdOn', 'DESC');
-
-  console.log(
-    '=====================================================================',
-  );
-
-  // console.log("query",data.getQuery())
-  let resualt = await paginate(data, options);
-  // console.log('my result...', resualt);
-  if (resualt) {
-    console.log('results for manage..', resualt);
-    return resualt;
-  }
-}
 
 
 async getAssessmentYearsListInTrackCA(
