@@ -478,9 +478,9 @@ let yrList:number[]=[];
   ) {
     let summryReport: any[] =
     await this.assessmentYearService.getDataForReportNew(
-      projIds.join(','),
-      assessType.join(','),
-      yearIds.join(','),
+      Array.isArray(projIds)?  projIds.join(',') :projIds,
+      Array.isArray(assessType) ?assessType.join(',') : assessType,
+      Array.isArray(yearIds) ? yearIds.join(',') :""+ yearIds,
       '',
     );
 
