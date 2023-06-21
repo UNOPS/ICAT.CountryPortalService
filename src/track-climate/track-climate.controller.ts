@@ -37,37 +37,41 @@ export class TrackClimateController implements CrudController<TrackcaEntity> {
         return this;
       }
 
-      @UseGuards(JwtAuthGuard)
-      @Get(
-        'getTrackClimateActionDetails',
-      )
-      async getTrackClimateActionDetails(
-        @Request() request,
-        
-      ): Promise<any> {
-        // console.log(moment(editedOn).format('YYYY-MM-DD'))
-        console.log('11111111');
-    
-      
-        let countryIdFromTocken:number ;
-        [countryIdFromTocken]=    this.tokenDetails.getDetails([TokenReqestType.countryId])
-        let country=new Country()
-        country.id=countryIdFromTocken
-        let projects=await this.climateservice.find({select: ["id"],
-        where: {country:country }    })
-      let projectIdlist:number[]=[]
-    projects.forEach(a=>{
-      projectIdlist.push(a.id);
+  @UseGuards(JwtAuthGuard)
+  @Get(
+    'getTrackClimateActionDetails',
+  )
+  async getTrackClimateActionDetails(
+    @Request() request,
+
+  ): Promise<any> {
+    // console.log(moment(editedOn).format('YYYY-MM-DD'))
+    console.log('11111111');
+
+
+    let countryIdFromTocken: number;
+    [countryIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId])
+    let country = new Country()
+    country.id = countryIdFromTocken
+    let projects = await this.climateservice.find({
+      select: ["id"],
+      where: { country: country }
     })
-       
-    console.log('projectId',projectIdlist)
-   
-    
-    
-        return this.service.find({ where: {
-          projectId: In(projectIdlist),
+    let projectIdlist: number[] = []
+    // projects.forEach(a=>{ // replaced foreach with map
+    //   projectIdlist.push(a.id);
+    // })
+    projectIdlist = projects.map(obj => obj.id)
+
+
+
+
+    return this.service.find({
+      where: {
+        projectId: In(projectIdlist),
       },
-      })
-      }
+      select: ['flag', 'years', 'createdOn', 'achieved', 'expected']
+    })
+  }
 
 }
