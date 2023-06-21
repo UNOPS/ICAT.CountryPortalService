@@ -101,6 +101,7 @@ export class Assessment extends BaseTrackingEntity {
   @ManyToOne(() => Methodology, (methodology) => methodology.assessments, {
     cascade: false,
     nullable: true,
+    eager:true
   })
   methodology: Methodology;
 
