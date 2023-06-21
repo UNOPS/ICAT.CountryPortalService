@@ -438,9 +438,9 @@ export class UsersService extends TypeOrmCrudService<User> {
     // else 
     if (role == "Data Collection Team") {
       if (filter) {
-        filter = `${filter}  and user.userTypeId = 8 or user.userTypeId = 9 `;
+        filter = `${filter}  and (user.userTypeId = 8 or user.userTypeId = 9 )`;
       } else {
-        filter = `user.userTypeId = 8 or user.userTypeId = 9 `;
+        filter = `(user.userTypeId = 8 or user.userTypeId = 9) `;
       }
     }
 

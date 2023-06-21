@@ -104,12 +104,12 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
 
     if (countryIdFromTocken != 0) {
-      console.log('countryIdFromTocken')
+      console.log('countryIdFromTocken%%%%')
 
       if (filter) {
-        filter = `${filter}  and ins.countryId = :countryIdFromTocken`;
+        filter = `${filter}  and country.id = :countryIdFromTocken`;
       } else {
-        filter = `ins.countryId = :countryIdFromTocken`;
+        filter = `country.id = :countryIdFromTocken`;
       }
     }
 
@@ -136,9 +136,9 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
     if (userTypeFromTocken === "Data Collection Team"){
       console.log("Data Collection Team")
       if (filter) {
-        filter = `${filter} and user.userTypeId = 9 or user.userTypeId = 8`
+        filter = `${filter} and (user.userTypeId = 9 or user.userTypeId = 8)`
       } else {
-        filter = `user.userTypeId = 9 or user.userTypeId = 8`
+        filter = `(user.userTypeId = 9 or user.userTypeId = 8)`
       }
     }
 
@@ -158,8 +158,15 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
     // }
 
+
     let data = this.repo
       .createQueryBuilder('ins')
+      .leftJoinAndMapOne(
+        'ins.country',
+        Country,
+        'country',
+        'country.id = ins.countryId'
+      )
       .leftJoinAndMapOne(
         'ins.category',
         InstitutionCategory,
@@ -200,7 +207,6 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
     // console.log('data////////',data)
     //     let user: User = new User();
 
-    // console.log('query',data.getQuery());
 
     let resualt = await paginate(data, options);
     // console.log('resula====', resualt);
