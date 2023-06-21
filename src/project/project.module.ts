@@ -12,11 +12,14 @@ import { TokenDetails } from 'src/utills/token_details';
 import { Project } from './entity/project.entity';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
+import { Assessment } from 'src/assesment/entity/assesment.entity';
+import { AssessmentYearModule } from 'src/assessment-year/assessment-year.module';
+import { AssesmentModule } from 'src/assesment/assesment.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project,Audit,User])],
+  imports: [TypeOrmModule.forFeature([Project,Audit,User, Assessment]), AssesmentModule],
   controllers: [ProjectController],
-  providers: [ProjectService, EmailNotificationService,AuditService,TokenDetails],
+  providers: [ProjectService, EmailNotificationService,AuditService,TokenDetails, Assessment],
   exports: [ProjectService,AuditService],
 })
 export class ProjectModule {}

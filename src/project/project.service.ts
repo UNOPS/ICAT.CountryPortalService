@@ -23,11 +23,13 @@ import { REQUEST } from '@nestjs/core';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { Repository } from 'typeorm-next';
 
 @Injectable()
 export class ProjectService extends TypeOrmCrudService<Project> {
   constructor(@InjectRepository(Project) repo,
     private readonly emaiService: EmailNotificationService,
+    @InjectRepository(Assessment) private assessmentRepo: Repository<Assessment>
   ) {
 
     super(repo);
@@ -1069,7 +1071,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'asse',
         'asse.projectId = dr.id',
       )
-
+      .select(['dr.id', 'dr.climateActionName', 'dr.institution', 'dr.projectStatus', 'dr.createdOn', 'dr.editedOn'])
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -1093,7 +1095,22 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     // console.log(data.getQuery());
 
     let result = await paginate(data, options);
-    console.log("results..", data.getQuery());
+
+    await Promise.all(
+      result.items.map(async item => {
+        let assessments = await this.assessmentRepo.find({project: {id: item.id}})
+        let isMac: boolean = false
+        let isGHG: boolean = false
+        if (assessments.length > 0){
+          isMac = (assessments.find((o: any)=>o.assessmentType == 'MAC'&& o.isProposal==0)) !== undefined ? true : false;
+          isGHG = (assessments.find((o: any)=>(o.assessmentType == 'Ex-ante' || o.assessmentType == 'Ex-post')&& o.isProposal==0 )) !== undefined ? true : false;
+        }
+        console.log(isMac, isGHG)
+        item["isMac"] = isMac;
+        item["isGhg"] = isGHG;
+      })
+    )
+    // console.log("results..", data.getQuery());
     console.log("results.===.", result);
     if (result) {
       return result;
