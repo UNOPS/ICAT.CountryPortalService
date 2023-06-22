@@ -71,19 +71,21 @@ export class AssesmentResaultService extends TypeOrmCrudService<AssessmentResaul
     console.log(assessmentResault)
 
     assesmentYear = await this.assessmentYearRepo.findOne(assesmentYearId);
+    console.log("flag", flag)
 
     if (isCalculate.toString() == 'false') {
-      if (assesmentYear.verificationStatus === VerificationStatus.AssessmentReturned){
-        if (flag === ''){
-          if (assessmentResault?.isResultupdated !== false){
-            return assessmentResault;
-          }
-        } else {
-          return assessmentResault;
-        }
-      } else {
+      // if (assesmentYear.verificationStatus === VerificationStatus.AssessmentReturned){
+      //   console.log("assessment returned")
+      //   if (flag === ''){
+      //     if (assessmentResault?.isResultupdated !== false){
+      //       return assessmentResault;
+      //     }
+      //   } else {
+      //     return assessmentResault;
+      //   }
+      // } else {
         return assessmentResault;
-      }
+      // }
     } else {
 
       let asseDetail = await this.assesmentRepo.findOne(assesmentId);
