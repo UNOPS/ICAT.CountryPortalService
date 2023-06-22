@@ -61,7 +61,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'para',
         'para.id = dr.parameterId',
       )
-      .select(['dr.dataRequestStatus', 'para.id'])
+      .select(['dr.dataRequestStatus', 'para.id','para.verifierAcceptance'])
       .where(
         `para.assessmentId = ${assesmentId} AND para.verifierAcceptance <> 'REJECTED' AND ((para.isEnabledAlternative = true AND para.isAlternative = true) OR (para.isEnabledAlternative = false AND para.isAlternative = false )) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmentYear}`,
       );

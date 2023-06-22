@@ -750,9 +750,9 @@ export class AssesmentService extends TypeOrmCrudService<Assessment> {
     // let filter: string =
     //   'as.id = :assessmentId AND par.dataRequestStatus in (9,-9,11) AND pa.AssessmentYear = :assementYear or pa.isProjection';
 
-    let userItem = await this.userService.findByUserName(userName);
-    console.log('userItem', userItem);
-    let institutionId = userItem.institution ? userItem.institution.id : 0;
+    // let userItem = await this.userService.findByUserName(userName);
+    // console.log('userItem', userItem);
+    // let institutionId = userItem.institution ? userItem.institution.id : 0;
 
     // institutionId is not being used in the query
     var data = this.repo
