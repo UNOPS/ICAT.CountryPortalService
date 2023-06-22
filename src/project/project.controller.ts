@@ -589,6 +589,14 @@ export class ProjectController implements CrudController<Project> {
     });
   }
 
+  @Get('getmeth/:id')
+  async getmeth(
+    @Request() request,
+    @Query('id') id: number,
+  ): Promise<any> {
+    return this.service.getMeth(id)
+  }
+
   @Get('trackpage/byprojectId/:id')
   async getTProjectById(
     @Request() request,

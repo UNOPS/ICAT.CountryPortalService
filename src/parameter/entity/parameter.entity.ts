@@ -44,7 +44,8 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ default: false })
   isEnabledAlternative:boolean;
 
-
+  @Column({ nullable: true })
+  canActiveAction:boolean
   // @ManyToOne((type) => Parameter, {
   //   cascade: false,
   //   onDelete: 'RESTRICT',
