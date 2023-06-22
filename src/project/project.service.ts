@@ -23,11 +23,14 @@ import { REQUEST } from '@nestjs/core';
 import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entity';
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { Repository } from 'typeorm-next';
+import { Methodology } from 'src/methodology/entity/methodology.entity';
 
 @Injectable()
 export class ProjectService extends TypeOrmCrudService<Project> {
   constructor(@InjectRepository(Project) repo,
     private readonly emaiService: EmailNotificationService,
+    @InjectRepository(Assessment) private assessmentRepo: Repository<Assessment>
   ) {
 
     super(repo);
@@ -179,6 +182,24 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       '',
       template,
     );
+  }
+
+  async getMeth(projectId:number){
+
+    let data = this.assessmentRepo
+      .createQueryBuilder('ass')
+      .leftJoinAndMapOne('ass.project', Project, 'pr', 'ass.projectId = pr.id')
+      .leftJoinAndMapOne('ass.methodology', Methodology, 'meth', 'ass.methodologyId = meth.id')
+      .where('ass.projectId = ' + projectId);
+
+    let result = await data.getMany();
+    let re=[]
+    for(let meth of result){
+      if(!re.includes(meth.methodology.displayName))
+      re.push(meth.methodology.displayName)
+    }
+    return re;
+
   }
 
   async getactiveClimateActionDetails(
@@ -1069,7 +1090,7 @@ export class ProjectService extends TypeOrmCrudService<Project> {
         'asse',
         'asse.projectId = dr.id',
       )
-
+      .select(['dr.id', 'dr.climateActionName', 'dr.institution', 'dr.projectStatus', 'dr.createdOn', 'dr.editedOn'])
 
       .where(filter, {
         filterText: `%${filterText}%`,
@@ -1093,7 +1114,22 @@ export class ProjectService extends TypeOrmCrudService<Project> {
     // console.log(data.getQuery());
 
     let result = await paginate(data, options);
-    console.log("results..", data.getQuery());
+
+    await Promise.all(
+      result.items.map(async item => {
+        let assessments = await this.assessmentRepo.find({project: {id: item.id}})
+        let isMac: boolean = false
+        let isGHG: boolean = false
+        if (assessments.length > 0){
+          isMac = (assessments.find((o: any)=>o.assessmentType == 'MAC'&& o.isProposal==0)) !== undefined ? true : false;
+          isGHG = (assessments.find((o: any)=>(o.assessmentType == 'Ex-ante' || o.assessmentType == 'Ex-post')&& o.isProposal==0 )) !== undefined ? true : false;
+        }
+        console.log(isMac, isGHG)
+        item["isMac"] = isMac;
+        item["isGhg"] = isGHG;
+      })
+    )
+    // console.log("results..", data.getQuery());
     console.log("results.===.", result);
     if (result) {
       return result;
