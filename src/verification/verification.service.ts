@@ -131,7 +131,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       )
       .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
 
-      .where(filter + " AND (ae.verificationStatus !=7 AND ae.verificationStatus !=6 AND ae.verificationUser ="+user.id+" )" ,{
+      .where(filter + " AND ae.verificationUser ="+user.id ,{
         filterText: `%${filterText}%`,
         VRstatusId,
       })
