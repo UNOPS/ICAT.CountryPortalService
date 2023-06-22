@@ -24,6 +24,7 @@ import { ProjectOwner } from 'src/master-data/project-owner/projeect-owner.entit
 import { AssessmentYear } from 'src/assessment-year/entity/assessment-year.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { Repository } from 'typeorm-next';
+import { Methodology } from 'src/methodology/entity/methodology.entity';
 
 @Injectable()
 export class ProjectService extends TypeOrmCrudService<Project> {
@@ -181,6 +182,24 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       '',
       template,
     );
+  }
+
+  async getMeth(projectId:number){
+
+    let data = this.assessmentRepo
+      .createQueryBuilder('ass')
+      .leftJoinAndMapOne('ass.project', Project, 'pr', 'ass.projectId = pr.id')
+      .leftJoinAndMapOne('ass.methodology', Methodology, 'meth', 'ass.methodologyId = meth.id')
+      .where('ass.projectId = ' + projectId);
+
+    let result = await data.getMany();
+    let re=[]
+    for(let meth of result){
+      if(!re.includes(meth.methodology.displayName))
+      re.push(meth.methodology.displayName)
+    }
+    return re;
+
   }
 
   async getactiveClimateActionDetails(
