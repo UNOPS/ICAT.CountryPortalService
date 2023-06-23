@@ -392,7 +392,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
               'Sector admin - Revised the value',
               req.noteDataRequest,
               req.dataRequestStatus.toString(),
-              oldDatarqst.dataRequestStatus.toString(),
+              oldDatarqst?.dataRequestStatus.toString(),
             );
          
           // let assessmentYear = await this.assessmentYearRepo.find({assessment: {id: parameter.assessment.id}})
@@ -462,6 +462,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
 
         let res2 = await this.ParameterRequestRepo.save(request)
+        console.log("res2", res2)
        
         this.parameterHistoryService.SaveParameterHistory(
           res2.id,
@@ -469,7 +470,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           'Sector admin - Reassigned data provider',
           res2.noteDataRequest,
           res2.dataRequestStatus.toString(),
-          oldDatarqst.dataRequestStatus.toString(),
+          oldDatarqst?.dataRequestStatus.toString(),
         );
 
 
