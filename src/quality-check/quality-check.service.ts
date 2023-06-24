@@ -145,10 +145,11 @@ console.log("+++++++++++++" ,ctAction)
         await this.repo.save(dataRequset);
       } 
 
+      param.value = undefined
       if (param.verifierAcceptance !== VerifierAcceptance.PENDING){
         param.verifierAcceptance = VerifierAcceptance.PENDING
-        await this.parameterRepo.update(param.id, param)
       }
+      await this.parameterRepo.update(param.id, param)
 
       let assesment = await this.assesmentservice.getAssessmentDetails(
         assementYear.assessment.id,

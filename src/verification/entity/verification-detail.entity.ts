@@ -69,6 +69,15 @@ export class VerificationDetail extends BaseTrackingEntity {
 
   @Column({ default: false })
   isResult: boolean;
+  
+  @Column({ default: false })
+  isTotal: boolean;
+  
+  @Column({ default: false })
+  isMac: boolean;
+
+  @Column({ default: false })
+  isDifference: boolean;
 
   @Column({ default: false })
   isDataRequested: boolean;
