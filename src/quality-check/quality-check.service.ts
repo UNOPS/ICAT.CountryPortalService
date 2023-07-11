@@ -145,7 +145,9 @@ console.log("+++++++++++++" ,ctAction)
         await this.repo.save(dataRequset);
       } 
 
-      param.value = undefined
+      if (qaStatus === QuAlityCheckStatus.Fail){
+        param.value = undefined
+      }
       if (param.verifierAcceptance !== VerifierAcceptance.PENDING){
         param.verifierAcceptance = VerifierAcceptance.PENDING
       }

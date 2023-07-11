@@ -56,6 +56,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     filterText: string,
     VRstatusId: number,
     countryIdFromTocken: number,
+    isHistory: boolean
   ): Promise<Pagination<AssessmentYear>> {
     // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
     //console.log("222222222222222222222222222222222222222222222")
@@ -68,6 +69,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
+    } else {
+      if (isHistory){
+        filter = `${filter}  and ae.verificationStatus = 6 or ae.verificationStatus = 7`;
+      }
     }
     console.log("222222222222222222222222222222222222222222222" ,VRstatusId,filterText) 
     let data = this.assessmentYearRepo
