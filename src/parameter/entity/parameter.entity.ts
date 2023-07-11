@@ -52,7 +52,7 @@ export class Parameter extends BaseTrackingEntity {
   //   onUpdate: 'RESTRICT',
   //   nullable: true,
   // })
-  // @JoinColumn({ name: 'ParentParameterId' })
+  @JoinColumn({ name: 'ParentParameterId' })
   ParentParameter?: Parameter;
   
 
