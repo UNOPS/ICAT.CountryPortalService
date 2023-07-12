@@ -69,9 +69,9 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
     if (countryIdFromTocken != 0) {
       if (filter) {
-        filter = `${filter}  and ins.countryId = :countryIdFromTocken`;
+        filter = `${filter}  and country.id = :countryIdFromTocken`;
       } else {
-        filter = `ins.countryId = :countryIdFromTocken`;
+        filter = `country.id = :countryIdFromTocken`;
       }
     }
 
@@ -91,16 +91,22 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
       }
     }
 
-    if (userTypeFromTocken === 'Data Collection Team') {
+    if (userTypeFromTocken === "Data Collection Team"){
       if (filter) {
-        filter = `${filter} and user.userTypeId = 9 or user.userTypeId = 8`;
+        filter = `${filter} and (user.userTypeId = 9 or user.userTypeId = 8)`
       } else {
-        filter = `user.userTypeId = 9 or user.userTypeId = 8`;
+        filter = `(user.userTypeId = 9 or user.userTypeId = 8)`
       }
     }
 
-    const data = this.repo
+    let data = this.repo
       .createQueryBuilder('ins')
+      .leftJoinAndMapOne(
+        'ins.country',
+        Country,
+        'country',
+        'country.id = ins.countryId'
+      )
       .leftJoinAndMapOne(
         'ins.category',
         InstitutionCategory,
@@ -128,7 +134,6 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
 
       .where(filter, {
         filterText: `%${filterText}%`,
-
         countryIdFromTocken,
         sectorIdFromTocken,
       })

@@ -45,15 +45,15 @@ export class TrackClimateController implements CrudController<TrackcaEntity> {
       select: ['id'],
       where: { country: country },
     });
-    const projectIdlist: number[] = [];
-    projects.forEach((a) => {
-      projectIdlist.push(a.id);
-    });
+    let projectIdlist: number[] = [];
+    projectIdlist = projects.map(obj => obj.id)
 
     return this.service.find({
       where: {
         projectId: In(projectIdlist),
       },
-    });
+      select: ['flag', 'years', 'createdOn', 'achieved', 'expected']
+    })
   }
+
 }

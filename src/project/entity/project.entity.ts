@@ -42,7 +42,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ length: 50, default: null, nullable: true })
   contactPersoFullName: string;
 
-  @Column({ length: 30, default: null, nullable: true })
+  @Column({ length: 100, default: null, nullable: true })
   email: string;
 
   @Column({ length: 30, default: null, nullable: true })

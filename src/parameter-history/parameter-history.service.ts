@@ -52,21 +52,50 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
     parameterHistory.parameterStatusPrevious = statusPrevious!;
     parameterHistory.deoAssumption = result1.parameter?.enterDataAssumption;
     parameterHistory.qcAssumption = datareqest?.qaComment;
-
     parameterHistory.Action = action;
 
-    const param = await this.repo.insert(parameterHistory);
+    let param = await this.repo.insert(parameterHistory);
   }
 
   async getHistory(id: number): Promise<any> {
-    const filter = 'as.parameterId = :id';
-    const data = this.repo
+    let filter1: string = 'as.parameterId = :id';
+    var data1 = this.repo
       .createQueryBuilder('as')
-      .where(filter, {
+      .where(filter1, {
         id,
       })
       .orderBy('as.createdOn', 'DESC');
 
-    return await data.getMany();
+    let parameter = await this.parameterRepo.findOne(id);
+    let previouseParameterhistry = [];
+    if (parameter.previouseParameterId) {
+      const previouseParameterId = parameter.previouseParameterId
+      let filter2: string = 'as.parameterId = :previouseParameterId';
+      var data2 = this.repo
+        .createQueryBuilder('as')
+        .where(filter2, {
+          previouseParameterId
+
+        })
+        .orderBy('as.createdOn', 'DESC');
+      previouseParameterhistry = await data2.getMany();
+    }
+    else if (parameter.historicalParaID) {
+      const historicalParaID = parameter.historicalParaID
+      let filter3: string = 'as.parameterId = :historicalParaID';
+      var data3 = this.repo
+        .createQueryBuilder('as')
+        .where(filter3, {
+          historicalParaID
+
+        })
+        .orderBy('as.createdOn', 'DESC');
+      previouseParameterhistry = await data3.getMany();
+    }
+    return [...await data1.getMany(), ...previouseParameterhistry];
   }
+
+
+
+
 }

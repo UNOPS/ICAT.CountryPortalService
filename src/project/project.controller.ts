@@ -251,7 +251,6 @@ export class ProjectController implements CrudController<Project> {
     @Request() request,
     @Query('page') page: number,
     @Query('limit') limit: number,
-
     @Query('sectorId') sectorId: number,
     @Query('ndcId') ndcId: number,
     @Query('subndcId') subndcId: number,
@@ -294,7 +293,6 @@ export class ProjectController implements CrudController<Project> {
     @Query('projectStatusId') projectStatusId: number,
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
     @Query('assessmentStatusName') assessmentStatusName: string,
-
     @Query('sectorId') sectorId: number,
   ): Promise<any> {
     let countryIdFromTocken: number;
@@ -314,7 +312,6 @@ export class ProjectController implements CrudController<Project> {
       projectStatusId,
       projectApprovalStatusId,
       assessmentStatusName,
-
       sectorId,
       countryIdFromTocken,
       sectorIdFromTocken,
@@ -359,7 +356,6 @@ export class ProjectController implements CrudController<Project> {
       projectStatus,
       projectApprovalStatusId,
       isProposal,
-
       sectorId,
       countryIdFromTocken,
       sectorIdFromTocken,
@@ -386,7 +382,6 @@ export class ProjectController implements CrudController<Project> {
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
     @Query('assessmentStatusName') assessmentStatusName: string,
     @Query('Active') Active: number,
-
     @Query('sectorId') sectorId: number,
   ): Promise<any> {
     let countryIdFromTocken: number;
@@ -423,7 +418,6 @@ export class ProjectController implements CrudController<Project> {
     if (existingProject) {
       newplData = await this.projectRepository.save(dto);
     }
-
     if (newplData) {
       this.service.mail(newplData);
       return true;
@@ -543,6 +537,14 @@ export class ProjectController implements CrudController<Project> {
     return await this.projectRepository.findOne({
       where: { id: id, projectApprovalStatus: null },
     });
+  }
+
+  @Get('getmeth/:id')
+  async getmeth(
+    @Request() request,
+    @Query('id') id: number,
+  ): Promise<any> {
+    return this.service.getMeth(id)
   }
 
   @Get('trackpage/byprojectId/:id')

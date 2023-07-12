@@ -6,4 +6,9 @@ export enum VerificationStatus {
   FinalAssessment = 5,
   Fail = 6,
   Pass = 7,
+  AssessmentReturned = 8 //updated term to 'In Remedition'
+
 }
+
+
+

@@ -4,4 +4,5 @@ export class UpdateDeadlineDto {
   status?: number;
   userId?: number;
   comment?: string;
+  verificationStatus?: number
 }

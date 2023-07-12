@@ -34,4 +34,8 @@ export class Documents extends BaseTrackingEntity {
   country: Country;
 
   url: string;
+  
+  viewUrl: string;
+
+  
 }

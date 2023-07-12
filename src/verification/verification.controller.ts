@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
+  Post,
   Put,
   Query,
   Request,
@@ -14,6 +16,8 @@ import { ParameterRequest } from 'src/data-request/entity/data-request.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerificationService } from './verification.service';
+import { ChangeParameterValue } from './dto/change-parameter-value.dto';
+import { ResposeDto } from './dto/response.dto';
 
 @Crud({
   model: {
@@ -37,6 +41,7 @@ export class VerificationController
     @Query('limit') limit: number,
     @Query('statusId') statusId: number,
     @Query('filterText') filterText: string,
+    @Query('isHistory') isHistory: boolean
   ): Promise<any> {
     let countryIdFromTocken: number;
     [countryIdFromTocken] = this.tokenDetails.getDetails([
@@ -51,6 +56,7 @@ export class VerificationController
       filterText,
       statusId,
       countryIdFromTocken,
+      isHistory
     );
   }
 
@@ -99,5 +105,25 @@ export class VerificationController
     );
     await this.service.SaveVerificationDetail(verificationDetail);
     return true;
+  }
+
+  @Post('change-parameter-value')
+  async ChangeParameterValue(@Body() req: ChangeParameterValue): Promise<ResposeDto | InternalServerErrorException> {
+    return await this.service.ChangeParameterValue(
+      req.parameter,
+      req.isDataEntered,
+      req.concern,
+      req.correctData,
+      req.user,
+      req.isDefault,
+      req.isHistorical
+    )
+  } 
+
+  @Post('send-result-to-recalculate')
+  async sendResultToRecalculate(
+    @Query('assessmentYearId') assessmentYearId: number
+  ) {
+    return await this.service.sendResultToRecalculate(assessmentYearId)
   }
 }

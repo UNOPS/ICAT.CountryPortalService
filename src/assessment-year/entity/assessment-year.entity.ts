@@ -1,5 +1,4 @@
 import { ApiHideProperty } from '@nestjs/swagger';
-
 import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 import { Assessment } from 'src/assessment/entity/assessment.entity';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';

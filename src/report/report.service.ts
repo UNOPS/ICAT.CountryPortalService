@@ -38,9 +38,11 @@ import { Methodology } from 'src/methodology/entity/methodology.entity';
 import { UsersService } from 'src/users/users.service';
 import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
+  projectionDataResults: any;
   constructor(
     @InjectRepository(Report) repo,
     private readonly usersService: UsersService,
@@ -233,6 +235,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
   async getPdfReportFiles() {
     try {
+      // const dirpath = path.join(__dirname, './public');
       const files = await readdir('./public');
 
       const pdfFiles = [];
@@ -390,9 +393,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
   ) {
     const summryReport: any[] =
       await this.assessmentYearService.getDataForReportNew(
-        projIds.join(','),
-        assessType.join(','),
-        yearIds.join(','),
+        Array.isArray(projIds) ? projIds.join(',') : projIds,
+        Array.isArray(assessType) ? assessType.join(',') : assessType,
+        Array.isArray(yearIds) ? yearIds.join(',') : "" + yearIds,
         '',
       );
 
@@ -549,11 +552,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
       .orderBy('assessmentYear.assessmentYear')
       .execute();
 
-    const projectionDataResults = await this.assessment
+    this.projectionDataResults = await this.assessment
       .createQueryBuilder('assessment')
       .innerJoinAndSelect('assessment.projectionResult', 'projectionResult')
       .select(
-        'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot',
+        'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot, projectionResult.leakageResult as projectionLekagetot,projectionResult.emissionReduction as emissionReduction, projectionResult.id ',
       )
       .where('assessment.id = :id', { id: id })
       .orderBy('projectionResult.projectionYear')
@@ -572,7 +575,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       );
     }
 
-    for (const projection of projectionDataResults) {
+    for (const projection of this.projectionDataResults) {
       year.push(projection.projectionYear);
       baseLineRes.push(
         projection.projectionBasetot ? projection.projectionBasetot : 0,
@@ -902,7 +905,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
               .getOne();
 
             const yearsActivity: number[] = [];
-            const groupedActivity = await assesActivity?.parameters.reduce(
+            let parameters = assesActivity?.parameters.filter(para => para.verifierAcceptance !== VerifierAcceptance.REJECTED)
+            const groupedActivity = await parameters.reduce(
               async (r, v) => {
                 if (v.isDefault == true) {
                   v.defaultValue = await this.defaultValueService.findOne(
@@ -1241,12 +1245,35 @@ export class ReportService extends TypeOrmCrudService<Report> {
                         `
                               <div style="margin-top:25px;margin-bottom:15px">
                               <h4>Projection of GHG Emissions</h4>
-                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assessment.projectionBaseYear} based on the ${assessment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
+                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${assessmentYer?.assessmentYear} considering the ${assessment.projectionBaseYear} based on the ${assessment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
-                              <div><img src="${process.env.BASE_URL}/graph` +
-                        assessment.id.toString() +
-                        `.png"` +
-                        ` alt="Italian Trulli"></div>
+                              <p style="font-size:15px">Table: Projection emissions attributed to ${element.climateActionName}</p>
+                              <table style="border:1px solid black;width:100%;">
+                                <thead >
+                                <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
+                                  <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Baseline Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Project Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Leakage Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emission Reduction (MtCO2e)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                
+                                      ${this.projectionDataResults?.map((e) => {
+                                    return `<tr style="height:30px; width:450px; margin:0;">
+                                    <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.projectionYear}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionBasetot ? e.projectionBasetot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionProjecttot ? e.projectionProjecttot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionLekagetot ? e.projectionLekagetot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.emissionReduction ? e.emissionReduction : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                  </tr>`;
+                                  }
+                                )}
+                                  
+                                </tbody>
+                              </table>
+                              <div><img src="${process.env.BASE_URL}/graph` + assessment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
                               <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
                               </div>
                               </div>
@@ -1640,7 +1667,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
                   ${emmisionReduction}
                         
                     `;
-
                 tableReportContent =
                   tableReportContent +
                   `
@@ -1813,7 +1839,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     const year = d.getUTCFullYear();
 
     const coverPage = `
-    <div style="display:flex;flex-direction:column;height:1500px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
+    <div style="display:flex;flex-direction:column;height:1450px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
               <h1 style="font-size: 50px;color: white">${reportData.reportName}</h1>
             </div>

@@ -79,26 +79,54 @@ export class UsersController implements CrudController<User> {
     } finally {
       await queryRunner.release();
     }
+
   }
+
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<User> {
-    return this.service.findOne(id);
+  async findOne(@Param('id') id: string): Promise<User> {
+    console.log("usersdadsa", id)
+    // console.log("usersdadsa", await this.service.findOne(id))
+    return await this.service.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Override()
   @Patch(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() newUser: User,
-  ): Promise<User | null> {
-    const user = await this.userRepository.findOneOrFail(id);
-    if (!user.id) {
-      console.error("User doesn't exist");
+  async update(@Param('id') id: number, @Body() newUser: User): Promise<User | null> {
+
+    const queryRunner = getConnection().createQueryRunner();
+    await queryRunner.startTransaction();
+
+    try {
+      const user = await this.userRepository.findOneOrFail(id);
+      if (!user.id) {
+        console.error("User doesn't exist");
+      }
+      let audit: AuditDto = new AuditDto();
+      if (user.status != newUser.status) {
+        newUser.deletedAt = new Date();
+        audit.action = newUser.username + ' was ' + `${newUser ? 'deactivate' : 'activate'}`;
+        audit.comment = `User ${newUser ? ' deactivate' : 'activate'}`;
+        audit.actionStatus = `${newUser ? ' deactivate' : 'activate'}`;
+      } else {
+        audit.action = newUser.username + ' Updated';
+        audit.comment = "User Updated";
+        audit.actionStatus = 'Updated';
+      }
+      Object.assign(user, newUser)
+
+      let user1 = await queryRunner.manager.save(User, newUser);
+      await this.auditService.create(audit);
+      await queryRunner.commitTransaction();
+      return user;
     }
-    Object.assign(user, newUser);
-    this.userRepository.save(user);
-    return await this.userRepository.findOne(id);
+    catch (err) {
+      await queryRunner.rollbackTransaction();
+      return err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @Get('isUserAvailable/:userName')

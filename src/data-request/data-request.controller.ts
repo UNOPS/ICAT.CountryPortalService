@@ -286,12 +286,13 @@ export class ParameterRequestController
     audit.actionStatus = 'Rejected';
 
     this.auditService.create(audit);
-
     return this.service.rejectEnterDataForIds(updateDeadlineDto);
   }
 
   @Get('climateaction/bydatRequestStatsu2')
-  async getClimateActionByDataRequestStatus(@Request() request): Promise<any> {
+  async getClimateActionByDataRequestStatus(
+    @Request() request,
+  ): Promise<any> {
     return await this.service.getClimateActionByDataRequestStatus();
   }
 
@@ -301,4 +302,14 @@ export class ParameterRequestController
   ): Promise<any> {
     return await this.service.getClimateActionByDataRequestStatusSix();
   }
+
+  @Get('getQCpassParameterRequest/:parameteIds')
+  async getQCpassParameterRequest(
+    @Request() request,
+    @Query('parameteIds') parameteIds:string[]
+  ): Promise<any> {
+    return parameteIds? await this.service.getQCpassParameterRequest(parameteIds):[];
+  }
+
+
 }

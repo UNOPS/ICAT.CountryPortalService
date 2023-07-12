@@ -170,7 +170,6 @@ export class InstitutionController implements CrudController<Institution> {
     audit.comment = 'Institution Deactivated';
     audit.actionStatus = 'Deactivated';
     this.auditService.create(audit);
-
     return await this.service.softDelete(instiId);
   }
 

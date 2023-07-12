@@ -17,7 +17,9 @@ import { Project } from 'src/project/entity/project.entity';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
-import { TokenDetails } from 'src/utills/token_details';
+import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
+import { AssesmentService } from 'src/assesment/assesment.service';
 @Injectable()
 export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
   constructor(
@@ -26,9 +28,11 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     private readonly assessmentYearRepo: Repository<AssessmentYear>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private assessmentservice: AssessmentService,
+    @InjectRepository(Parameter) private parameterRepo: Repository<Parameter>,
+    private assesmentservice: AssesmentService,
     public parameterHistoryService: ParameterHistoryService,
-    private readonly tokenDetails: TokenDetails,
+    private readonly tokenDetails:TokenDetails,
+    
   ) {
     super(repo);
   }
@@ -125,16 +129,25 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         dataRequset.qaStatus = qaStatus;
         dataRequset.qaComment = comment;
         dataRequset.qcUserName = userQc;
-        dataRequset.dataRequestStatus =
-          qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
+        dataRequset.dataRequestStatus = qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
         dataRequset.qaStatusUpdatedDate = new Date();
         await this.repo.save(dataRequset);
-      }
+      } 
 
-      const assessment = await this.assessmentservice.getAssessmentDetails(
+      if (qaStatus === QuAlityCheckStatus.Fail){
+        param.value = undefined
+      }
+      if (param.verifierAcceptance !== VerifierAcceptance.PENDING){
+        param.verifierAcceptance = VerifierAcceptance.PENDING
+      }
+      await this.parameterRepo.update(param.id, param)
+
+      let assesment = await this.assesmentservice.getAssessmentDetails(
         assessmentYear.assessment.id,
-        assessmentYearId.toString(),
+        assessmentYear.toString(),
       );
+
+     
 
       this.parameterHistoryService.SaveParameterHistory(
         dataRequset.id,

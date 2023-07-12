@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { AssessmentYear } from './entity/assessment-year.entity';
 import { Project } from 'src/project/entity/project.entity';
-import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { IPaginationMeta, IPaginationOptions, Pagination, paginate } from 'nestjs-typeorm-paginate';
 import { User } from 'src/users/user.entity';
 import { DataVerifierDto } from './Dto/dataVerifier.dto';
 import { ParameterHistoryService } from 'src/parameter-history/parameter-history.service';
@@ -28,7 +28,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     @InjectRepository(AssessmentYear) repo,
     @InjectRepository(Institution)
     public institutionRepo: Repository<Institution>,
-
     private readonly parameterHistoryService: ParameterHistoryService,
     private readonly userService: UsersService,
     private readonly emaiService: EmailNotificationService,
@@ -104,7 +103,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
       .leftJoinAndMapOne('a.ndc', Ndc, 'ndc', 'ndc.id = a.ndcId')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
-
       .where('ay.id=' + yearId);
 
     const result = await data.getOne();
@@ -137,7 +135,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pa',
         'a.id = pa.assessmentId',
       )
-
       .leftJoinAndMapOne('a.Project', Project, 'p', 'a.projectId = p.id')
       .leftJoinAndMapOne('p.ndc', Ndc, 'ndc', 'p.ndcId = ndc.Id')
       .leftJoinAndMapOne('a.subNdc', SubNdc, 'sndc', 'sndc.id = a.subNdcId')
@@ -597,7 +594,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'pro',
         'asse.projectId = pro.id',
       )
-
       .select([
         'asseYr.assessmentYear',
         'asse.id',
@@ -772,7 +768,12 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     isProposal: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
+    climateActionId: number,
+    year: string,
+    getAll: string = 'false',
+    approveStatus: string
   ): Promise<any> {
+    climateActionId = Number(climateActionId)
     let filter = '';
     if (filterText != null && filterText != undefined && filterText != '') {
       filter =
@@ -802,6 +803,39 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       }
     }
 
+    if (climateActionId !== 0) {
+      console.log("susccs")
+      if (filter) {
+        filter = `${filter}  and proj.id = :climateActionId`;
+      } else {
+        filter = `proj.id = :climateActionId`;
+      }
+    }
+
+    if (year !== '') {
+      if (filter) {
+        filter = `${filter}  and assesYr.assessmentYear = :year`;
+      } else {
+        filter = `assesYr.assessmentYear = :year`;
+      }
+    }
+
+    if (approveStatus !== '') {
+      if (approveStatus === 'approved') {
+        if (filter) {
+          filter = `${filter}  and assesYr.qaStatus IN (1,4)`;
+        } else {
+          filter = `assesYr.qaStatus IN (1,4)`;
+        }
+      } else {
+        if (filter) {
+          filter = `${filter}  and assesYr.qaStatus IS NULL`;
+        } else {
+          filter = `assesYr.qaStatus IS NULL`;
+        }
+      }
+    }
+
     if (sectorIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and proj.sectorId = :sectorIdFromTocken`;
@@ -812,16 +846,13 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
     const data = this.repo
       .createQueryBuilder('assesYr')
-
-      .leftJoinAndMapOne(
+      .leftJoinAndSelect(
         'assesYr.assessment',
-        Assessment,
         'asse',
         'asse.id = assesYr.assessmentId',
       )
-      .leftJoinAndMapOne(
+      .leftJoinAndSelect(
         'asse.project',
-        Project,
         'proj',
         `proj.id = asse.projectId and  proj.countryId = ${countryIdFromTocken}`,
       )
@@ -830,21 +861,29 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         'assesYr.id',
         'assesYr.assessmentYear',
         'assesYr.qaStatus',
+        'assesYr.verificationStatus',
         'asse.assessmentType',
         'proj.climateActionName',
+        'proj.id'
       ])
       .where(filter, {
         filterText: `%${filterText}%`,
         isProposal,
         projectStatusId,
         projectApprovalStatusId,
-
+        climateActionId: climateActionId,
+        year: year,
         sectorIdFromTocken,
       })
-      .orderBy('asse.createdOn', 'DESC');
+      .orderBy('asse.editedOn', 'DESC')
+      .addOrderBy('asse.createdOn', 'DESC');
 
-    const result = await paginate(data, options);
-
+    let result: AssessmentYear[] | Pagination<AssessmentYear, IPaginationMeta>
+    if (getAll === 'false') {
+      result = await paginate(data, options);
+    } else {
+      result = await data.getMany()
+    }
     if (result) {
       return result;
     }
@@ -853,7 +892,8 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
   async getAssessmentYearsListInTrackCA(
     countryIdFromTocken: number,
   ): Promise<any> {
-    const data = this.repo
+
+    let data = this.repo
       .createQueryBuilder('asseYear')
       .leftJoinAndMapOne(
         'asseYear.Assessment',

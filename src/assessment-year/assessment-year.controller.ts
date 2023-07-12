@@ -425,7 +425,6 @@ export class AssessmentYearController
       filterText,
       projectStatusId,
       projectApprovalStatusId,
-
       isProposal,
       countryIdFromTocken,
       sectorIdFromTocken,

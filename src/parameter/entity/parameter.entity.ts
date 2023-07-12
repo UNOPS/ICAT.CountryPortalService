@@ -12,6 +12,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { VerifierAcceptance } from '../enum/verifier-acceptance.enum';
 
 @Entity({ name: 'parameter' })
 export class Parameter extends BaseTrackingEntity {
@@ -36,6 +37,9 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ default: false })
   isEnabledAlternative: boolean;
 
+  @Column({ nullable: true })
+  canActiveAction:boolean
+
   ParentParameter?: Parameter;
 
   @Column({ nullable: true })
@@ -56,8 +60,11 @@ export class Parameter extends BaseTrackingEntity {
   @Column({ nullable: true })
   isDefault: boolean;
 
-  @Column({ nullable: true })
+  @Column({nullable: true})
   isHistorical: boolean;
+
+  @Column({nullable: true})
+  historicalParaID: number;
 
   @Column({ nullable: true })
   vehical?: string;
@@ -156,18 +163,24 @@ export class Parameter extends BaseTrackingEntity {
     onDelete: 'RESTRICT',
     onUpdate: 'RESTRICT',
     nullable: true,
-    eager: true,
+    eager: true
   })
   defaultValue?: DefaultValue;
 
   parameterRequest?: ParameterRequest;
 
-  @OneToMany(
-    () => VerificationDetail,
-    (verificationDetail) => verificationDetail.parameter,
-  )
+  @OneToMany(() => VerificationDetail,(verificationDetail) => verificationDetail.parameter)
   public verificationDetail: VerificationDetail[];
 
   @Column({ default: false })
   hasChild: boolean;
+
+  @Column({default: VerifierAcceptance.PENDING})
+  verifierAcceptance: VerifierAcceptance
+
+  @Column({nullable: true})
+  verifierConcern: string
+
+  @Column({ nullable: true })
+  previouseParameterId: number;
 }
