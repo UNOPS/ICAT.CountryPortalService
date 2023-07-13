@@ -886,4 +886,24 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
     return result;
   }
+
+  async getQCpassParameterRequest(
+    paraIds: string[],
+  ): Promise<any> {
+    const data = this.repo
+      .createQueryBuilder('dr')
+      .leftJoinAndMapOne(
+        'dr.parameter',
+        Parameter,
+        'para',
+        'para.id = dr.parameterId',
+      )
+      .where(
+        'dr.qaStatus=4  and para.id in (:...paraIds)', { paraIds }
+      )
+    const result = await data.getMany();
+    if (result) {
+      return result;
+    }
+  }
 }

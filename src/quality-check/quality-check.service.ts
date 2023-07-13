@@ -19,7 +19,6 @@ import { Repository } from 'typeorm';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
 import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
-import { AssesmentService } from 'src/assesment/assesment.service';
 @Injectable()
 export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
   constructor(
@@ -29,7 +28,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     @InjectRepository(Parameter) private parameterRepo: Repository<Parameter>,
-    private assesmentservice: AssesmentService,
+    private assesmentservice: AssessmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly tokenDetails:TokenDetails,
     

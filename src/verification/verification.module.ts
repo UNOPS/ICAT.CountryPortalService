@@ -12,10 +12,9 @@ import { VerificationDetail } from './entity/verification-detail.entity';
 import { VerificationController } from './verification.controller';
 import { VerificationService } from './verification.service';
 import { Parameter } from 'src/parameter/entity/parameter.entity';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
-import { AssesmentModule } from 'src/assesment/assesment.module';
-import { AssesmentResaultModule } from 'src/assesment-resault/assesment-resault.module';
 import { ParameterModule } from 'src/parameter/parameter.module';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
+import { AssessmentResultModule } from 'src/assessment-result/assessment-result.module';
 
 @Module({
   imports: [
@@ -27,12 +26,12 @@ import { ParameterModule } from 'src/parameter/parameter.module';
       Institution,
       User,
       Parameter,
-      AssessmentResault
+      AssessmentResult
     ]),
     ParameterHistoryModule,
-    AssesmentModule,
+    AssessmentModule,
     ParameterModule,
-    AssesmentResaultModule
+    AssessmentResultModule
   ],
   controllers: [VerificationController],
   providers: [

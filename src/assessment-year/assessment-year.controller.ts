@@ -406,16 +406,18 @@ export class AssessmentYearController
     @Query('filterText') filterText: string,
     @Query('projectStatusId') projectStatusId: number,
     @Query('projectApprovalStatusId') projectApprovalStatusId: number,
-
     @Query('isProposal') isProposal: number,
+    @Query('climateActionId') climateActionId: number,
+    @Query('year') year: string,
+    @Query('getAll') getAll: string,
+    @Query('approveStatus') approveStatus: string
+
   ): Promise<any> {
+
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
 
-    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
-      TokenReqestType.countryId,
-      TokenReqestType.sectorId,
-    ]);
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId])
 
     return await this.service.assessmentYearForManageDataStatus(
       {
@@ -428,6 +430,11 @@ export class AssessmentYearController
       isProposal,
       countryIdFromTocken,
       sectorIdFromTocken,
+      climateActionId,
+      year,
+      getAll,
+      approveStatus
     );
   }
+
 }

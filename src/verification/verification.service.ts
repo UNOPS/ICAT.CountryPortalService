@@ -24,7 +24,7 @@ import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum'
 import { ResposeDto } from './dto/response.dto';
 import { QuAlityCheckStatus } from 'src/quality-check/entity/quality-check-status.entity';
 import { VerificationStatus } from './entity/verification-status.entity';
-import { AssessmentResault } from 'src/assesment-resault/entity/assessment-resault.entity';
+import { AssessmentResult } from 'src/assessment-result/entity/assessment-result.entity';
 
 @Injectable()
 export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
@@ -43,8 +43,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     private assessmentservice: AssessmentService,
     @InjectRepository(Parameter)
     private parameterRepo: Repository<Parameter>,
-    @InjectRepository(AssessmentResault)
-    private assessmentResultRepo: Repository<AssessmentResault>,
+    @InjectRepository(AssessmentResult)
+    private assessmentResultRepo: Repository<AssessmentResult>,
     public parameterHistoryService: ParameterHistoryService,
     private readonly emaiService: EmailNotificationService,
   ) {
@@ -375,7 +375,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
   
           let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
   
-          let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+          let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assessment: { id: assessmentYear[0].assessment.id } })
           assessmentResult[0].isResultupdated = false
           assessmentResult[0].qcStatuProjectResult = undefined
           assessmentResult[0].qcStatusBaselineResult = undefined
@@ -439,7 +439,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           oldDatarqst?.dataRequestStatus.toString(),
         );
 
-        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+        let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assessment: { id: assessmentYear[0].assessment.id } })
         assessmentResult[0].isResultupdated = false
         assessmentResult[0].qcStatuProjectResult = undefined
         assessmentResult[0].qcStatusBaselineResult = undefined
@@ -479,7 +479,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
   
       let res1 = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
   
-      let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assement: { id: assessmentYear[0].assessment.id } })
+      let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assessment: { id: assessmentYear[0].assessment.id } })
       
       assessmentResult[0].isResultRecalculating = true
       assessmentResult[0].qcStatuProjectResult = undefined
