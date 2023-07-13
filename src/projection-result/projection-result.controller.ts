@@ -69,4 +69,14 @@ export class ProjectionResultController
 
     return restult;
   }
+
+  @Get('checkAllQCApprovmentProjectionResult')
+  async checkAllQCApprovmentProjectionResult(
+    @Query('assementId') assementId: number,
+
+  ): Promise<boolean> {
+    return await this.service.checkAllQCApprovmentProjectionResult(
+      assementId
+    );
+  }
 }

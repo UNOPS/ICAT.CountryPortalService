@@ -45,111 +45,117 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
   }
 
   async GetAssessmentResult(
-    assessmentId: number,
-    assessmentYearId: number,
+    assesmentId: number,
+    assesmentYearId: number,
     isCalculate: boolean,
+    flag = ''
   ): Promise<any> {
-    const assessment = new Assessment();
-    assessment.id = assessmentId;
+    let assement = new Assessment();
+    assement.id = assesmentId;
 
-    let assessmentYear = new AssessmentYear();
-    assessmentYear.id = assessmentYearId;
+    let assesmentYear = new AssessmentYear();
+    assesmentYear.id = assesmentYearId;
 
-    const assessmentResult = await this.repo.findOne({
-      where: { assessment: assessment, assessmentYear: assessmentYear },
+    let assessmentResault = await this.repo.findOne({
+      where: { assement: assement, assessmentYear: assesmentYear },
       relations: ['assessmentYear'],
     });
 
-    assessmentYear = await this.assessmentYearRepo.findOne(assessmentYearId);
+    assesmentYear = await this.assessmentYearRepo.findOne(assesmentYearId);
 
     if (isCalculate.toString() == 'false') {
-      return assessmentResult;
+        return assessmentResault;
     } else {
-      const asseDetail = await this.assessmentRepo.findOne(assessmentId);
-
-      if (asseDetail.isProposal) {
-        const assessment = await this.assessmentservice.getAssessmentDetails(
-          assessmentId,
-          assessmentYear.assessmentYear,
+      let asseDetail = await this.assessmentRepo.findOne(assesmentId);
+     
+      if(asseDetail.isProposal)
+      {
+        var assesment = await this.assessmentservice.getAssessmentDetails(
+          assesmentId,
+          assesmentYear.assessmentYear,
         );
-      } else {
-        const assessment =
-          await this.assessmentservice.getAssessmentDetailsForQC(
-            assessmentId,
-            assessmentYear.assessmentYear,
-          );
+      }
+      else {
+        var assesment = await this.assessmentservice.getAssessmentDetailsForQC(
+          assesmentId,
+          assesmentYear.assessmentYear,
+        );
       }
 
-      if (!assessment.isProposal) {
-        const result = assessment.parameters.find((m) =>
-          m.parameterRequest
-            ? m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass
-            : false,
+      if (!assesment.isProposal) {
+        let result = assesment.parameters.find(
+          (m) =>m.parameterRequest?m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass:false,
         );
 
         if (result === null || result === undefined) {
           await this.getAssessmentResultFromEngine(
-            assessment.parameters,
+            assesment.parameters,
           ).subscribe(async (a) => {
-            const saveEntity = await this.saveassessmentResult(
+            let saveEntity = await this.saveAssesmentResult(
               a.data,
-              assessmentId,
-              assessmentYearId,
+              assesmentId,
+              assesmentYear,
             );
-
             return saveEntity;
           });
         } else {
           return null;
         }
       } else {
-        await this.getAssessmentResultFromEngine(
-          assessment.parameters,
-        ).subscribe((a) => {
-          return this.saveassessmentResult(
-            a.data,
-            assessmentId,
-            assessmentYearId,
-          );
-        });
+        console.log("lemgth of para..",assesment.parameters.length)
+        await this.getAssessmentResultFromEngine(assesment.parameters).subscribe(
+          (a) => {
+            console.log('Calcuclation Responce....', a.data);
+            return this.saveAssesmentResult(
+              a.data,
+              assesmentId,
+              assesmentYear,
+            );
+          },
+        );
       }
     }
   }
 
-  async saveassessmentResult(
+
+  async saveAssesmentResult(
     data: any,
-    assessmentId: number,
-    assessmentYearId: number,
+    assesmentId: number,
+    assesmentYearObj: AssessmentYear,
   ) {
-    const assessment = new Assessment();
-    assessment.id = assessmentId;
+    let assesment = new Assessment();
+    assesment.id = assesmentId;
 
-    const assessmentYear = new AssessmentYear();
-    assessmentYear.id = assessmentYearId;
+    let assesmentYear = new AssessmentYear();
+    assesmentYear.id = assesmentYearObj.id;
 
-    let assessmentResult = await this.repo.findOne({
-      where: { assessment: assessment, assessmentYear: assessmentYear },
+    let assesmentResult = await this.repo.findOne({
+      where: { assement: assesment, assessmentYear: assesmentYear },
     });
 
-    if (assessmentResult === undefined || assessmentResult === null) {
-      assessmentResult = new AssessmentResult();
-      assessmentResult.assessment = assessment;
-      assessmentResult.assessmentYear = assessmentYear;
+    if (assesmentResult === undefined || assesmentResult === null) {
+      assesmentResult = new AssessmentResult();
+      assesmentResult.assessment = assesment;
+      assesmentResult.assessmentYear = assesmentYear;
     }
 
-    assessmentResult.projectResult = data.projectEmission;
-    assessmentResult.baselineResult = data.baseLineEmission;
-    assessmentResult.lekageResult = data.leakegeEmission;
-    assessmentResult.totalEmission = data.emissionReduction;
+    assesmentResult.projectResult = data.projectEmission;
+    assesmentResult.baselineResult = data.baseLineEmission;
+    assesmentResult.lekageResult = data.leakegeEmission;
+    assesmentResult.totalEmission = data.emissionReduction;
 
-    if (assessmentResult.id > 0) {
-      const responce = await this.repo.save(assessmentResult);
-      await this.saveProjectionResult(data, assessment, assessmentYear);
+
+    assesmentResult.isResultupdated = true
+    assesmentResult.isResultRecalculating = false
+
+    if (assesmentResult.id > 0) {
+      let responce = await this.repo.save(assesmentResult);
+      await this.saveProjectionResult(data, assesment, assesmentYear);
 
       return responce;
     } else {
-      const responce = await this.repo.insert(assessmentResult);
-      await this.saveProjectionResult(data, assessment, assessmentYear);
+      let responce = await this.repo.insert(assesmentResult);
+      await this.saveProjectionResult(data, assesment, assesmentYear);
 
       return responce;
     }
