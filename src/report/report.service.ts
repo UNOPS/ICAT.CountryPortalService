@@ -41,9 +41,11 @@ import { UsersService } from 'src/users/users.service';
 import { async } from 'rxjs';
 import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
+  projectionDataResults: any;
   constructor(
     @InjectRepository(Report) repo,
     private readonly usersService: UsersService,
@@ -809,11 +811,11 @@ let yrList:number[]=[];
       .orderBy('assessmentYear.assessmentYear')
       .execute();
 
-    let projectionDataResults = await this.assesment
+    this.projectionDataResults = await this.assesment
       .createQueryBuilder('assesment')
       .innerJoinAndSelect('assesment.projectionResult', 'projectionResult')
       .select(
-        'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot',
+        'projectionResult.projectionYear, projectionResult.baselineResult as projectionBasetot, projectionResult.projectResult as projectionProjecttot, projectionResult.leakageResult as projectionLekagetot,projectionResult.emissionReduction as emissionReduction, projectionResult.id ',
       )
       .where('assesment.id = :id', { id: id })
       .orderBy('projectionResult.projectionYear')
@@ -834,7 +836,7 @@ let yrList:number[]=[];
       );
     }
 
-    for (let projection of projectionDataResults) {
+    for (let projection of this.projectionDataResults) {
       // console.log("projectionRes ========", projectionRes);
       year.push(projection.projectionYear);
       baseLineRes.push(
@@ -1232,38 +1234,39 @@ let yrList:number[]=[];
 
 
             let yearsActivity: number[] = []
-            let groupedActivity =await assesActivity?.parameters.reduce(async (r, v, i, a) => {
+            let parameters = assesActivity?.parameters.filter(para => para.verifierAcceptance !== VerifierAcceptance.REJECTED)
+            let groupedActivity = await parameters.reduce(async (r, v, i, a) => {
 
-              if(v.isDefault==true){
-                v.defaultValue=await this.defaultValueService.findOne(v.defaultValueId)
-               }
+              if (v.isDefault == true) {
+                v.defaultValue = await this.defaultValueService.findOne(v.defaultValueId)
+              }
               //  console.log("default",v.defaultValue)
-                let foundyears = yearsActivity.find((element) => {
-                  return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
-                });
-  
-  
-  
-                if (foundyears == undefined) {
-                  yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
-                }
-  
-                let found = (await r).find((element) => {
-                  return element['name'] == v.name
-                });
-  
-  
-                if (found == undefined) {
-                  (await r).push({ 'name': v.name, 'unit': v.uomDataRequest?v.uomDataRequest:v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"":v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" }] })
-                } else {
-  
-  
-                  found['years'].push({ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue':v.isDefault?v.defaultValue.value?v.defaultValue.value:"": v.uomDataRequest? v.conversionValue ? v.conversionValue : "":v.value?v.value:"" })
-                  r[(await r).indexOf(found)] = found
-                }
-  
-                return r;
-              }, Promise.resolve([]));
+              let foundyears = yearsActivity.find((element) => {
+                return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
+              });
+
+
+
+              if (foundyears == undefined) {
+                yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
+              }
+
+              let found = (await r).find((element) => {
+                return element['name'] == v.name
+              });
+
+
+              if (found == undefined) {
+                (await r).push({ 'name': v.name, 'unit': v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.isDefault ? v.defaultValue.value ? v.defaultValue.value : "" : v.uomDataRequest ? v.conversionValue ? v.conversionValue : "" : v.value ? v.value : "" }] })
+              } else {
+
+
+                found['years'].push({ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.isDefault ? v.defaultValue.value ? v.defaultValue.value : "" : v.uomDataRequest ? v.conversionValue ? v.conversionValue : "" : v.value ? v.value : "" })
+                r[(await r).indexOf(found)] = found
+              }
+
+              return r;
+            }, Promise.resolve([]));
 
             //console.log("===== groupe +++++", groupedActivity);
             // groupedActivity.forEach(e => console.log("==== group years", e['years']))
@@ -1520,8 +1523,34 @@ let yrList:number[]=[];
                         `
                               <div style="margin-top:25px;margin-bottom:15px">
                               <h4>Projection of GHG Emissions</h4>
-                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${emisiionResult?.assessmentYear} considering the ${assesment.projectionBaseYear} based on the ${assesment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
+                              <p style="font-size:15px">GHG emissions attributed to the ${element.climateActionName} are projected to ${assesmentYer?.assessmentYear} considering the ${assesment.projectionBaseYear} based on the ${assesment.projectionIndicator}.   Figure 3 illustrates the BAU and project emissions of the ${element.climateActionName}.</p>
                               <div>
+                              <p style="font-size:15px">Table: Projection emissions attributed to ${element.climateActionName}</p>
+                              <table style="border:1px solid black;width:100%;">
+                                <thead >
+                                <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
+                                  <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Baseline Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Project Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Leakage Result (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emission Reduction (MtCO2e)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                
+                                      ${this.projectionDataResults?.map((e) => {
+                                    return `<tr style="height:30px; width:450px; margin:0;">
+                                    <td style="border:1px solid black;width:100px">&nbsp&nbsp&nbsp&nbsp${e.projectionYear}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionBasetot ? e.projectionBasetot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionProjecttot ? e.projectionProjecttot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.projectionLekagetot ? e.projectionLekagetot : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                    <td style="border:1px solid black;width:350px">&nbsp&nbsp&nbsp&nbsp${e.emissionReduction ? e.emissionReduction : '&nbsp&nbsp&nbsp&nbsp-'}</td>
+                                  </tr>`;
+                                  }
+                                )}
+                                  
+                                </tbody>
+                              </table>
                               <div><img src="http://localhost:7080/graph` + assesment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
                               <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
                               </div>
@@ -1843,6 +1872,7 @@ let yrList:number[]=[];
                   `
                   ${projectionEmission}
                   <hr/>
+
                 `;
               }
             } else if (assesment.assessmentType == 'MAC') {
