@@ -31,7 +31,7 @@ export class VerificationController
     @Query('limit') limit: number,
     @Query('statusId') statusId: number,
     @Query('filterText') filterText: string,
-    @Query('isHistory') isHistory: boolean
+    @Query('isHistory') isHistory: string
   ): Promise<any> {
 
     let countryIdFromTocken:number ;
