@@ -190,14 +190,18 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       .createQueryBuilder('ass')
       .leftJoinAndMapOne('ass.project', Project, 'pr', 'ass.projectId = pr.id')
       .leftJoinAndMapOne('ass.methodology', Methodology, 'meth', 'ass.methodologyId = meth.id')
-      .where('ass.projectId = ' + projectId);
+      .where('ass.isProposal=0 AND ass.projectId = ' + projectId );
 
     let result = await data.getMany();
-    let re=[]
+    console.log("aaa",result);
+    let re=[];
     for(let meth of result){
-      if(!re.includes(meth.methodology.displayName))
-      re.push(meth.methodology.displayName)
-    }
+      if(meth.methodology){
+        if(!re.includes(meth.methodology.displayName))
+        re.push(meth.methodology.displayName)
+      }
+      }
+      
     return re;
 
   }
