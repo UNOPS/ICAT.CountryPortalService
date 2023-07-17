@@ -56,10 +56,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     filterText: string,
     VRstatusId: number,
     countryIdFromTocken: number,
-    isHistory: boolean
+    isHistory: string
   ): Promise<Pagination<AssessmentYear>> {
-    // let filter: string = `dataRequestStatus in (${DataRequestStatus.QA_Assign.valueOf()},${DataRequestStatus.QAPass.valueOf()},${DataRequestStatus.QAFail.valueOf()})`;
-    //console.log("222222222222222222222222222222222222222222222")
     let filter: string = `ae.verificationStatus is not null`;
 
     if (filterText != null && filterText != undefined && filterText != '') {
@@ -70,18 +68,17 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
     } else {
-      if (isHistory){
+      if (isHistory && isHistory !== 'false') {
         filter = `${filter}  and ae.verificationStatus = 6 or ae.verificationStatus = 7`;
       }
     }
-    console.log("222222222222222222222222222222222222222222222" ,VRstatusId,filterText) 
     let data = this.assessmentYearRepo
       .createQueryBuilder('ae')
       .innerJoinAndMapOne(
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',   //`a.projectId = p.id and p.countryId = ${countryIdFromTocken}`
+        'ae.assessmentId = as.id',  
       )
       .innerJoinAndMapOne('as.project', Project, 'p', `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`)
 
@@ -89,18 +86,11 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         filterText: `%${filterText}%`,
         VRstatusId,
       })
-      // .groupBy('ae.Assessmentid')
-      // .groupBy('ae.AssessmentYear')
       .orderBy('ae.qaDeadline', 'DESC');
-    // console.log(
-    //   '=====================================================================',
-    // );
-    console.log("PPPPPPPP",data.getQuery());
 
     let resualt = await paginate(data, options);
 
     if (resualt) {
-      console.log("result is...",resualt)
       return resualt;
     }
   }

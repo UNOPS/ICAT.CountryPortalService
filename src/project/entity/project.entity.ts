@@ -267,4 +267,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null })
   actionJustification: string;
 
+  @Column({ default: null})
+  climateActionCreatedData: Date
+
 }
