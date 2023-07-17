@@ -144,10 +144,10 @@ console.log("+++++++++++++" ,ctAction)
         var dataRequestTo = dataRequset;
         await this.repo.save(dataRequset);
       } 
-      if(qaStatus ==QuAlityCheckStatus.Fail){
+
+      if (qaStatus === QuAlityCheckStatus.Fail){
         param.value = undefined
       }
-      
       if (param.verifierAcceptance !== VerifierAcceptance.PENDING){
         param.verifierAcceptance = VerifierAcceptance.PENDING
       }
