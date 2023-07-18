@@ -153,6 +153,44 @@ export class AssesmentController implements CrudController<Assessment> {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(
+    'assessments/assmentdetailsforresult/:page/:limit/:filterText/:assessmentType/:isProposal/:projectId/:ctAction',
+  )
+  async getAssmentDetailsForResult(
+    @Request() request,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('filterText') filterText: string,
+    @Query('assessmentType') assessmentType: string,
+    @Query('isProposal') isProposal: number,
+    @Query('projectId') projectId: number,
+    @Query('ctAction') ctAction: string,
+  ): Promise<any> {
+    // console.log("hiiiiiii")
+    let countryIdFromTocken: number;
+    let sectorIdFromTocken: number;
+
+
+    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([TokenReqestType.countryId, TokenReqestType.sectorId, TokenReqestType.InstitutionId])
+
+
+
+    return await this.service.getassessmentsdetailsForResult(
+      {
+        limit: limit,
+        page: page,
+      },
+      filterText,
+      assessmentType,
+      isProposal,
+      projectId,
+      ctAction,
+      countryIdFromTocken,
+      sectorIdFromTocken,
+    );
+  }
+
   @Get('assessments/getAssment/:id/:assementYear')
   async getAssment(
     @Request() request,
