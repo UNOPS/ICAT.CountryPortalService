@@ -1252,7 +1252,7 @@ let yrList:number[]=[];
               }
 
               let found = (await r).find((element) => {
-                return element['name'] == v.name
+                return (element['name'] == v.name && (element['isBaseline'] === v.isBaseline && element['isProject'] === v.isProject))
               });
 
 
