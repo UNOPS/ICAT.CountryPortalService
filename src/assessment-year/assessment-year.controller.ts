@@ -234,7 +234,7 @@ export class AssessmentYearController
     try {
       let audit: AuditDto = new AuditDto();
       let paeameter = this.service.acceptQC(updateDeadlineDto);
-      console.log(updateDeadlineDto)
+      // console.log(updateDeadlineDto)
       audit.action = 'Quality Check Added';
       audit.comment = 'Quality Check Added';
       audit.actionStatus = 'Added'

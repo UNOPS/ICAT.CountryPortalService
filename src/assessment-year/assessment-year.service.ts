@@ -522,9 +522,9 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     // let dataRequestItemList = new Array<ParameterRequest>();
    let insSec: any;
    let inscon: any;
-
-    for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
-      const id = updateDataRequestDto.ids[index];
+ let saveArray =[];
+    for await  (let index of updateDataRequestDto.ids) {
+      const id = index;
       let dataRequestItem = await this.repo.findOne({ where: { id: id } ,relations:['assessment']});
       console.log('dataRequestItem', dataRequestItem);
       let originalStatus = dataRequestItem.qaStatus;
@@ -532,28 +532,17 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
 
      inscon = dataRequestItem.assessment.project.country;
-     console.log( "inscon",dataRequestItem.assessment.project.country)
      insSec = dataRequestItem.assessment.project.sector;
-     console.log( "insSec",insSec)
-
-      // dataRequestItemList.push(dataRequestItem);
-      this.repo.save(dataRequestItem).then((res) => {
-        console.log('res', res);
-        // this.parameterHistoryService.SaveParameterHistory(
-        //   res.id,
-        //   ParameterHistoryAction.QC,
-        //   'QC',
-        //   '',
-        //   res.qaStatus.toString(),
-        //   originalStatus.toString(),
-        // );
+      await this.repo.save(dataRequestItem).then((res) => {
+        // console.log('res', res);
+        saveArray.push(res);
+      
       });
     }
     let user:User[];
    let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
    user= await this.userService.find({where:{country:inscon,userType:7,institution:ins}})
    user.forEach((ab)=>{
-    console.log("=========", ins)
     var template: any;
     if (updateDataRequestDto.comment != undefined) {
       template =
@@ -583,8 +572,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     
 
     // this.repo.save(dataRequestItemList);
-
-    return true;
+if(saveArray.length == updateDataRequestDto.ids.length){
+  return true;
+}
+else false
+    
   }
 
   async getVerificationDetails(
