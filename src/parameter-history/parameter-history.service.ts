@@ -92,10 +92,18 @@ export class ParameterHistoryService extends TypeOrmCrudService<ParameterHistory
         .orderBy('as.createdOn', 'DESC');
       previouseParameterhistry = await data3.getMany();
     }
+    else if (parameter.defaultValueId) {
+      const historicalParaID = parameter.historicalParaID
+      let filter4: string = 'as.parameterId = :defaultValueId';
+      var data4 = this.repo
+        .createQueryBuilder('as')
+        .where(filter4, {
+          historicalParaID
+
+        })
+        .orderBy('as.createdOn', 'DESC');
+      previouseParameterhistry = await data4.getMany();
+    }
     return [...await data1.getMany(), ...previouseParameterhistry];
   }
-
-
-
-
 }

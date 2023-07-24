@@ -56,7 +56,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     filterText: string,
     VRstatusId: number,
     countryIdFromTocken: number,
-    isHistory: boolean
+    isHistory: string
   ): Promise<Pagination<AssessmentYear>> {
     let filter = `ae.verificationStatus is not null`;
 
@@ -68,7 +68,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
     if (VRstatusId != 0) {
       filter = `${filter}  and ae.verificationStatus = :VRstatusId`;
     } else {
-      if (isHistory){
+      if (isHistory && isHistory !== 'false') {
         filter = `${filter}  and ae.verificationStatus = 6 or ae.verificationStatus = 7`;
       }
     }
@@ -78,20 +78,13 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         'ae.assessment',
         Assessment,
         'as',
-        'ae.assessmentId = as.id',
-      )
-      .innerJoinAndMapOne(
-        'as.project',
-        Project,
-        'p',
-        `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`,
+        'ae.assessmentId = as.id',  
       )
 
       .where(filter, {
         filterText: `%${filterText}%`,
         VRstatusId,
       })
-
       .orderBy('ae.qaDeadline', 'DESC');
 
     const result = await paginate(data, options);

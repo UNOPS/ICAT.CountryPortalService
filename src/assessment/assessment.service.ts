@@ -321,6 +321,135 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
     }
   }
 
+
+  async getassessmentsdetailsForResult(
+    options: IPaginationOptions,
+    filterText: string,
+    assessmentType: string,
+    isProposal: number,
+    projectId: number,
+    ctAction: string,
+    countryIdFromTocken: number,
+    sectorIdFromTocken: number,
+  ): Promise<Pagination<Assessment>> {
+    console.log('im in.aaa...');
+    let filter: string = '';
+
+    if (filterText != null && filterText != undefined && filterText != '') {
+      filter =
+        '(ay.assessmentYear LIKE :filterText OR asse.emmisionReductionValue LIKE :filterText OR asse.macValue LIKE :filterText OR pt.contactPersoFullName LIKE :filterText OR asse.assessmentStatus LIKE :filterText OR asse.assessmentType LIKE :filterText OR asse.editedOn LIKE :filterText OR us.firstName LIKE :filterText OR us.lastName LIKE :filterText OR mt.name LIKE :filterText OR pt.climateActionName LIKE :filterText)';
+    }
+
+    if (countryIdFromTocken != 0) {
+      if (filter) {
+        filter = `${filter}  and pt.countryId = :countryIdFromTocken`;
+      } else {
+        filter = `pt.countryId = :countryIdFromTocken`;
+      }
+    }
+
+    console.log('sectorIdFromTocken..', sectorIdFromTocken);
+    if (sectorIdFromTocken) {
+      if (filter) {
+        filter = `${filter}  and pt.sectorId = :sectorIdFromTocken`;
+      } else {
+        filter = `pt.sectorId = :sectorIdFromTocken`;
+      }
+    }
+
+    if (
+      assessmentType != null &&
+      assessmentType != undefined &&
+      assessmentType != ''
+    ) {
+      if (filter) {
+        filter = `${filter}  and asse.assessmentType = :assessmentType`;
+      } else {
+        filter = `asse.assessmentType = :assessmentType`;
+      }
+    }
+
+    if (isProposal != null && isProposal != undefined) {
+      //console.log(isProposal);
+      if (filter) {
+        filter = `${filter}  and asse.isProposal = :isProposal`;
+      } else {
+        filter = `asse.isProposal = :isProposal`;
+      }
+    }
+
+    if (ctAction != null && ctAction != undefined && ctAction != '') {
+      //console.log(Active);
+      if (filter) {
+        filter = `${filter}  and pt.climateActionName = :ctAction`;
+      } else {
+        filter = `pt.climateActionName = :ctAction`;
+      }
+    }
+
+    if (projectId != 0) {
+      if (filter) {
+        filter = `${filter}  and pt.id = :projectId`;
+      } else {
+        filter = `pt.id = :projectId`;
+      }
+    }
+
+    // let ltype = 'ASC';
+
+    var data = this.repo
+      .createQueryBuilder('asse')
+      .leftJoinAndMapOne(
+        'asse.project',
+        Project,
+        'pt',
+        'pt.id = asse.projectId',
+      )
+      .innerJoinAndMapOne(
+        'asse.assessmentResult',
+        AssessmentResault,
+        'ar',
+        'ar.assementId = asse.id AND  ar.totalEmission is not null',
+      )
+      .leftJoinAndMapMany(
+        'asse.assessmentYear',
+        AssessmentYear,
+        'ay',
+        'ay.assessmentId = asse.id',
+      )
+      .leftJoinAndMapOne('asse.user', User, 'us', 'asse.userId = us.id')
+      .leftJoinAndMapOne(
+        'asse.methodology',
+        Methodology,
+        'mt',
+        'mt.id = asse.methodologyId',
+      )
+
+      .where(filter, {
+        filterText: `%${filterText}%`,
+        assessmentType,
+        isProposal,
+        projectId,
+        ctAction,
+        countryIdFromTocken,
+        sectorIdFromTocken,
+      })
+      // .orderBy('asse.editedOn', 'DESC');
+      .orderBy(
+        `(case when asse.assessmentStatus = 2 then 1 when asse.assessmentStatus = 1 then 2 end)`,
+        'DESC',
+      )
+      .addOrderBy('asse.editedOn', 'DESC');
+
+    let resualt = await paginate(data, options);
+
+    if (resualt) {
+      console.log("+++++++++", resualt)
+      return resualt;
+      
+    }
+  }
+
   async getAssessmentData(
     options: IPaginationOptions,
     assessmentYear: string[],

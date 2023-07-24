@@ -906,52 +906,33 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
             const yearsActivity: number[] = [];
             let parameters = assesActivity?.parameters.filter(para => para.verifierAcceptance !== VerifierAcceptance.REJECTED)
-            const groupedActivity = await parameters.reduce(
-              async (r, v) => {
-                if (v.isDefault == true) {
-                  v.defaultValue = await this.defaultValueService.findOne(
-                    v.defaultValueId,
-                  );
-                }
+            let groupedActivity = await parameters.reduce(async (r, v, i, a) => {
 
-                const foundyears = yearsActivity.find((element) => {
-                  return element == v.AssessmentYear
-                    ? v.AssessmentYear
-                    : v.baseYear;
-                });
+              if (v.isDefault == true) {
+                v.defaultValue = await this.defaultValueService.findOne(v.defaultValueId)
+              }
+              //  console.log("default",v.defaultValue)
+              let foundyears = yearsActivity.find((element) => {
+                return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
+              });
 
-                if (foundyears == undefined) {
-                  yearsActivity.push(
-                    v.AssessmentYear ? v.AssessmentYear : v.baseYear,
-                  );
-                }
 
-                const found = (await r).find((element) => {
-                  return element['name'] == v.name;
-                });
 
-                if (found == undefined) {
-                  (await r).push({
-                    name: v.name,
-                    unit: v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry,
-                    years: [
-                      {
-                        year: v.AssessmentYear ? v.AssessmentYear : v.baseYear,
-                        conValue: v.isDefault
-                          ? v.defaultValue.value
-                            ? v.defaultValue.value
-                            : ''
-                          : v.uomDataRequest
-                          ? v.conversionValue
-                            ? v.conversionValue
-                            : ''
-                          : v.value
-                          ? v.value
-                          : '',
-                      },
-                    ],
-                  });
-                } else {
+              if (foundyears == undefined) {
+                yearsActivity.push(v.AssessmentYear ? v.AssessmentYear : v.baseYear)
+              }
+
+              let found = (await r).find((element) => {
+                return (element['name'] == v.name && (element['isBaseline'] === v.isBaseline && element['isProject'] === v.isProject))
+              });
+
+
+              if (found == undefined) {
+                (await r).push({ 'name': v.name, 'unit': v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.isDefault ? v.defaultValue.value ? v.defaultValue.value : "" : v.uomDataRequest ? v.conversionValue ? v.conversionValue : "" : v.value ? v.value : "" }] })
+              } else {
+
+
+                
                   found['years'].push({
                     year: v.AssessmentYear ? v.AssessmentYear : v.baseYear,
                     conValue: v.isDefault

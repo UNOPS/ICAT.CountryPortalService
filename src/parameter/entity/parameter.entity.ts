@@ -39,7 +39,8 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ nullable: true })
   canActiveAction:boolean
-
+  
+  @JoinColumn({ name: 'ParentParameterId' })
   ParentParameter?: Parameter;
 
   @Column({ nullable: true })

@@ -420,51 +420,52 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
   async acceptQC(updateDataRequestDto: DataVerifierDto): Promise<boolean> {
     let insSec: any;
     let inscon: any;
+    let saveArray = [];
 
-    for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
-      const id = updateDataRequestDto.ids[index];
-      const dataRequestItem = await this.repo.findOne({
-        where: { id: id },
-        relations: ['assessment'],
-      });
-
-      const originalStatus = dataRequestItem.qaStatus;
+    for await (let index of updateDataRequestDto.ids) {
+      const id = index;
+      let dataRequestItem = await this.repo.findOne({ where: { id: id }, relations: ['assessment'] });
+      let originalStatus = dataRequestItem.qaStatus;
       dataRequestItem.qaStatus = updateDataRequestDto.status;
 
       inscon = dataRequestItem.assessment.project.country;
-
       insSec = dataRequestItem.assessment.project.sector;
-
-      this.repo.save(dataRequestItem).then((res) => {});
+      await this.repo.save(dataRequestItem).then((res) => {
+        saveArray.push(res);
+      });
     }
-    const ins = await this.institutionRepo.findOne({
-      where: { country: inscon, sector: insSec, type: 2 },
-    });
-    const user: User[] = await this.userService.find({
-      where: { country: inscon, userType: 7, institution: ins },
-    });
+    let user: User[];
+    let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
+    user = await this.userService.find({ where: { country: inscon, userType: 7, institution: ins } })
+
     user.forEach((ab) => {
-      let template: any;
+      var template: any;
       if (updateDataRequestDto.comment != undefined) {
         template =
           'Dear ' +
-          ab.username +
-          ' ' +
+          ab.username + ' ' +
           ' <br/> Data request with following information has shared with you.' +
-          '<br> comment -: ' +
-          updateDataRequestDto.comment;
-      } else {
-        template =
-          'Dear ' +
-          ab.username +
-          ' ' +
-          ' <br/>Data request with following information has shared with you.';
+          '<br> comment -: ' + updateDataRequestDto.comment;
       }
 
-      this.emaiService.sendMail(ab.email, 'Please verify', '', template);
-    });
+      else {
+        template =
+          'Dear ' + ab.username + ' ' +
+          ' <br/>Data request with following information has shared with you.'
+      }
 
-    return true;
+      this.emaiService.sendMail(
+        ab.email,
+        'Please verify',
+        '',
+        template,
+      );
+    })
+
+    if (saveArray.length == updateDataRequestDto.ids.length) {
+      return true;
+    }
+    else false
   }
 
   async getVerificationDetails(
