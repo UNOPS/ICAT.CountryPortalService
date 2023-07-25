@@ -81,11 +81,13 @@ export class UsersService extends TypeOrmCrudService<User> {
       newUserDb.lastName +
       ' <br/>Your username is ' +
       newUserDb.email +
-      ' and your new login password is : ' +
+      ' <br/> your login Code is : ' +
       newPassword +
-      ' <br/>System login url is ' +
-      systemLoginUrl;
-    '<br/>' + '<br/>Best regards' + '<br/>Software support team';
+      ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
+    '<br/>' +
+      '<br/>Best regards' +
+      '<br/>Software support team'
+      ;
 
     this.emaiService.sendMail(
       newUserDb.email,
@@ -122,8 +124,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     const newUUID = uuidv4();
     const newPassword = ('' + newUUID).substr(0, 6);
     user.password = await this.hashPassword(user.password, user.salt);
-    user.password = newPassword;
-    this.usersRepository.save(user);
+    await this.usersRepository.save(user);
     const template =
       'Dear ' +
       user.firstName +
@@ -133,9 +134,12 @@ export class UsersService extends TypeOrmCrudService<User> {
       user.email +
       ' and your new login password is : ' +
       newPassword +
-      ' <br/>System login url is ' +
-      systemLoginUrl;
-    '<br/>' + '<br/>Best regards' + '<br/>Software support team';
+      ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
+    '<br/>' +
+      '<br/>Best regards' +
+      '<br/>Software support team'
+      ;
+
 
     this.emaiService.sendMail(
       user.email,
@@ -219,20 +223,56 @@ export class UsersService extends TypeOrmCrudService<User> {
     }
   }
 
-  async resetPassword(email: string, password: string): Promise<boolean> {
-    const user = await this.usersRepository.findOne({ email: email });
-
+  async resetPassword(email: string, password: string, code: string): Promise<boolean> {
+    let user = await this.usersRepository.findOne({ email: email });
     if (user) {
-      const salt = await bcript.genSalt();
+      let url = process.env.CLIENT_URL
+      if (code) {
+        const hashPassword = await bcript.hash(code, user.salt);
+        if (hashPassword == user.password) {
+          let salt = await bcript.genSalt();
+          user.salt = salt;
+          user.password = await this.hashPassword(password, salt);
+          await this.usersRepository.save(user);
+          var template =
+            'Dear ' + user.firstName + " " + user.lastName +
+            ' <br/>Your username is ' +
+            user.email +
+            '<br/> your login password is : ' +
+            password +
+            ' <br/>System login url is' + ' <a href="' + url + '">' + url + '</a>' +
+            url;
 
-      user.salt = salt;
-      user.password = await this.hashPassword(password, salt);
+          this.emaiService.sendMail(
+            user.email,
+            'Your credentials for ICAT system',
+            '',
+            template,
+          );
+          return true;
+        }
+        else return false
+      }
+      else {
+        let salt = await bcript.genSalt();
+        user.salt = salt;
+        user.password = await this.hashPassword(password, salt);
+        await this.usersRepository.save(user);
+        var template =
+          'Dear ' + user.firstName + " " + user.lastName +
+          ' <br/>Your username is ' +
+          user.email +
+          '<br/> your login password is : ' +
+          password +
+          ' <br/>System login url is' + ' <a href="' + url + '">' + url + '</a>' +
 
-      await this.usersRepository.save(user);
-
-      await this.updateChnagePasswordToken(user.id, '');
-
-      return true;
+          this.emaiService.sendMail(
+            user.email,
+            'Your credentials for ICAT system',
+            '',
+            template,)
+        return true;
+      }
     }
 
     return false;
@@ -353,7 +393,7 @@ export class UsersService extends TypeOrmCrudService<User> {
         'type.id = user.userTypeId',
       )
 
-      .where(' type.id=' + userTypeId + ' AND ins.id=' + institutionId)
+      .where(' type.id=' + userTypeId + ' AND ins.id=' + institutionId + ' AND ins.status=0')
       .orderBy('user.status', 'ASC');
     const SQLString = data.getSql();
 

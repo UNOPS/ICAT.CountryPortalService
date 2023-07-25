@@ -78,12 +78,12 @@ export class Country extends BaseTrackingEntity {
   @Column({ default: null })
   uniqueIdentification: string;
 
-  @OneToMany(() => DefaultValue, (defaultValue) => defaultValue.country)
-  defaultValue: DefaultValue[];
+  @Column({ default: null })
+  telephoneLength: number;
+  
+  @Column({ default: null })
+  uniqtelephone: number;
 
-  @OneToMany(() => CountrySector, (countrySector) => countrySector.country, {
-    eager: true,
-  })
-  @JoinColumn()
-  countrysector: CountrySector[];
+  @OneToMany(() => DefaultValue, (defaultValue) => defaultValue.country,{cascade:false})
+  defaultValue: DefaultValue[]
 }

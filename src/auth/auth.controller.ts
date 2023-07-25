@@ -49,9 +49,10 @@ export class AuthController {
         resetPwd.token,
       )
     ) {
-      const res = await this.usersService.resetPassword(
+      let res = await this.usersService.resetPassword(
         resetPwd.email,
         resetPwd.password,
+        resetPwd.code,
       );
 
       return res;
@@ -70,6 +71,13 @@ export class AuthController {
       const errorResponse: any = {
         status: 0,
         message: 'Invalid Email/User Id',
+      };
+      return response.status(400).send(errorResponse);
+    }
+    else if (user.status != 0) {
+      const errorResponse: any = {
+        status: 0,
+        message: 'Sorry. Your account has been deactivated. Please contact the user who created your account for re-activation.',
       };
       return response.status(400).send(errorResponse);
     }

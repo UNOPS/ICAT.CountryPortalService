@@ -76,11 +76,13 @@ export class AssessmentResultController
     @Query('AssessmentId') AssessmentId: number,
     @Query('AssessmentYearId') AssessmentYearId: number,
     @Query('calculate') calculate: boolean,
+    @Query('flag') flag: string 
   ) {
     const restult = await this.service.GetAssessmentResult(
       AssessmentId,
       AssessmentYearId,
       calculate,
+      flag
     );
 
     return restult;

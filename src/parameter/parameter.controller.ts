@@ -100,7 +100,6 @@ export class ParameterController implements CrudController<Parameter> {
     audit.actionStatus = 'Updated';
 
     this.auditService.create(audit);
-
     return this.service.updateEnterDataValue(updateValueDto);
   }
 

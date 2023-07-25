@@ -48,87 +48,87 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     assessmentId: number,
     assessmentYearId: number,
     isCalculate: boolean,
+    flag = ''
   ): Promise<any> {
-    const assessment = new Assessment();
-    assessment.id = assessmentId;
+    let assement = new Assessment();
+    assement.id = assessmentId;
 
     let assessmentYear = new AssessmentYear();
     assessmentYear.id = assessmentYearId;
 
-    const assessmentResult = await this.repo.findOne({
-      where: { assessment: assessment, assessmentYear: assessmentYear },
+    let assessmentResault = await this.repo.findOne({
+      where: { assement: assement, assessmentYear: assessmentYear },
       relations: ['assessmentYear'],
     });
 
     assessmentYear = await this.assessmentYearRepo.findOne(assessmentYearId);
 
     if (isCalculate.toString() == 'false') {
-      return assessmentResult;
+        return assessmentResault;
     } else {
-      const asseDetail = await this.assessmentRepo.findOne(assessmentId);
-
-      if (asseDetail.isProposal) {
-        const assessment = await this.assessmentservice.getAssessmentDetails(
+      let asseDetail = await this.assessmentRepo.findOne(assessmentId);
+     
+      if(asseDetail.isProposal)
+      {
+        var assessment = await this.assessmentservice.getAssessmentDetails(
           assessmentId,
           assessmentYear.assessmentYear,
         );
-      } else {
-        const assessment =
-          await this.assessmentservice.getAssessmentDetailsForQC(
-            assessmentId,
-            assessmentYear.assessmentYear,
-          );
+      }
+      else {
+        var assessment = await this.assessmentservice.getAssessmentDetailsForQC(
+          assessmentId,
+          assessmentYear.assessmentYear,
+        );
       }
 
       if (!assessment.isProposal) {
-        const result = assessment.parameters.find((m) =>
-          m.parameterRequest
-            ? m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass
-            : false,
+        let result = assessment.parameters.find(
+          (m) =>m.parameterRequest?m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass:false,
         );
 
         if (result === null || result === undefined) {
           await this.getAssessmentResultFromEngine(
             assessment.parameters,
           ).subscribe(async (a) => {
-            const saveEntity = await this.saveassessmentResult(
+            let saveEntity = await this.saveAssessmentResult(
               a.data,
               assessmentId,
-              assessmentYearId,
+              assessmentYear,
             );
-
             return saveEntity;
           });
         } else {
           return null;
         }
       } else {
-        await this.getAssessmentResultFromEngine(
-          assessment.parameters,
-        ).subscribe((a) => {
-          return this.saveassessmentResult(
-            a.data,
-            assessmentId,
-            assessmentYearId,
-          );
-        });
+        await this.getAssessmentResultFromEngine(assessment.parameters).subscribe(
+          (a) => {
+            return this.saveAssessmentResult(
+              a.data,
+              assessmentId,
+              assessmentYear,
+            );
+          },
+        );
       }
     }
   }
 
-  async saveassessmentResult(
+
+  async saveAssessmentResult(
     data: any,
     assessmentId: number,
-    assessmentYearId: number,
+    assessmentYearObj: AssessmentYear,
   ) {
-    const assessment = new Assessment();
+    let assessment = new Assessment();
     assessment.id = assessmentId;
 
-    const assessmentYear = new AssessmentYear();
-    assessmentYear.id = assessmentYearId;
+    let assessmentYear = new AssessmentYear();
+    assessmentYear.id = assessmentYearObj.id;
 
     let assessmentResult = await this.repo.findOne({
-      where: { assessment: assessment, assessmentYear: assessmentYear },
+      where: { assement: assessment, assessmentYear: assessmentYear },
     });
 
     if (assessmentResult === undefined || assessmentResult === null) {
@@ -142,13 +142,17 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     assessmentResult.lekageResult = data.leakegeEmission;
     assessmentResult.totalEmission = data.emissionReduction;
 
+
+    assessmentResult.isResultupdated = true
+    assessmentResult.isResultRecalculating = false
+
     if (assessmentResult.id > 0) {
-      const responce = await this.repo.save(assessmentResult);
+      let responce = await this.repo.save(assessmentResult);
       await this.saveProjectionResult(data, assessment, assessmentYear);
 
       return responce;
     } else {
-      const responce = await this.repo.insert(assessmentResult);
+      let responce = await this.repo.insert(assessmentResult);
       await this.saveProjectionResult(data, assessment, assessmentYear);
 
       return responce;

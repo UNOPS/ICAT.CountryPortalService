@@ -7,16 +7,18 @@ import { TokenDetails } from 'src/utills/token_details';
 import { TrackcaEntity } from './entity/trackca.entity';
 import { TrackClimateController } from './track-climate.controller';
 import { TrackClimateService } from './track-climate.service';
+import { Assessment } from 'src/assessment/entity/assessment.entity';
+import { AssessmentModule } from 'src/assessment/assessment.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TrackcaEntity, Project])],
+  imports: [TypeOrmModule.forFeature([TrackcaEntity, Project, Assessment]), AssessmentModule],
   controllers: [TrackClimateController],
   providers: [
     TrackClimateService,
     TokenDetails,
     ProjectService,
-    EmailNotificationService,
+    EmailNotificationService
   ],
   exports: [TrackClimateService],
 })
-export class TrackClimateModule {}
+export class TrackClimateModule { }

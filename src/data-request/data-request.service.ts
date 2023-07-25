@@ -24,6 +24,7 @@ import { Repository } from 'typeorm';
 import { DefaultValue } from 'src/default-value/entity/defaultValue.entity';
 import { EmailNotificationService } from 'src/notifications/email.notification.service';
 import { Country } from 'src/country/entity/country.entity';
+import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 
 @Injectable()
 export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest> {
@@ -58,9 +59,9 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'para',
         'para.id = dr.parameterId',
       )
-      .select(['dr.dataRequestStatus', 'para.id'])
+      .select(['dr.dataRequestStatus', 'para.id', 'para.verifierAcceptance'])
       .where(
-        `para.assessmentId = ${assessmentId} AND ((para.isEnabledAlternative = true AND para.isAlternative = true) OR (para.isEnabledAlternative = false AND para.isAlternative = false )) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmentYear}`,
+        `para.assessmentId = ${assessmentId} AND para.verifierAcceptance <> 'REJECTED' AND ((para.isEnabledAlternative = true AND para.isAlternative = true) OR (para.isEnabledAlternative = false AND para.isAlternative = false )) AND COALESCE(para.AssessmentYear ,para.projectionBaseYear ) = ${assessmentYear}`,
       );
 
     return await data.execute();
@@ -110,7 +111,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'cou',
         `p.countryId = cou.id and p.countryId = ${countryIdFromTocken}`,
       )
-
       .leftJoinAndMapOne(
         'a.AssessmentYear',
         AssessmentYear,
@@ -180,7 +180,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'cou',
         `p.countryId = cou.id and p.countryId = ${countryIdFromTocken}`,
       )
-
       .leftJoinAndMapOne(
         'a.AssessmentYear',
         AssessmentYear,
@@ -235,7 +234,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         'a.id = ay.assessmentId',
       )
       .leftJoinAndMapMany('a.Prject', Project, 'p', 'p.id = a.projectId')
-
       .select([
         'p.climateActionName as climateAction',
         'para.AssessmentYear as year',
@@ -291,7 +289,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .leftJoinAndMapOne('a.User', User, 'u', 'u.id = dr.UserDataEntry')
       .leftJoinAndMapOne('a.Prject', Project, 'p', 'p.id = a.projectId')
-
       .where(
         (
           (institutionId != 0 ? `i.id=${institutionId} AND ` : '') +
@@ -455,7 +452,6 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       )
       .leftJoinAndMapOne('a.User', User, 'u', 'u.id = dr.UserDataEntry')
       .leftJoinAndMapOne('a.Prject', Project, 'p', 'p.id = a.projectId')
-
       .where(
         (
           (institutionId != 0 ? `i.id=${institutionId} AND ` : '') +
@@ -579,10 +575,23 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     let insSec: any;
     let inscon: any;
 
+    if (updateDataRequestDto.verificationStatus && updateDataRequestDto.verificationStatus === 8){
+      let paraRequests = await this.repo.findByIds(updateDataRequestDto.ids)
+  
+      let parameters = paraRequests.map(req =>{ return req.parameter})
+      parameters = parameters.map(para => {
+        para.verifierAcceptance = VerifierAcceptance.DATA_ENTERED
+        return para
+      })
+      await this.paramterRepo.save(parameters)
+    }
+
+
+
     for (let index = 0; index < updateDataRequestDto.ids.length; index++) {
       const id = updateDataRequestDto.ids[index];
-      const dataRequestItem = await this.repo.findOne({ where: { id: id } });
-      const originalStatus = dataRequestItem
+      let dataRequestItem = await this.repo.findOne({ where: { id: id } });
+      let originalStatus = dataRequestItem
         ? dataRequestItem.dataRequestStatus
         : 0;
       dataRequestItem.dataRequestStatus = updateDataRequestDto.status;
@@ -742,11 +751,15 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
       const dataRequestItem = await this.repo.findOne({ where: { id: id } });
       const originalStatus = dataRequestItem.dataRequestStatus;
 
+      let parameter = dataRequestItem.parameter
+      parameter.value = null
+      await this.paramterRepo.save(parameter)
+
       const user = await this.userRepo.findByIds([updateDataRequestDto.userId]);
       let template: any;
 
       if (updateDataRequestDto.status === -9) {
-        const ins = dataRequestItem.parameter;
+        let ins = dataRequestItem.parameter;
         template =
           'Dear ' +
           ins.institution.name +
@@ -872,5 +885,25 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
     const result = await data.getMany();
 
     return result;
+  }
+
+  async getQCpassParameterRequest(
+    paraIds: string[],
+  ): Promise<any> {
+    const data = this.repo
+      .createQueryBuilder('dr')
+      .leftJoinAndMapOne(
+        'dr.parameter',
+        Parameter,
+        'para',
+        'para.id = dr.parameterId',
+      )
+      .where(
+        'dr.qaStatus=4  and para.id in (:...paraIds)', { paraIds }
+      )
+    const result = await data.getMany();
+    if (result) {
+      return result;
+    }
   }
 }
