@@ -28,7 +28,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     @InjectRepository(Parameter) private parameterRepo: Repository<Parameter>,
-    private assesmentservice: AssessmentService,
+    private assessmentservice: AssessmentService,
     public parameterHistoryService: ParameterHistoryService,
     private readonly tokenDetails:TokenDetails,
     
@@ -141,7 +141,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
       }
       await this.parameterRepo.update(param.id, param)
 
-      let assesment = await this.assesmentservice.getAssessmentDetails(
+      let assessment = await this.assessmentservice.getAssessmentDetails(
         assessmentYear.assessment.id,
         assessmentYear.toString(),
       );

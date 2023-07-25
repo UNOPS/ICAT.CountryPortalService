@@ -235,7 +235,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
   async getPdfReportFiles() {
     try {
-      // const dirpath = path.join(__dirname, './public');
       const files = await readdir('./public');
 
       const pdfFiles = [];
@@ -246,9 +245,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       }
 
       return pdfFiles;
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) {}
   }
   sfdsfds;
   async generateChart(summryReport: any[], graphData: any): Promise<string> {
@@ -911,7 +908,6 @@ export class ReportService extends TypeOrmCrudService<Report> {
               if (v.isDefault == true) {
                 v.defaultValue = await this.defaultValueService.findOne(v.defaultValueId)
               }
-              //  console.log("default",v.defaultValue)
               let foundyears = yearsActivity.find((element) => {
                 return element == v.AssessmentYear ? v.AssessmentYear : v.baseYear
               });

@@ -247,10 +247,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       )
       .where('vd.assessmentYearId = :assessmentYearId', { assessmentYearId });
 
-    let resualt = data.getMany();
+    let result = data.getMany();
 
-    if (resualt) {
-      return resualt;
+    if (result) {
+      return result;
     }
   }
 
@@ -298,10 +298,8 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
 
 
       if (isDataEntered) {
-        //direct data enter
 
         if (isDefault){
-          //handle default
           let newPara = new Parameter()
           newPara = { ...parameter }
           newPara.id = undefined
@@ -316,7 +314,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           res = await this.parameterRepo.save([parameter, newPara])
 
         } else if (isHistorical){
-          //handle historical value
           let newPara = new Parameter()
           newPara = { ...parameter }
           newPara.id = undefined
@@ -389,10 +386,6 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
           return response
         }
       } else {
-        //data collection path
-        // 1. Duplicate parameter
-        // 2. create new data request
-        // 3. Set assessmentYear qaStatus ->   Pending = 1
         let newPara = new Parameter()
         newPara = {...parameter}
         newPara.id = undefined  

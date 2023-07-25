@@ -332,7 +332,6 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<Pagination<Assessment>> {
-    console.log('im in.aaa...');
     let filter: string = '';
 
     if (filterText != null && filterText != undefined && filterText != '') {
@@ -348,7 +347,6 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       }
     }
 
-    console.log('sectorIdFromTocken..', sectorIdFromTocken);
     if (sectorIdFromTocken) {
       if (filter) {
         filter = `${filter}  and pt.sectorId = :sectorIdFromTocken`;
@@ -370,7 +368,6 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
     }
 
     if (isProposal != null && isProposal != undefined) {
-      //console.log(isProposal);
       if (filter) {
         filter = `${filter}  and asse.isProposal = :isProposal`;
       } else {
@@ -379,7 +376,6 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
     }
 
     if (ctAction != null && ctAction != undefined && ctAction != '') {
-      //console.log(Active);
       if (filter) {
         filter = `${filter}  and pt.climateActionName = :ctAction`;
       } else {
@@ -395,8 +391,6 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       }
     }
 
-    // let ltype = 'ASC';
-
     var data = this.repo
       .createQueryBuilder('asse')
       .leftJoinAndMapOne(
@@ -407,7 +401,7 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
       )
       .innerJoinAndMapOne(
         'asse.assessmentResult',
-        AssessmentResault,
+        AssessmentResult,
         'ar',
         'ar.assementId = asse.id AND  ar.totalEmission is not null',
       )
@@ -434,18 +428,16 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
         countryIdFromTocken,
         sectorIdFromTocken,
       })
-      // .orderBy('asse.editedOn', 'DESC');
       .orderBy(
         `(case when asse.assessmentStatus = 2 then 1 when asse.assessmentStatus = 1 then 2 end)`,
         'DESC',
       )
       .addOrderBy('asse.editedOn', 'DESC');
 
-    let resualt = await paginate(data, options);
+    let result = await paginate(data, options);
 
-    if (resualt) {
-      console.log("+++++++++", resualt)
-      return resualt;
+    if (result) {
+      return result;
       
     }
   }

@@ -84,13 +84,11 @@ export class UsersService extends TypeOrmCrudService<User> {
       ' <br/> your login Code is : ' +
       newPassword +
       ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
-      // url
     '<br/>' +
       '<br/>Best regards' +
       '<br/>Software support team'
       ;
 
-    // sned email with new password
     this.emaiService.sendMail(
       newUserDb.email,
       'Your credentials for ICAT system',
@@ -126,7 +124,6 @@ export class UsersService extends TypeOrmCrudService<User> {
     const newUUID = uuidv4();
     const newPassword = ('' + newUUID).substr(0, 6);
     user.password = await this.hashPassword(user.password, user.salt);
-    // user.password = newPassword;
     await this.usersRepository.save(user);
     const template =
       'Dear ' +
@@ -138,7 +135,6 @@ export class UsersService extends TypeOrmCrudService<User> {
       ' and your new login password is : ' +
       newPassword +
       ' <br/>System login url is' + ' <a href="' + systemLoginUrl + '">' + systemLoginUrl + '</a>' +
-      // systemLoginUrl
     '<br/>' +
       '<br/>Best regards' +
       '<br/>Software support team'
@@ -230,7 +226,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   async resetPassword(email: string, password: string, code: string): Promise<boolean> {
     let user = await this.usersRepository.findOne({ email: email });
     if (user) {
-      let url = "https://icat-ca-tool.climatesi.com/icat-country-app/"
+      let url = process.env.CLIENT_URL
       if (code) {
         const hashPassword = await bcript.hash(code, user.salt);
         if (hashPassword == user.password) {
@@ -269,7 +265,6 @@ export class UsersService extends TypeOrmCrudService<User> {
           '<br/> your login password is : ' +
           password +
           ' <br/>System login url is' + ' <a href="' + url + '">' + url + '</a>' +
-          // url;
 
           this.emaiService.sendMail(
             user.email,

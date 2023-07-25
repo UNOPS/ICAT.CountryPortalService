@@ -85,8 +85,6 @@ export class UsersController implements CrudController<User> {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    console.log("usersdadsa", id)
-    // console.log("usersdadsa", await this.service.findOne(id))
     return await this.service.findOne(id);
   }
 
@@ -100,9 +98,7 @@ export class UsersController implements CrudController<User> {
 
     try {
       const user = await this.userRepository.findOneOrFail(id);
-      if (!user.id) {
-        console.error("User doesn't exist");
-      }
+      if (!user.id) {}
       let audit: AuditDto = new AuditDto();
       if (user.status != newUser.status) {
         newUser.deletedAt = new Date();

@@ -805,7 +805,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     }
 
     if (climateActionId !== 0) {
-      console.log("susccs")
       if (filter) {
         filter = `${filter}  and proj.id = :climateActionId`;
       } else {

@@ -149,8 +149,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
   }
 
   async mail(dto: Project) {
-
-    console.log('mail-----------------',dto)
     let template =
       'Dear ' + dto.contactPersoFullName + ' ' +
       ' <br/> Your project was successfully Submitted .' +
@@ -173,7 +171,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
       .where('ass.isProposal=0 AND ass.projectId = ' + projectId );
 
     let result = await data.getMany();
-    console.log("aaa",result);
     let re=[];
     for(let meth of result){
       if(meth.methodology){
@@ -871,7 +868,6 @@ export class ProjectService extends TypeOrmCrudService<Project> {
           isMac = (assessments.find((o: any) => o.assessmentType == 'MAC' && o.isProposal == 0)) !== undefined ? true : false;
           isGHG = (assessments.find((o: any) => (o.assessmentType == 'Ex-ante' || o.assessmentType == 'Ex-post') && o.isProposal == 0)) !== undefined ? true : false;
         }
-        console.log(isMac, isGHG)
         item["isMac"] = isMac;
         item["isGhg"] = isGHG;
       })

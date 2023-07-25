@@ -88,7 +88,6 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
       },
     });
 
-    console.log(documenst);
     const base = process.env.BASE_URL;
     documenst.forEach((a) => {
       a.viewUrl=`${base}/document/downloadDocument/inline/${a.id}`;
