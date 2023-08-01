@@ -72,11 +72,11 @@ export class ProjectionResultController
 
   @Get('checkAllQCApprovmentProjectionResult')
   async checkAllQCApprovmentProjectionResult(
-    @Query('assementId') assementId: number,
+    @Query('assessmentId') assessmentId: number,
 
   ): Promise<boolean> {
     return await this.service.checkAllQCApprovmentProjectionResult(
-      assementId
+      assessmentId
     );
   }
 }

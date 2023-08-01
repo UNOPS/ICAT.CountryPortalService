@@ -50,33 +50,33 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     isCalculate: boolean,
     flag = ''
   ): Promise<any> {
-    let assement = new Assessment();
-    assement.id = assessmentId;
+    let assessment = new Assessment();
+    assessment.id = assessmentId;
 
     let assessmentYear = new AssessmentYear();
     assessmentYear.id = assessmentYearId;
 
-    let assessmentResault = await this.repo.findOne({
-      where: { assement: assement, assessmentYear: assessmentYear },
+    let assessmentResult = await this.repo.findOne({
+      where: { assessment: assessment, assessmentYear: assessmentYear },
       relations: ['assessmentYear'],
     });
 
     assessmentYear = await this.assessmentYearRepo.findOne(assessmentYearId);
 
     if (isCalculate.toString() == 'false') {
-        return assessmentResault;
+        return assessmentResult;
     } else {
       let asseDetail = await this.assessmentRepo.findOne(assessmentId);
      
       if(asseDetail.isProposal)
       {
-        var assessment = await this.assessmentservice.getAssessmentDetails(
+        var assessmentProposal = await this.assessmentservice.getAssessmentDetails(
           assessmentId,
           assessmentYear.assessmentYear,
         );
       }
       else {
-        var assessment = await this.assessmentservice.getAssessmentDetailsForQC(
+        var assessmentProposal = await this.assessmentservice.getAssessmentDetailsForQC(
           assessmentId,
           assessmentYear.assessmentYear,
         );
@@ -128,7 +128,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     assessmentYear.id = assessmentYearObj.id;
 
     let assessmentResult = await this.repo.findOne({
-      where: { assement: assessment, assessmentYear: assessmentYear },
+      where: { assessment: assessment, assessmentYear: assessmentYear },
     });
 
     if (assessmentResult === undefined || assessmentResult === null) {
