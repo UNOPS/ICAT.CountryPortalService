@@ -403,7 +403,7 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
         'asse.assessmentResult',
         AssessmentResult,
         'ar',
-        'ar.assementId = asse.id AND  ar.totalEmission is not null',
+        'ar.assessmentId = asse.id AND  ar.totalEmission is not null',
       )
       .leftJoinAndMapMany(
         'asse.assessmentYear',
