@@ -128,7 +128,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     assessmentYear.id = assessmentYearObj.id;
 
     let assessmentResult = await this.repo.findOne({
-      where: { assement: assessment, assessmentYear: assessmentYear },
+      where: { assessment: assessment, assessmentYear: assessmentYear },
     });
 
     if (assessmentResult === undefined || assessmentResult === null) {
