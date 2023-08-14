@@ -72,7 +72,7 @@ export class UsersService extends TypeOrmCrudService<User> {
 
     const newUserDb = await this.usersRepository.save(newUser);
 
-    const systemLoginUrl = process.env.CLIENT_URL;
+    const systemLoginUrl = process.env.Reset_URL;
 
     const template =
       'Dear ' +
