@@ -552,7 +552,7 @@ export class AssessmentController implements CrudController<Assessment> {
         const proj = new Project();
         proj.id = dto.project.id;
         dto.project = proj;
-
+        console.log(proj)
         const assessment = await queryRunner.manager.save(Assessment, dto);
 
         const audit: AuditDto = new AuditDto();
