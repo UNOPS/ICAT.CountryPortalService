@@ -82,14 +82,14 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
         );
       }
 
-      if (!assessment.isProposal) {
-        let result = assessment.parameters.find(
+      if (!assessmentProposal.isProposal) {
+        let result = await assessmentProposal.parameters.find(
           (m) =>m.parameterRequest?m.parameterRequest.qaStatus !== QuAlityCheckStatus.Pass:false,
         );
 
         if (result === null || result === undefined) {
           await this.getAssessmentResultFromEngine(
-            assessment.parameters,
+            assessmentProposal.parameters,
           ).subscribe(async (a) => {
             let saveEntity = await this.saveAssessmentResult(
               a.data,
@@ -102,7 +102,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
           return null;
         }
       } else {
-        await this.getAssessmentResultFromEngine(assessment.parameters).subscribe(
+        await this.getAssessmentResultFromEngine(assessmentProposal.parameters).subscribe(
           (a) => {
             return this.saveAssessmentResult(
               a.data,
@@ -128,7 +128,7 @@ export class AssessmentResultService extends TypeOrmCrudService<AssessmentResult
     assessmentYear.id = assessmentYearObj.id;
 
     let assessmentResult = await this.repo.findOne({
-      where: { assement: assessment, assessmentYear: assessmentYear },
+      where: { assessment: assessment, assessmentYear: assessmentYear },
     });
 
     if (assessmentResult === undefined || assessmentResult === null) {

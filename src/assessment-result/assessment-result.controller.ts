@@ -63,7 +63,7 @@ export class AssessmentResultController
     return this;
   }
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Get(
     'assessment-result/GetAssessmentResult/:AssessmentId/:AssessmentYearId/:calculate',
   )

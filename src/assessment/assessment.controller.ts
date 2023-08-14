@@ -303,9 +303,9 @@ export class AssessmentController implements CrudController<Assessment> {
     dto.createdOn = new Date();
     dto.editedBy = '-';
     dto.editedOn = new Date();
-    const queryRunner = getConnection().createQueryRunner();
-    await queryRunner.startTransaction();
-
+    // const queryRunner = getConnection().createQueryRunner();
+    // await queryRunner.startTransaction();
+   
     try {
       if (dto.assessmentType != 'MAC') {
         if (dto.user.username === undefined) {
@@ -320,7 +320,8 @@ export class AssessmentController implements CrudController<Assessment> {
         proj.id = dto.project.id;
         dto.project = proj;
 
-        const assessment = await queryRunner.manager.save(Assessment, dto);
+        // const assessment = await queryRunner.manager.save(Assessment, dto);
+        const assessment = await this.assessmentRepo.save(dto);
         const audit: AuditDto = new AuditDto();
         audit.action = dto.assessmentType + ' Assessment Created';
         audit.comment = dto.assessmentType + ' Assessment Created';
@@ -350,14 +351,17 @@ export class AssessmentController implements CrudController<Assessment> {
 
         dto.applicability !== undefined &&
           dto.applicability.map(async (a) => {
-            await queryRunner.manager.save(ApplicabilityEntity, a);
+            // await queryRunner.manager.save(ApplicabilityEntity, a);
+            await this.applicabilityEntityRepo.save(a);
           });
 
         dto.assessmentYear.map(async (a) => {
-          await queryRunner.manager.save(AssessmentYear, a);
+          // await queryRunner.manager.save(AssessmentYear, a);
+          await this.assessmentYearsRepo.save(a);
         });
 
-        await queryRunner.manager.save(ProjectionYear, dto.projectionYear);
+        // await queryRunner.manager.save(ProjectionYear, dto.projectionYear);
+        this.projectionYearsRepo.save(dto.projectionYear)
 
         const grouped = dto.parameters
           .filter((i) => i.isAlternative)
@@ -418,7 +422,8 @@ export class AssessmentController implements CrudController<Assessment> {
           a.verificationDetail = null;
           a.isAlternative = false;
 
-          const param = await queryRunner.manager.save(Parameter, a);
+          // const param = await queryRunner.manager.save(Parameter, a);
+          const param = await this.paramterRepo.save( a);
 
           await dto.parameters.push(param);
 
@@ -427,7 +432,8 @@ export class AssessmentController implements CrudController<Assessment> {
             paramReq.dataRequestStatus = DataRequestStatus.initiate;
             paramReq.parameter = param;
 
-            await queryRunner.manager.save(ParameterRequest, paramReq);
+            // await queryRunner.manager.save(ParameterRequest, paramReq);
+            await this.parameterRequestRepo.save( paramReq);
           }
         }
 
@@ -444,7 +450,8 @@ export class AssessmentController implements CrudController<Assessment> {
           parent.assessment = assessment;
           parent.hasChild = true;
 
-          const paramParent = await queryRunner.manager.save(Parameter, parent);
+          // const paramParent = await queryRunner.manager.save(Parameter, parent);
+          const paramParent = await this.paramterRepo.save(parent);
 
           dto.parameters.push(paramParent);
 
@@ -453,7 +460,8 @@ export class AssessmentController implements CrudController<Assessment> {
             paramReq.dataRequestStatus = DataRequestStatus.initiate;
             paramReq.parameter = paramParent;
 
-            await queryRunner.manager.save(ParameterRequest, paramReq);
+            // await queryRunner.manager.save(ParameterRequest, paramReq);
+            await this.parameterRequestRepo.save(paramReq);
           }
 
           for await (const b of a['child']) {
@@ -466,14 +474,16 @@ export class AssessmentController implements CrudController<Assessment> {
             b.ParentParameter.id = paramParent.id;
             b.ParentParameterId = paramParent.id;
             b.hasChild = true;
-            const param = await queryRunner.manager.save(Parameter, b);
+            const param = await this.paramterRepo.save(b);
+            // const param = await queryRunner.manager.save(Parameter, b);
             dto.parameters.push(param);
             if (b.value === null || b.value === undefined) {
               const paramReq = new ParameterRequest();
               paramReq.dataRequestStatus = DataRequestStatus.initiate;
               paramReq.parameter = param;
 
-              await queryRunner.manager.save(ParameterRequest, paramReq);
+              // await queryRunner.manager.save(ParameterRequest, paramReq);
+              await this.parameterRequestRepo.save(paramReq);
             }
           }
         }
@@ -484,12 +494,14 @@ export class AssessmentController implements CrudController<Assessment> {
               a.assessmentId = assessment.id;
               a.status = 0;
 
-              await queryRunner.manager.save(AssessmentObjective, a);
+              // await queryRunner.manager.save(AssessmentObjective, a);
+            await this.assessmentObjectiveRepo.save(a)
             } else {
               a.id = null;
               a.assessmentId = assessment.id;
 
-              await queryRunner.manager.save(AssessmentObjective, a);
+              // await queryRunner.manager.save(AssessmentObjective, a);
+              await this.assessmentObjectiveRepo.save(a)
             }
           }
         }
@@ -508,10 +520,11 @@ export class AssessmentController implements CrudController<Assessment> {
             dto.project.proposeDateofCommence = dto.projectStartDate;
           }
 
-          await queryRunner.manager.save(Project, dto.project);
+          // await queryRunner.manager.save(Project, dto.project);
+          await this.projectRepo.save(dto.project)
         }
 
-        await queryRunner.commitTransaction();
+        // await queryRunner.commitTransaction();
 
         const pro = assessment.project.id;
         const pr = await this.projectRepo.findOne({
@@ -552,8 +565,8 @@ export class AssessmentController implements CrudController<Assessment> {
         const proj = new Project();
         proj.id = dto.project.id;
         dto.project = proj;
-        console.log(proj)
-        const assessment = await queryRunner.manager.save(Assessment, dto);
+        const assessment = await this.assessmentRepo.save(dto);
+        // const assessment = await queryRunner.manager.save(Assessment, dto);
 
         const audit: AuditDto = new AuditDto();
         audit.action = dto.assessmentType + ' Assessment Created';
@@ -574,7 +587,8 @@ export class AssessmentController implements CrudController<Assessment> {
           a.assessment = assessment;
         });
 
-        await queryRunner.manager.save(AssessmentYear, dto.assessmentYear);
+        // await queryRunner.manager.save(AssessmentYear, dto.assessmentYear);
+        this.assessmentYearsRepo.save( dto.assessmentYear)
 
         const grouped = dto.parameters
           .filter((i) => i.isAlternative)
@@ -629,8 +643,8 @@ export class AssessmentController implements CrudController<Assessment> {
           a.verificationDetail = null;
           a.isAlternative = false;
 
-          const param = await queryRunner.manager.save(Parameter, a);
-
+          // const param = await queryRunner.manager.save(Parameter, a);
+          const param = await this.paramterRepo.save(a);
           dto.parameters.push(param);
 
           if (a.value === null || a.value === undefined) {
@@ -638,7 +652,8 @@ export class AssessmentController implements CrudController<Assessment> {
             paramReq.dataRequestStatus = DataRequestStatus.initiate;
             paramReq.parameter = param;
 
-            await queryRunner.manager.save(ParameterRequest, paramReq);
+            // await queryRunner.manager.save(ParameterRequest, paramReq);
+            this.parameterRequestRepo.save(paramReq)
           }
         }
 
@@ -655,8 +670,8 @@ export class AssessmentController implements CrudController<Assessment> {
           parent.hasChild = true;
           parent.assessment = assessment;
 
-          const paramParent = await queryRunner.manager.save(Parameter, parent);
-
+          // const paramParent = await queryRunner.manager.save(Parameter, parent);
+          const paramParent = await this.paramterRepo.save(parent);
           dto.parameters.push(paramParent);
 
           if (parent.value === null || parent.value === undefined) {
@@ -664,7 +679,8 @@ export class AssessmentController implements CrudController<Assessment> {
             paramReq.dataRequestStatus = DataRequestStatus.initiate;
             paramReq.parameter = paramParent;
 
-            await queryRunner.manager.save(ParameterRequest, paramReq);
+            // await queryRunner.manager.save(ParameterRequest, paramReq);
+            await this.parameterRequestRepo.save(paramReq)
           }
 
           for await (const b of a['child']) {
@@ -678,8 +694,8 @@ export class AssessmentController implements CrudController<Assessment> {
             b.ParentParameter.id = paramParent.id;
             b.ParentParameterId = paramParent.id;
 
-            const param = await queryRunner.manager.save(Parameter, b);
-
+            // const param = await queryRunner.manager.save(Parameter, b);
+            const param = await this.paramterRepo.save(b);
             dto.parameters.push(param);
 
             if (b.value === null || b.value === undefined) {
@@ -687,12 +703,13 @@ export class AssessmentController implements CrudController<Assessment> {
               paramReq.dataRequestStatus = DataRequestStatus.initiate;
               paramReq.parameter = param;
 
-              await queryRunner.manager.save(ParameterRequest, paramReq);
+              // await queryRunner.manager.save(ParameterRequest, paramReq);
+              await this.parameterRequestRepo.save(paramReq)
             }
           }
         }
 
-        await queryRunner.commitTransaction();
+        // await queryRunner.commitTransaction();
 
         const pro = assessment.project.id;
         const pr = await this.projectRepo.findOne({
@@ -721,10 +738,10 @@ export class AssessmentController implements CrudController<Assessment> {
         return await this.assessmentRepo.findOne(assessment.id);
       }
     } catch (err) {
-      await queryRunner.rollbackTransaction();
+      // await queryRunner.rollbackTransaction();
       throw new Error('error in saving assessment data');
     } finally {
-      await queryRunner.release();
+      // await queryRunner.release();
     }
   }
 
