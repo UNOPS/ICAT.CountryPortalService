@@ -92,6 +92,7 @@ The environment variables should be declared as follow:
 | `CLIENT_URL`          | Country Service Web URL                        |
 | `PWD_RESET_URL`       | Country Service Web URL + `/reset-password`    |
 | `CAL_ENGINE_BASE_URL` | Calculation Engine URL                         |
+| `MAC_PNG_URL`         | Python Application URL                         |
 | `API_KEY_1`           | API key. Should be the same as used by clients |
 | `API_KEY_2`           | API key. Should be the same as used by clients |
 

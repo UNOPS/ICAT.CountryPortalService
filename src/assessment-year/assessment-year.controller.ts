@@ -373,7 +373,7 @@ export class AssessmentYearController
     });
 
     for (const gr of graphsData) {
-      await axios.post(`${process.env.BASE_URL}/image`, gr[1]).then((res) => {
+      await axios.post(`${process.env.MAC_PNG_URL}/image`, gr[1]).then((res) => {
         graphsYearWise.push([gr[0], res.data]);
       });
     }
