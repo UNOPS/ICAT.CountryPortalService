@@ -80,7 +80,12 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         'as',
         'ae.assessmentId = as.id',  
       )
-
+      .innerJoinAndMapOne(
+        'as.project',
+        Project,
+        'p',
+        `as.projectId = p.id and p.countryId = ${countryIdFromTocken}`,
+      )
       .where(filter, {
         filterText: `%${filterText}%`,
         VRstatusId,
