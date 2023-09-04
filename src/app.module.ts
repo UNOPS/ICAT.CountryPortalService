@@ -116,6 +116,7 @@ import { MethodologyData } from './master-data/methodology-data/methodology-data
       serveStaticOptions: { index: false },
     }),
     ConfigModule.forRoot({
+      envFilePath: '.env.example', 
       isGlobal: true,
     }),
     MailerModule.forRoot({
