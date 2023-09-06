@@ -218,7 +218,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
       .where(filter, {
         filterText: `%${filterText}%`,
-        countryId,
+        countryIdFromTocken,
         sectorId,
         ndcId,
         projectId,
