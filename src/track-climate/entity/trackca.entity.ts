@@ -15,7 +15,7 @@ export class TrackcaEntity extends BaseTrackingEntity {
   @Column()
   climateActionName: string;
 
-  @Column({ default: null })
+  @Column({length: 2000, default: null })
   description: string;
 
   @Column({ length: 500, default: null, nullable: true })

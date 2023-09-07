@@ -4,7 +4,7 @@ Backend service for ICAT Climate Action Assessment Tool for Transport Sector - T
 
 Supported by [Initiative for Climate Action Transparency - ICAT](https://climateactiontransparency.org/).
 
-Built using [Node.js 18](https://nodejs.org/dist/latest-v18.x/docs/api/) and [Nest](https://github.com/nestjs/nest) framework.
+Built using [Node.js 16](https://nodejs.org/dist/latest-v16.x/docs/api/) and [Nest](https://github.com/nestjs/nest) framework.
 
 ## Database Configuration
 
@@ -12,7 +12,7 @@ This application uses a [MySQL Database](https://www.mysql.com/). The `ICAT-coun
 
 ## Manual Installation
 
-1. Download and install the [Node.js 18 LTS version](https://nodejs.org/en/download) for your operational system.
+1. Download and install the [Node.js 16 LTS version](https://nodejs.org/en/download/releases) for your operational system.
 
 2. Download or clone this repository.
 
@@ -120,18 +120,8 @@ This application provides API service to CountryPortalWeb application and consum
 The complete dependency diagram of TraCAD Country and PMU applications:
 
 <p align="left">
-  <img src="https://lucid.app/publicSegments/view/9a6fb822-be5a-47d7-ad67-0434a4025234/image.png" width="800" alt="TraCAD Diagram" /></a>
+  <img src="https://lucid.app/publicSegments/view/7e56ab6c-3c14-428b-be1d-63dfd33760be/image.png" width="800" alt="TraCAD Diagram" /></a>
 </p>
-
-## Standalone TraCAD Country App Installation
-
-Suggested simplified installation of the standalone TraCAD Country Application:
-
-<p align="left">
-  <img src="https://lucid.app/publicSegments/view/173624cf-952e-40dd-bd8a-ab031a40a1b8/image.png" width="800" alt="TraCAD Simplified Diagram" /></a>
-</p>
-
-> This version doesn’t include the PMU TraCAD application and the CountryScheduler application responsible for the data synchronization between Country and PMU applications.
 
 ## License
 

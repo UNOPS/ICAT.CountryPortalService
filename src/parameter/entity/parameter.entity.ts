@@ -184,4 +184,7 @@ export class Parameter extends BaseTrackingEntity {
 
   @Column({ nullable: true })
   previouseParameterId: number;
+
+  @Column({ default: false })
+  isConcernRaised: boolean;
 }
