@@ -135,7 +135,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
       )
 
       .where(
-        filter + filter + " AND ae.verificationUser =" + user.id,
+         filter + " AND ae.verificationUser =" + user.id,
         {
           filterText: `%${filterText}%`,
           VRstatusId,
