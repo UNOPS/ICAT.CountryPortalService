@@ -5,7 +5,12 @@ import { json, urlencoded } from 'express';
 import 'dotenv/config'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule , { cors: true });
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+});
   const options = new DocumentBuilder()
     .setTitle('ICAT')
     .setDescription('ICAT')
@@ -17,7 +22,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
-  app.enableCors();
   await app.listen(parseInt(process.env.PORT) || 8080);
 }
 bootstrap();
