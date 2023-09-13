@@ -326,6 +326,7 @@ export class InstitutionService extends TypeOrmCrudService<Institution> {
         sectorIdFromTocken,
         institutionIdFromTocken,
       })
+      .andWhere('ins.status = 0')
       .orderBy('ins.status', 'ASC');
 
     const result = await paginate(data, options);

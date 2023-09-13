@@ -399,7 +399,7 @@ export class AssessmentService extends TypeOrmCrudService<Assessment> {
         'pt',
         'pt.id = asse.projectId',
       )
-      .innerJoinAndMapOne(
+      .leftJoinAndMapOne(
         'asse.assessmentResult',
         AssessmentResult,
         'ar',
