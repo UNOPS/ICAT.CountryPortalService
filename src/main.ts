@@ -1,16 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { json, urlencoded } from 'express';
+import { NextFunction, json, urlencoded,Response  } from 'express';
 import 'dotenv/config'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule , { cors: true });
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-});
+  const option = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true
+  };
+  app.enableCors(option);
+  app.use(function (request: Request, response: Response, next: NextFunction) {
+    response.setHeader('Access-Control-Allow-Origin', 'http://tracad.unops.org');
+    next();
+  });
   const options = new DocumentBuilder()
     .setTitle('ICAT')
     .setDescription('ICAT')
