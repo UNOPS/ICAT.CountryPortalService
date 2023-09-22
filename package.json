@@ -44,7 +44,7 @@
     "bcrypt": "^5.0.1",
     "chart.js-image": "^6.0.3",
     "class-transformer": "^0.4.0",
-    "dotenv":"16.3.1",
+    "dotenv": "^16.3.1",
     "html-pdf-node": "^1.0.8",
     "http": "^0.0.1-security",
     "i": "^0.3.7",
