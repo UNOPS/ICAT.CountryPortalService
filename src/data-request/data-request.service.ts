@@ -489,9 +489,9 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           'Dear ' +
           ss[0].institution.name +
           '<br/>Data request with following information has shared with you.' +
-          ' <br/> parameter name' +
+          ' <br/> parameter name - ' +
           ss[0].name +
-          '<br/> deadline ' +
+          '<br/> deadline - ' +
           updateDataRequestDto.deadline;
 
         this.emaiService.sendMail(
@@ -536,16 +536,16 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
 
       const template =
         'Dear ' +
-        user[0].fullName +
+        user[0].firstName +
         ' ' +
         user[0].lastName +
         ' <br/> Data request with following information has shared with you.' +
-        '<br/> Parameter name' +
+        '<br/> Parameter name - ' +
         dataRequestItem.parameter.name +
-        '<br/> deadline ' +
+        '<br/> deadline - ' +
         updateDataRequestDto.deadline +
-        '<br> comment' +
-        updateDataRequestDto.comment;
+        '<br> comment - ' +
+        updateDataRequestDto?.comment;
 
       this.emaiService.sendMail(
         user[0].email,
@@ -714,7 +714,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           '<br/> parameter name -: ' +
           dataRequestItem.parameter.name +
           '<br> comment -: ' +
-          updateDataRequestDto.comment;
+          updateDataRequestDto?.comment;
       } else {
         template =
           'Dear ' +
@@ -766,10 +766,10 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
           ' ' +
           '<br/>Data request with following information has shared with you.' +
           ' <br/> We are assign  Data entry' +
-          '<br/> deadline ' +
+          '<br/> deadline - ' +
           updateDataRequestDto.deadline +
-          '<br> comment' +
-          updateDataRequestDto.comment;
+          '<br> comment - ' +
+          updateDataRequestDto?.comment;
         this.emaiService.sendMail(
           ins.institution.email,
           'Assign  Data Entry',
@@ -780,15 +780,15 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         if (updateDataRequestDto.comment != undefined) {
           template =
             'Dear ' +
-            user[0].fullName +
+            user[0].firstName +
             ' ' +
             user[0].lastName +
             '<br/>Data request with following information has shared with you.' +
             ' <br/> We are assign  Data entry' +
-            '<br/> deadline ' +
+            '<br/> deadline - ' +
             updateDataRequestDto.deadline +
-            '<br> comment' +
-            updateDataRequestDto.comment;
+            '<br> comment - ' +
+            updateDataRequestDto?.comment;
           this.emaiService.sendMail(
             user[0].email,
             'Assign  Data Entry',
@@ -798,12 +798,12 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         } else {
           template =
             'Dear ' +
-            user[0].fullName +
+            user[0].firstName +
             ' ' +
             user[0].lastName +
             '<br/>Data request with following information has shared with you.' +
             ' <br/> We are assign new Data entry' +
-            '<br/> deadline ' +
+            '<br/> deadline - ' +
             updateDataRequestDto.deadline;
 
           this.emaiService.sendMail(
