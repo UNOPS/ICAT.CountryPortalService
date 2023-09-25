@@ -1,6 +1,6 @@
 import { Country } from 'src/country/entity/country.entity';
 import { MasterData } from 'src/shared/entities/master.data.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Double, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Sector } from '../../sector/sector.entity';
 
 @Entity({ name: 'EmissionReductionDraftData' })
@@ -15,18 +15,18 @@ export class EmissionReductioDraftDataEntity extends MasterData {
   @Column()
   baseYear: string;
 
-  @Column()
+  @Column({type :"double" })
   baseYearEmission: number;
 
   @Column()
   targetYear: string;
 
-  @Column()
+  @Column({type :"double" })
   targetYearEmission: number;
 
-  @Column({ default: null })
+  @Column({ default: null,type :"double" })
   unconditionaltco2: number;
 
-  @Column({ default: null })
+  @Column({ default: null,type :"double" })
   conditionaltco2: number;
 }
