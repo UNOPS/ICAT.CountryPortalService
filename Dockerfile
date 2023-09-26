@@ -75,7 +75,5 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/template ./template
 COPY --chown=node:node --from=build /usr/src/app/public ./public
 
-USER node
-
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
