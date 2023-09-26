@@ -456,7 +456,7 @@ export class ParameterRequestService extends TypeOrmCrudService<ParameterRequest
         (
           (institutionId != 0 ? `i.id=${institutionId} AND ` : '') +
           (climateActionId != 0 ? `p.id=${climateActionId} AND ` : '') +
-          `dr.dataRequestStatus in (6,7,-6) AND ` +
+          `dr.dataRequestStatus in (6,7) AND ` +
           (type != '' ? `a.assessmentType='${type}' AND ` : '') +
           (year != '' ? `ay.assessmentYear='${year}' AND ` : '') +
           (filterText != ''
