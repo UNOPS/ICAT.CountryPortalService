@@ -68,23 +68,14 @@ RUN apk add --no-cache \
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
+# Puppeteer v13.5.0 works with Chromium 100.
+RUN yarn add puppeteer@13.5.0
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/template ./template
 COPY --chown=node:node --from=build /usr/src/app/public ./public
-
-# Puppeteer v13.5.0 works with Chromium 100.
-RUN yarn add puppeteer@13.5.0
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
-    && mkdir -p /home/pptruser/Downloads /app \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-
-# Run everything after as non-privileged user.
-USER pptruser
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
