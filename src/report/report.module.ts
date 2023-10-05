@@ -30,6 +30,7 @@ import { ReportPdfFileData } from './entity/report-pdfFile.entity';
 import { Report } from './entity/report.entity';
 import { ReportController } from './report.controller';
 import { ReportService } from './report.service';
+import { StorageModule } from 'src/storage/storage.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { ReportService } from './report.service';
     UsersModule,
     AssessmentYearModule,
     EmissionReductionDraftdataModule,
+    StorageModule
   ],
   controllers: [ReportController],
   providers: [
