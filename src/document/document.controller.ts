@@ -1,5 +1,5 @@
 import { DocumentOwner } from './entity/document-owner.entity';
-import { editFileName, fileLocation } from './entity/file-upload.utils';
+import { editFileName, editFileNameForStorage, fileLocation, fileLocationForStorage } from './entity/file-upload.utils';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './document.service';
 import { Crud, CrudController, CrudRequest } from '@nestjsx/crud';
@@ -17,6 +17,8 @@ import {
   Res,
   UseGuards,
   Query,
+  NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { join } from 'path';
 import { createReadStream } from 'fs';
@@ -28,6 +30,8 @@ import { Country } from 'src/country/entity/country.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/project/entity/project.entity';
 import { Repository } from 'typeorm';
+import { StorageService } from 'src/storage/storage.service';
+import { StorageFile } from 'src/storage/storage-file';
 const multer = require('multer');
 
 @Crud({
@@ -43,53 +47,13 @@ export class DocumentController implements CrudController<Documents> {
     private readonly tokenDetails: TokenDetails,
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    private storageService: StorageService
   ) {}
 
   @Post('upload')
   uploadFile(@Body() file: Documents) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('upload2/:oid/:owner')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: multer.diskStorage({
-        destination: fileLocation,
-        filename: editFileName,
-      }),
-    }),
-  )
-  async uploadFile2(
-    @UploadedFile() file,
-    @Req() req: CrudRequest,
-    @Param('oid') oid,
-    @Param('owner') owner,
-  ) {
-    const docowner: DocumentOwner = (<any>DocumentOwner)[owner];
-    const path = join(owner, oid, file.filename);
-    const doc = new Documents();
-    doc.documentOwnerId = oid;
-    doc.documentOwner = docowner;
-    doc.fileName = file.originalname;
-    doc.mimeType = file.mimetype;
-    doc.relativePath = path;
 
-    const audit: AuditDto = new AuditDto();
-    audit.action = file.originalname + ' Uploaded';
-    audit.comment = 'Document Uploaded';
-    audit.actionStatus = 'Uploaded';
-
-    this.auditService.create(audit);
-
-    let countryIdFromTocken: number;
-    [countryIdFromTocken] = this.tokenDetails.getDetails([
-      TokenReqestType.countryId,
-    ]);
-    const country = new Country();
-    country.id = countryIdFromTocken;
-    doc.country = country;
-
-    const newdoc = await this.service.saveDocument(doc);
-  }
 
   @Post('uploadFileAnonymous/:oid/:owner')
   @UseInterceptors(
@@ -144,10 +108,19 @@ export class DocumentController implements CrudController<Documents> {
     audit.action = 'Document Deleted';
     audit.comment = 'Document Deleted';
     audit.actionStatus = 'Deleted';
-
+    const doc = await this.service.findOne(docId)
+    try {
+       await this.storageService.delete(doc.relativePath);
+    } catch (e) {
+      if (e.message.toString().includes("No such object")) {
+        throw new NotFoundException("image not found");
+      } else {
+        throw new ServiceUnavailableException("internal error");
+      }
+    }
     await this.auditService.create(audit);
 
-    return await this.service.deleteDocument(docId);
+    return await this.service.deleteDocument(doc);
   }
 
   @Post('anonymousDelete/:docId')
@@ -156,10 +129,20 @@ export class DocumentController implements CrudController<Documents> {
     audit.action = 'Anonymous Document Deleted';
     audit.comment = 'Anonymous Document Deleted';
     audit.actionStatus = 'Deleted';
+    const doc = await this.service.findOne(docId)
+    try {
+       await this.storageService.delete(doc.relativePath);
+    } catch (e) {
+      if (e.message.toString().includes("No such object")) {
+        throw new NotFoundException("image not found");
+      } else {
+        throw new ServiceUnavailableException("internal error");
+      }
+    }
 
     this.auditService.create(audit);
 
-    return this.service.anonymousDeleteDocument(docId);
+    return this.service.anonymousDeleteDocument(doc);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -201,6 +184,59 @@ export class DocumentController implements CrudController<Documents> {
       countryIdFromTocken,
     );
   }
+ 
+
+  @UseGuards(JwtAuthGuard)
+  @Post('upload2/:oid/:owner')
+  @UseInterceptors(
+    FileInterceptor("file", {
+      limits: {
+        files: 1,
+        fileSize: 1024 * 1024,
+      },
+    })
+  )
+  async uploadFile2(
+    @UploadedFile() file,
+    @Param('oid') oid,
+    @Param('owner') owner,
+    
+  ) {
+    const fileName=editFileNameForStorage(file);
+    const location=fileLocationForStorage(owner,oid)
+    await this.storageService.save(
+      location + fileName,
+      file.mimetype,
+      file.buffer,
+      [{ mediaId: fileName }]
+    );
+
+   const docowner: DocumentOwner = (<any>DocumentOwner)[owner];
+    const doc = new Documents();
+    doc.documentOwnerId = oid;
+    doc.documentOwner = docowner;
+    doc.fileName = file.originalname;
+    doc.mimeType = file.mimetype;
+    doc.relativePath = location + fileName;
+
+    const audit: AuditDto = new AuditDto();
+    audit.action = file.originalname + ' Uploaded';
+    audit.comment = 'Document Uploaded';
+    audit.actionStatus = 'Uploaded';
+
+    this.auditService.create(audit);
+
+    let countryIdFromTocken: number;
+    [countryIdFromTocken] = this.tokenDetails.getDetails([
+      TokenReqestType.countryId,
+    ]);
+    const country = new Country();
+    country.id = countryIdFromTocken;
+    doc.country = country;
+
+    const newdoc = await this.service.saveDocument(doc);
+
+  }
   @Get('downloadDocument/:state/:did')
   async downloadDocuments(
     @Res({ passthrough: true }) res,
@@ -208,14 +244,24 @@ export class DocumentController implements CrudController<Documents> {
     @Param('state') state: string,
   ): Promise<StreamableFile> {
     const doc: Documents = await this.service.getDocument(did);
-
+    let storageFile: StorageFile;
+    try {
+      storageFile = await this.storageService.get(doc.relativePath);
+    } catch (e) {
+      if (e.message.toString().includes("No such object")) {
+        throw new NotFoundException("image not found");
+      } else {
+        throw new ServiceUnavailableException("internal error");
+      }
+    }
     res.set({
       'Content-Type': `${doc.mimeType}`,
       'Content-Disposition': `${state}; filename=${doc.fileName}`,
     });
 
-    const file = createReadStream(`./static-files/${doc.relativePath}`);
 
-    return new StreamableFile(file);
+    return new StreamableFile(storageFile.buffer);
   }
+
+
 }

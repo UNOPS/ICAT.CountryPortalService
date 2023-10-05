@@ -41,3 +41,16 @@ export const fileLocation = (req, file, callback) => {
   }
   callback(null, dir);
 };
+
+export const editFileNameForStorage = (file) => {
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(8)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+ return `${randomName}${fileExtName}`;
+};
+
+export const fileLocationForStorage = (owner,oid) => {
+  return statticFileLocation+"/" + owner+"/"+oid;
+};

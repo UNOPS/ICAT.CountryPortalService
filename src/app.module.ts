@@ -73,6 +73,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { CaActionHistoryController } from './ca-action-history/ca-action-history.controller';
 import { CaActionHistoryModule } from './ca-action-history/ca-action-history.module';
 import { MethodologyData } from './master-data/methodology-data/methodology-data.entity';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -160,6 +161,7 @@ import { MethodologyData } from './master-data/methodology-data/methodology-data
     UnitConversionModule,
     TrackClimateModule,
     CaActionHistoryModule,
+    StorageModule,
   ],
   controllers: [
     AppController,
