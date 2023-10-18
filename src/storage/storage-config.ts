@@ -1,9 +1,8 @@
 const StorageConfig = {
-    projectId: process.env.PROJECT_ID,
-    private_key: process.env.PRIVATE_KEY,
-    client_email: process.env.CLIENT_EMAIL,
-    mediaBucket: process.env.STORAGE_MEDIA_BUCKET,
-
+    projectId: 'arctic-shadow-400805',
+    private_key:"-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCk9RNwhxZYaEna\nUvvh/KnHyjYUNbCx5pXSuqozC74kGJMP43kCJOQLSFO9MsBv9Wv9WsIwj10hNjna\nwUPRX3voAYVSr+TmCEYzLENqzkrRMRCR/+gexAsuBmk+gq92QUHMes7q0kr2FOkR\nyfUn1KTrLdj8M4HRnZ85KgyLSEK2VZk/vbw+oCCR52DYDuAegArLOboW6LLPqoO0\nRrQHp5qlkyKG7PKnN7IVZRhfhjgbGloawuot4JMLw7vaW0arNgCZzXjdt9MASZFg\npqyijrVhtTMbTa0uWNxm8Gcn7q02/6O9jS80JyC11x8lGLfcck25IGcPKJz5XPvD\nt0sslzTLAgMBAAECgf89C/DjaDdOk2+39C1pTtXSI+cO++wcbxN1Dxr3MXRJFuIT\ng/V9WmKY5sMgOCzGl5sTkDceDViiuPzpFIoEk1Gmd80rK3tknI7ZfcDwqXqU+d9N\n7+uYgKj32rzfSPk0pG0dsTjPT4i6M+ZsFzUUyt+l8IEadc9vZOXT4yQplvM/Vz5L\nJkYZjjj5skUQt463Fo1QTnmvV0xPT1/d9n5gPjrpI9bo7TpDXpJ/Wa+3l5jRLkz9\nt6bjWOIB5xFZ2O3qW0GCKtdqK2subUDV+neQO3Xkz5NP5m1NSqvBm8c8gHeqwhmw\nQGq6bXZMvlv8QsrsNawqU+U8Rvf2ZDRF0yALrPECgYEA2VNzU/ImXv3im+3XL/Ig\neLA2JkE/DpUb8WIKMMc14etCdM2GxQHReyo3IAzuCm+v1QVj+UulfodrRvqNa091\nGSClw4limgLoQFAYOQhq/eScoorKjJ79v6FuAIvWPKWN7Lfkel6FLI0Xltw2HIiy\nuuoi3cRJu8e6alVY//IKXxUCgYEAwk/oZh+zh+ZNQ46uf95ejGqO2x0DqF/xs5Gs\n05mGTSDlXocXWHeNMHkZdSNOLCnQlNTfGuG7mVz+e7Hlt/iatjMOvncHtj1yjoDr\nNMpJ+2a+7YFQ/hZrzHqyS4HrNEPf1D0m66G2QXSm7v8nKNeLhpYlNAFY0u+C5LPx\n1a/hPF8CgYEAgCWI95LttU2XdcKFBKyNIR0mkOAgQoUB+Q+KWsDcsN58TUtzkG9G\nCo4V+zwkkNrSn5WSIcnNSBKp2yyafxBXR/3MQMSd85qLQID6B4dDL3rCMcYNMWX+\n0iRqLMBID3K/gTnd65oYhPCdXEN1VNX2LekprgK0R5m5/kFdPW6HVxECgYEAso55\ncXbKJCS2dVEk+y2dVo0Iz0K/PLdFxQwlc6CNcEy9WXrsMghR/uwZP7H8wMp/+HQQ\nvIQYPtrco1AbV04k5S7P6qg4tveKUHcZLD6Dc3i8FEYT5hk2YAWT150ARNvmUAMN\nw9OrRkTqrY5cLsS7WyaX800VkWg0sPLGVOW1JSMCgYAQAeQNx4vi3VkVeP0g4I4M\nb/11FUZe809I0uIKWb3vEcY1KGb9aYS4aDME44wSk9tn9agecIdhlDeeTW8rcG16\np/M64eL0yimY/PhMyR9p430EVaYbyBHzsHjY+1ZqD52QTnSGYoOK4wDzL90/9ImH\nBGC4BZmGxblgD4adM4kvuA==\n-----END PRIVATE KEY-----\n",
+    client_email: 'icat-bucket-test@arctic-shadow-400805.iam.gserviceaccount.com',
+    mediaBucket: "icat_climatesi_kh",
   };
   
   export default StorageConfig;
