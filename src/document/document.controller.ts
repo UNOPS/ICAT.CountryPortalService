@@ -204,12 +204,21 @@ export class DocumentController implements CrudController<Documents> {
   ) {
     const fileName=editFileNameForStorage(file);
     const location=fileLocationForStorage(owner,oid)
-    await this.storageService.save(
-      location + fileName,
-      file.mimetype,
-      file.buffer,
-      [{ mediaId: fileName }]
-    );
+
+    try {
+      await this.storageService.save(
+        location + fileName,
+        file.mimetype,
+        file.buffer,
+        [{ mediaId: fileName }]
+      );
+    } catch (e) {
+      if (e.message.toString().includes("No such object")) {
+        throw new NotFoundException("file not found");
+      } else {
+        throw new ServiceUnavailableException("internal error");
+      }
+    }
 
    const docowner: DocumentOwner = (<any>DocumentOwner)[owner];
     const doc = new Documents();
