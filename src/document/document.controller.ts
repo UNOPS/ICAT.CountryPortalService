@@ -219,7 +219,6 @@ export class DocumentController implements CrudController<Documents> {
         throw new ServiceUnavailableException("internal error");
       }
     }
- 
 
    const docowner: DocumentOwner = (<any>DocumentOwner)[owner];
     const doc = new Documents();
