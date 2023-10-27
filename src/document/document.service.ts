@@ -24,37 +24,24 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     return await this.repo.save(doc).catch((error) => {});
   }
 
-  async deleteDocument(docId: number): Promise<any> {
-    const document = await this.repo
-      .createQueryBuilder('document')
-      .where('id=:id', {
-        id: docId,
-      })
-      .getOne();
+  async deleteDocument(document: Documents): Promise<any> {
+    
 
     if (document) {
       const del = await this.repo.delete(document);
-      this.deleteFile(document.relativePath);
     }
 
     return document;
   }
 
-  async anonymousDeleteDocument(docId: number): Promise<any> {
-    const document = await this.repo
-      .createQueryBuilder('document')
-      .where('countryId = :countryId AND id=:id', {
-        countryId: 0,
-        id: docId,
-      })
-      .getOne();
+  async anonymousDeleteDocument(document: Documents): Promise<any> {
+   
 
     if (document) {
       const del = await this.repo.delete(document).catch((a) => {
         return a;
       });
 
-      this.deleteFile(document.relativePath);
     }
 
     return document;
@@ -92,6 +79,7 @@ export class DocumentService extends TypeOrmCrudService<Documents> {
     documenst.forEach((a) => {
       a.viewUrl=`${base}/document/downloadDocument/inline/${a.id}`;
       a.url = `${base}/document/downloadDocument/attachment/${a.id}`;
+
     });
 
     return documenst;

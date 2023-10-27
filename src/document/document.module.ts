@@ -8,9 +8,10 @@ import { Audit } from 'src/audit/entity/audit.entity';
 import { AuditService } from 'src/audit/audit.service';
 import { TokenDetails } from 'src/utills/token_details';
 import { Project } from 'src/project/entity/project.entity';
+import { StorageModule } from 'src/storage/storage.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Documents, User, Audit, Project])],
+  imports: [TypeOrmModule.forFeature([Documents, User, Audit, Project]),StorageModule],
   providers: [DocumentService, AuditService, TokenDetails],
   controllers: [DocumentController],
   exports: [DocumentService, AuditService],

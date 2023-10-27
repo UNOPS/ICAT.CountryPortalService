@@ -53,7 +53,21 @@ USER node
 ###################
 
 FROM node:16-alpine As production
+
+# Installs latest Chromium (100) package.
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+# Puppeteer v13.5.0 works with Chromium 100.
+RUN yarn add puppeteer@13.5.0
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
