@@ -59,7 +59,7 @@ export class AssessmentYear extends BaseTrackingEntity {
   assessmentAssumption: string;
 
   @ManyToOne(() => Assessment, (assessment) => assessment.assessmentYear, {
-    cascade: false,
+    cascade: false,eager: true
   })
   assessment: Assessment;
 
