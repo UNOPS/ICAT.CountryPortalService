@@ -403,12 +403,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       });
 
       let template: any;
-      template =
-        'Dear ' +
-        user.firstName +
-        ' ' +
-        user.lastName +
-        ' <br/> Data request with following information has shared with you.' +
+      template = 'Dear ' + user.firstName + ' ' + user.lastName +
+        ' <br/> You has been assigned to verify the following assessment.<br/>' + 
+        '<br/> Climate Action Name- '+ dataRequestItem.assessment.project.climateActionName +
+        '<br/> Assessment Year- '+ dataRequestItem.assessmentYear +
+        '<br/> Assessment Type- ' + dataRequestItem.assessment.assessmentType;
         this.emaiService.sendMail(user.email, 'Assign verifier', '', template);
 
       this.repo.save(dataRequestItem).then((res) => {});
