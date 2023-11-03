@@ -1,5 +1,5 @@
 import { StorageFile } from "./storage-file";
-import { DownloadResponse, Storage } from "@google-cloud/storage";
+// import { DownloadResponse, Storage } from "@google-cloud/storage";
 import { Injectable } from "@nestjs/common";
 import StorageConfig from "./storage-config";
 
@@ -9,13 +9,13 @@ export class StorageService {
   private bucket: string;
 
   constructor() {
-    this.storage = new Storage({
-      projectId: StorageConfig.projectId,
-      credentials: {
-        client_email: StorageConfig.client_email,
-        private_key: StorageConfig.private_key,
-      },
-    });
+    // this.storage = new Storage({
+    //   projectId: StorageConfig.projectId,
+    //   credentials: {
+    //     client_email: StorageConfig.client_email,
+    //     private_key: StorageConfig.private_key,
+    //   },
+    // });
 
     this.bucket = StorageConfig.mediaBucket;
   }
@@ -45,13 +45,13 @@ export class StorageService {
   }
 
   async get(path: string): Promise<StorageFile> {
-    const fileResponse: DownloadResponse = await this.storage
-      .bucket(this.bucket)
-      .file(path)
-      .download();
-    const [buffer] = fileResponse;
+    // const fileResponse: DownloadResponse = await this.storage
+    //   .bucket(this.bucket)
+    //   .file(path)
+    //   .download();
+    // const [buffer] = fileResponse;
     const storageFile = new StorageFile();
-    storageFile.buffer = buffer;
+    // storageFile.buffer = buffer;
     storageFile.metadata = new Map<string, string>();
     return storageFile;
   }

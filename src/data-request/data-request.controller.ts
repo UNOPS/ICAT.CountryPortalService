@@ -132,7 +132,6 @@ export class ParameterRequestController
     );
   }
 
-  @UseGuards(LocalAuthGuard)
   @Get(
     'getAssignDateRequest/:page/:limit/:filterText/:climateActionId/:userName',
   )
@@ -158,7 +157,7 @@ export class ParameterRequestController
       userName,
     );
   }
-  @UseGuards(LocalAuthGuard)
+  
   @Get('getEnterDataRequest/:page/:limit/:filterText/:climateActionId/:year')
   @ApiHeader({
     name: 'api-key',

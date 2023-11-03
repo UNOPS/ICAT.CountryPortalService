@@ -423,7 +423,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
     for await (let index of updateDataRequestDto.ids) {
       const id = index;
-      let dataRequestItem = await this.repo.findOne({ where: { id: id }, relations: ['assessment'] });
+      let dataRequestItem = await this.repo.findOne({ where: { id: id }});
       let originalStatus = dataRequestItem.qaStatus;
       dataRequestItem.qaStatus = updateDataRequestDto.status;
 
@@ -436,7 +436,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     let user: User[];
     let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
     user = await this.userService.find({ where: { country: inscon, userType: 7, institution: ins } })
-
     user.forEach((ab) => {
       var template: any;
       if (updateDataRequestDto.comment != undefined) {
