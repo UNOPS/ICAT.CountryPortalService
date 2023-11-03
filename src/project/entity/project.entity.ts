@@ -36,16 +36,16 @@ export class Project extends BaseTrackingEntity {
   @Column()
   climateActionName: string;
 
-  @Column({ default: null })
+  @Column({ length: 1500, default: null })
   description: string;
 
-  @Column({ length: 100, default: null, nullable: true })
+  @Column({ default: null, nullable: true })
   contactPersoFullName: string;
 
-  @Column({ length: 100, default: null, nullable: true })
+  @Column({ default: null, nullable: true })
   email: string;
 
-  @Column({ length: 100, default: null, nullable: true })
+  @Column({default: null, nullable: true })
   contactPersonDesignation: string;
 
   @Column()
@@ -54,7 +54,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null })
   mobileNumber: string;
 
-  @Column({ length: 100, default: null, nullable: true })
+  @Column({ default: null, nullable: true })
   institution: string;
 
   @ManyToOne((type) => Institution, { cascade: false, nullable: true })
@@ -163,16 +163,16 @@ export class Project extends BaseTrackingEntity {
   @Column({ length: 1500, default: null })
   indirectSDBenefit: string;
 
-  @Column({length: 500, default: null })
+  @Column({length: 1500, default: null })
   implementingEntity: string;
 
-  @Column({length: 500, default: null })
+  @Column({length: 1500, default: null })
   executingEntity: string;
 
-  @Column({ length: 500, default: null })
+  @Column({ length: 1500, default: null })
   partiesInvolved?: string;
 
-  @Column({ length: 500, default: null })
+  @Column({ length: 1500, default: null })
   beneficiaries: string;
 
   @Column({ default: null })
@@ -184,13 +184,13 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   financingScheme?: FinancingScheme;
 
-  @Column({ length: 300, default: null })
+  @Column({ length: 1500, default: null })
   donors: string;
 
-  @Column({ length: 300, default: null })
+  @Column({ length: 1500, default: null })
   investors: string;
 
-  @Column({ length: 500, default: null })
+  @Column({ length: 1500, default: null })
   fundingOrganization: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
@@ -213,7 +213,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   projectApprovalStatus?: ProjectApprovalStatus;
 
-  @Column({ length: 500,default: null })
+  @Column({ length: 1500,default: null })
   projectRejectComment: string;
 
   @Column({ default: null })
@@ -228,7 +228,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null, nullable: true })
   gdp: string;
 
-  @Column({length: 1200, default: null, nullable: true })
+  @Column({length: 1500, default: null, nullable: true })
   assumption: string;
 
   @OneToMany(() => ReportProject, (reportProject) => reportProject.project, {
@@ -260,7 +260,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null })
   availabilityOfTechnology: number;
 
-  @Column({length: 1200, default: null })
+  @Column({length: 1500, default: null })
   actionJustification: string;
 
   @Column({ default: null})
