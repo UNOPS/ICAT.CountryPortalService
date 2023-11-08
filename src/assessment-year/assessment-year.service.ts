@@ -73,7 +73,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         ab.username +
         ' ' +
         ' <br/> Data request with following information has shared with you.';
-
       this.emaiService.sendMail(ab.email, 'Accepted QC', '', template);
     });
   }
