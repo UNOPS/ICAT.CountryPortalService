@@ -36,7 +36,7 @@ export class Project extends BaseTrackingEntity {
   @Column()
   climateActionName: string;
 
-  @Column({ type:'text', length: 1500, default: null })
+  @Column({ type:'longtext', length: 1500, default: null })
   description: string;
 
   @Column({ default: null, nullable: true })
@@ -81,7 +81,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   subNdc?: SubNdc;
 
-  @Column({ type:'text', length: 1500,default: null })
+  @Column({ type:'longtext', length: 1500,default: null })
   projectScope: string;
 
   @ManyToOne((type) => ProjectOwner, { cascade: false })
@@ -115,10 +115,10 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: 0 })
   baseScenarioTotalInvestment: number;
 
-  @Column({ type:'text',length: 1500, default: null, nullable: true })
+  @Column({ type:'longtext',length: 1500, default: null, nullable: true })
   objective: string;
 
-  @Column({ type:'text', length: 1500, default: null, nullable: true })
+  @Column({ type:'longtext', length: 1500, default: null, nullable: true })
   subNationalLevl1: string;
 
   @Column({ default: null, nullable: true })
@@ -145,34 +145,34 @@ export class Project extends BaseTrackingEntity {
   })
   latitude: number;
 
-  @Column({type:'text', length: 1500, default: null, nullable: true })
+  @Column({type:'longtext', length: 1500, default: null, nullable: true })
   outcome: string;
 
-  @Column({ type:'text',length: 1500, default: null, nullable: true })
+  @Column({ type:'longtext',length: 1500, default: null, nullable: true })
   currentProgress: string;
 
   @Column({ default: null, nullable: true })
   chgEmissions: string;
 
-  @Column({type:'text', length: 1500, default: null, nullable: true })
+  @Column({type:'longtext', length: 1500, default: null, nullable: true })
   adaptationBenefits: string;
 
-  @Column({ type:'text',length: 1500, default: null })
+  @Column({ type:'longtext',length: 1500, default: null })
   directSDBenefit: string;
 
-  @Column({ type:'text',length: 1500, default: null })
+  @Column({ type:'longtext',length: 1500, default: null })
   indirectSDBenefit: string;
 
-  @Column({type:'text',length: 1500, default: null })
+  @Column({type:'longtext',length: 1500, default: null })
   implementingEntity: string;
 
-  @Column({type:'text',length: 1500, default: null })
+  @Column({type:'longtext',length: 1500, default: null })
   executingEntity: string;
 
-  @Column({type:'text', length: 1500, default: null })
+  @Column({type:'longtext', length: 1500, default: null })
   partiesInvolved?: string;
 
-  @Column({type:'text', length: 1500, default: null })
+  @Column({type:'longtext', length: 1500, default: null })
   beneficiaries: string;
 
   @Column({ default: null })
@@ -184,13 +184,13 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   financingScheme?: FinancingScheme;
 
-  @Column({type:'text', length: 1500, default: null })
+  @Column({type:'longtext', length: 1500, default: null })
   donors: string;
 
-  @Column({type:'text', length: 1500, default: null })
+  @Column({type:'longtext', length: 1500, default: null })
   investors: string;
 
-  @Column({type:'text', length: 1500, default: null })
+  @Column({type:'longtext', length: 1500, default: null })
   fundingOrganization: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
@@ -213,7 +213,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   projectApprovalStatus?: ProjectApprovalStatus;
 
-  @Column({type:'text', length: 1500,default: null })
+  @Column({type:'longtext', length: 1500,default: null })
   projectRejectComment: string;
 
   @Column({ default: null })
