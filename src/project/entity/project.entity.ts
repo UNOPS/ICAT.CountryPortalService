@@ -36,7 +36,7 @@ export class Project extends BaseTrackingEntity {
   @Column()
   climateActionName: string;
 
-  @Column({ type:'longtext', default: null })
+  @Column({ type:'text', default: null })
   description: string;
 
   @Column({ default: null, nullable: true })
@@ -81,7 +81,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   subNdc?: SubNdc;
 
-  @Column({ type:'longtext', default: null })
+  @Column({ type:'text', default: null })
   projectScope: string;
 
   @ManyToOne((type) => ProjectOwner, { cascade: false })
@@ -115,10 +115,10 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: 0 })
   baseScenarioTotalInvestment: number;
 
-  @Column({ type:'longtext', default: null, nullable: true })
+  @Column({ type:'text', default: null, nullable: true })
   objective: string;
 
-  @Column({ type:'longtext', default: null, nullable: true })
+  @Column({ type:'text', default: null, nullable: true })
   subNationalLevl1: string;
 
   @Column({ default: null, nullable: true })
@@ -145,34 +145,34 @@ export class Project extends BaseTrackingEntity {
   })
   latitude: number;
 
-  @Column({type:'longtext', default: null, nullable: true })
+  @Column({type:'text', default: null, nullable: true })
   outcome: string;
 
-  @Column({ type:'longtext', default: null, nullable: true })
+  @Column({ type:'text', default: null, nullable: true })
   currentProgress: string;
 
   @Column({ default: null, nullable: true })
   chgEmissions: string;
 
-  @Column({type:'longtext', default: null, nullable: true })
+  @Column({type:'text', default: null, nullable: true })
   adaptationBenefits: string;
 
-  @Column({ type:'longtext', default: null })
+  @Column({ type:'text', default: null })
   directSDBenefit: string;
 
-  @Column({ type:'longtext', default: null })
+  @Column({ type:'text', default: null })
   indirectSDBenefit: string;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   implementingEntity: string;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   executingEntity: string;
 
-  @Column({type:'longtext',  default: null })
+  @Column({type:'text', default: null })
   partiesInvolved?: string;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   beneficiaries: string;
 
   @Column({ default: null })
@@ -184,13 +184,13 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   financingScheme?: FinancingScheme;
 
-  @Column({type:'longtext',  default: null })
+  @Column({type:'text', default: null })
   donors: string;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   investors: string;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   fundingOrganization: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: null })
@@ -213,7 +213,7 @@ export class Project extends BaseTrackingEntity {
   @JoinColumn()
   projectApprovalStatus?: ProjectApprovalStatus;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   projectRejectComment: string;
 
   @Column({ default: null })
@@ -260,7 +260,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null })
   availabilityOfTechnology: number;
 
-  @Column({type:'longtext', default: null })
+  @Column({type:'text', default: null })
   actionJustification: string;
 
   @Column({ default: null})
