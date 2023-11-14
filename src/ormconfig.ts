@@ -9,10 +9,6 @@ const config: ConnectionOptions = {
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
 
-  // port: 3306,
-  // username: "root",
-  // password: "7860150",
-  // database: "portalservice3",
 
   
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
