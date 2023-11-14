@@ -73,7 +73,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         ab.username +
         ' ' +
         ' <br/> Data request with following information has shared with you.';
-
       this.emaiService.sendMail(ab.email, 'Accepted QC', '', template);
     });
   }
@@ -403,12 +402,11 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       });
 
       let template: any;
-      template =
-        'Dear ' +
-        user.firstName +
-        ' ' +
-        user.lastName +
-        ' <br/> Data request with following information has shared with you.' +
+      template = 'Dear ' + user.firstName + ' ' + user.lastName +
+        ' <br/> You has been assigned to verify the following assessment.<br/>' + 
+        '<br/> Climate Action Name- '+ dataRequestItem.assessment.project.climateActionName +
+        '<br/> Assessment Year- '+ dataRequestItem.assessmentYear +
+        '<br/> Assessment Type- ' + dataRequestItem.assessment.assessmentType;
         this.emaiService.sendMail(user.email, 'Assign verifier', '', template);
 
       this.repo.save(dataRequestItem).then((res) => {});
@@ -424,7 +422,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
 
     for await (let index of updateDataRequestDto.ids) {
       const id = index;
-      let dataRequestItem = await this.repo.findOne({ where: { id: id }, relations: ['assessment'] });
+      let dataRequestItem = await this.repo.findOne({ where: { id: id }});
       let originalStatus = dataRequestItem.qaStatus;
       dataRequestItem.qaStatus = updateDataRequestDto.status;
 
@@ -437,7 +435,6 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     let user: User[];
     let ins = await this.institutionRepo.findOne({ where: { country: inscon, sector: insSec, type: 2 } });
     user = await this.userService.find({ where: { country: inscon, userType: 7, institution: ins } })
-
     user.forEach((ab) => {
       var template: any;
       if (updateDataRequestDto.comment != undefined) {
