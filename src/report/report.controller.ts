@@ -119,6 +119,18 @@ export class ReportController implements CrudController<Report> {
       countryIdFromTocken,
       sectorIdFromTocken,
     );
+
+ 
+    return { fileName: res };
+  }
+
+  @Get('reportnormalPDF')
+  async getReportnormalPDF(): Promise<any> {
+  
+
+    const res = await this.service.createnormalpdf(
+    
+    );
     return { fileName: res };
   }
 
