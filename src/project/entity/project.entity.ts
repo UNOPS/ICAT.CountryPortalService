@@ -228,7 +228,7 @@ export class Project extends BaseTrackingEntity {
   @Column({ default: null, nullable: true })
   gdp: string;
 
-  @Column({type:'longtext', default: null, nullable: true })
+  @Column({type:'text', default: null, nullable: true })
   assumption: string;
 
   @OneToMany(() => ReportProject, (reportProject) => reportProject.project, {
