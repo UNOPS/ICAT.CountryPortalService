@@ -1783,13 +1783,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     `;
 
     const datetime = await this.generateChart(summryReport, graphData);
-    const fileName = `reportPDF_${datetime}.pdf`;
-    const options = {
-      format: 'A4',
-      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
-      path: './public/' + fileName,
-      printBackground: true,
-    };
+  
 
     let userName: string;
 
@@ -1909,10 +1903,84 @@ export class ReportService extends TypeOrmCrudService<Report> {
       <div class="mb-5 mt-5">${tableReportContent} </div>
       <div class="mb-5 mt-5">${activitiData}</div>
       </body></html>`,
+    }; 
+    const fileName = `reportPDF_${datetime}.pdf`; 
+    const options = {
+      format: 'A4',
+      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
+      path: './public/' + fileName,
+      printBackground: true,
+  
     };
 
-    await html_to_pdf.generatePdf(file, options).then((pdfBuffer: any) => {});
+
+
+
+    const puppeteer = require('puppeteer');
+    const browser = await puppeteer.launch({
+      headless: "new",
+      executablePath:'/usr/bin/chromium-browser',
+      args: ['--no-sandbox']
+     
+    });
+
+    let test=`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   
+    </head>
+    <body></body>test</html>`
+    const page = await browser.newPage();
+    await page.setContent(file.content, { waitUntil: 'domcontentloaded' });
+    await page.emulateMediaType('print');
+    const PDF = await page.pdf(options);
+    await browser.close();
+
+    return fileName; 
+  }
+  async createnormalpdf(){
+
+    const fileName = `reportPDF.pdf`; 
+    const options = {
+      format: 'A4',
+      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
+      path: './public/' + fileName,
+      printBackground: true,
+      preferCSSPageSize: true,
+    };
+
+
+  
+
+    const puppeteer = require('puppeteer');
+    
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath:'/usr/bin/chromium-browser',
+      args: ['--no-sandbox']
+    });
+    let test=`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+   
+    </head>
+    <body></body>test</html>`
+    const page = await browser.newPage();
+    await page.setContent(test, { waitUntil: 'domcontentloaded' });
+    await page.emulateMediaType('print');
+    const PDF = await page.pdf(options);
+    await browser.close();
+
 
     return fileName;
+
   }
 }
