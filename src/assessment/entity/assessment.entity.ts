@@ -61,10 +61,10 @@ export class Assessment extends BaseTrackingEntity {
   @Column({ nullable: true })
   macValue: number;
 
-  @Column({ nullable: true })
+  @Column({type:'text', nullable: true })
   baselineScenario: string;
 
-  @Column({ nullable: true })
+  @Column({type:'text', nullable: true })
   projectScenario: string;
 
   @Column({ nullable: true })
