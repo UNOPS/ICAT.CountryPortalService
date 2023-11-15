@@ -104,12 +104,17 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
     userQc: string,
   ) {
     try {
-      const assessmentYear = await this.assessmentYearRepo.findOne(
-        assessmentYearId,
-        {
-          relations: ['assessment'],
-        },
-      );
+
+      let data = this.assessmentYearRepo.createQueryBuilder('assessmentYear')
+      .innerJoinAndSelect(
+        'assessmentYear.assessment',
+        'assessment',
+        'assessmentYear.assessmentId = assessment.id'
+      )
+      .where('assessmentYear.id = :id', {id: assessmentYearId})
+
+      const assessmentYear = await data.getOne()
+      
 
       if (assessmentYear.qaStatus === QuAlityCheckStatus.Pending) {
         assessmentYear.qaStatus = QuAlityCheckStatus.InProgress;
@@ -128,6 +133,7 @@ export class QualityCheckService extends TypeOrmCrudService<ParameterRequest> {
         dataRequset.qaStatus = qaStatus;
         dataRequset.qaComment = comment;
         dataRequset.qcUserName = userQc;
+        //@ts-ignore
         dataRequset.dataRequestStatus = qaStatus == QuAlityCheckStatus.Fail ? 30 : 11;
         dataRequset.qaStatusUpdatedDate = new Date();
         await this.repo.save(dataRequset);
