@@ -13,7 +13,7 @@ export class StorageService {
       projectId: StorageConfig.projectId,
       credentials: {
         client_email: StorageConfig.client_email,
-        private_key: StorageConfig.private_key,
+        private_key: StorageConfig.private_key.replace(/\\n/g, '\n') ,
       },
     });
 
