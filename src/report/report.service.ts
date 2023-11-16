@@ -903,7 +903,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
             const yearsActivity: number[] = [];
             let parameters = assesActivity?.parameters.filter(para => para.verifierAcceptance !== VerifierAcceptance.REJECTED)
-            let groupedActivity = await parameters.reduce(async (r, v, i, a) => {
+            let groupedActivity = await parameters?.reduce(async (r, v, i, a) => {
 
               if (v.isDefault == true) {
                 v.defaultValue = await this.defaultValueService.findOne(v.defaultValueId)
@@ -1810,17 +1810,17 @@ export class ReportService extends TypeOrmCrudService<Report> {
     const year = d.getUTCFullYear();
 
     const coverPage = `
-    <div style="display:flex;flex-direction:column;height:1450px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
+    <div style="display:flex;flex-direction:column;height:1000px;justify-content: space-around;align-items: center;background-color: #3bbbcd !important;">
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h1 style="font-size: 50px;color: white">${reportData.reportName}</h1>
+              <h1 style="font-size: 50px;color: white !important">${reportData.reportName}</h1>
             </div>
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h1 style="color: white">${month} ${year}</h1>
-              <h3 style="color: white">${selectedUser.institution.name}</h3>
+              <h1 style="color: white!important"">${month} ${year}</h1>
+              <h3 style="color: white!important"">${selectedUser.institution.name}</h3>
             </div>
             <div style="display:flex;flex-direction:column;align-items: center;justify-content: center;text-align: center">
-              <h4 style="color: white">Prepared By</h4>
-              <h4 style="color: white">${selectedUser.firstName} ${selectedUser.lastName}</h4>
+              <h4 style="color: white!important"">Prepared By</h4>
+              <h4 style="color: white!important"">${selectedUser.firstName} ${selectedUser.lastName}</h4>
             </div>
     </div>
     `;
@@ -1924,16 +1924,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
      
     });
 
-    let test=`<!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <title>Bootstrap Example</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-   
-   
-    </head>
-    <body></body>test</html>`
+ 
     const page = await browser.newPage();
     await page.setContent(file.content, { waitUntil: 'domcontentloaded' });
     await page.emulateMediaType('print');
