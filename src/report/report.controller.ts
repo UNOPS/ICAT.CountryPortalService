@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   Query,
   Request,
   Res,
+  ServiceUnavailableException,
   StreamableFile,
   UseGuards,
 } from '@nestjs/common';
@@ -28,7 +30,8 @@ import { ReportDataPDF } from './dto/reportDataPDF.dto';
 import { ReportPdfInsert } from './dto/reportPdfInsert.dto';
 import { Report } from './entity/report.entity';
 import { ReportService } from './report.service';
-
+import { StorageService } from 'src/storage/storage.service';
+import { promises as fsPromises } from 'fs';
 @Crud({
   model: {
     type: Report,
@@ -58,6 +61,7 @@ export class ReportController implements CrudController<Report> {
     public yrService: AssessmentYearService,
     public resultService: AssessmentResultService,
     private readonly tokenDetails: TokenDetails,
+    private storageService: StorageService
   ) {}
 
   get base(): CrudController<Report> {
@@ -136,10 +140,33 @@ export class ReportController implements CrudController<Report> {
 
   @Post('reportPdfFileData')
   async getReportPdfFileData(@Body() dto: ReportPdfInsert): Promise<any> {
+   
+      const filePath = `./public/${dto.generateReportName}`;
+      
+       
+        try {
+        const fileContent =await fsPromises.readFile(filePath);
+       
+          await this.storageService.save(
+            'public/' + dto.generateReportName,
+            'application/pdf',
+            fileContent,
+            [{ mediaId: dto.generateReportName }]
+          );
+        } catch (e) {
+          if (e.message.toString().includes("No such object")) {
+            throw new NotFoundException("file not found");
+          } else {
+            throw new ServiceUnavailableException("internal error");
+          }
+        }
+     
+    
     const res = await this.service.savePdfFileData(dto);
 
     return res;
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('reportPdfFileData/:Ndc/:ClimateAction/:Sector/:ReportName')
   async getPdfDataAndFilter(
