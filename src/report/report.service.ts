@@ -924,7 +924,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
 
               if (found == undefined) {
-                (await r).push({ 'name': v.name, 'unit': v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.isDefault ? v.defaultValue.value ? v.defaultValue.value : "" : v.uomDataRequest ? v.conversionValue ? v.conversionValue : "" : v.value ? v.value : "" }] })
+                (await r).push({ 'name': v.name, 'unit': v.uomDataRequest ? v.uomDataRequest : v.uomDataEntry, 'years': [{ 'year': v.AssessmentYear ? v.AssessmentYear : v.baseYear, 'conValue': v.isDefault ? v.defaultValue.value ? v.defaultValue.value : "" : v.uomDataRequest ? v.conversionValue ? v.conversionValue :  v.value ? v.value : "" : v.value ? v.value : "" }] })
               } else {
 
 
@@ -938,7 +938,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                       : v.uomDataRequest
                       ? v.conversionValue
                         ? v.conversionValue
-                        : ''
+                        :  v.value ? v.value : ""
                       : v.value
                       ? v.value
                       : '',

@@ -271,6 +271,29 @@ export class DocumentController implements CrudController<Documents> {
 
     return new StreamableFile(storageFile.buffer);
   }
+  @Get('downloadReport/:reportname')
+  async downloadReport(
+    @Res({ passthrough: true }) res,
+   
+    @Param('reportname') reportname: string,
+  ): Promise<StreamableFile> {
+    let storageFile: StorageFile;
+    try {
+      storageFile = await this.storageService.get('public/'+reportname);
+    } catch (e) {
+      if (e.message.toString().includes("No such object")) {
+        throw new NotFoundException("image not found");
+      } else {
+        throw new ServiceUnavailableException("internal error");
+      }
+    }
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename=${reportname}`,
+    });
 
+
+    return new StreamableFile(storageFile.buffer);
+  }
 
 }
