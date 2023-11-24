@@ -39,6 +39,7 @@ import { UsersService } from 'src/users/users.service';
 import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
+import * as puppeteer from 'puppeteer';
 
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
@@ -582,59 +583,80 @@ export class ReportService extends TypeOrmCrudService<Report> {
       );
     }
 
-    const ChartJSImage = require('chart.js-image');
 
-    const line_chart = ChartJSImage()
-      .chart({
-        type: 'line',
-        data: {
-          labels: year,
-          datasets: [
-            {
-              label: 'BAU Scenario Emissions(tCO₂)',
-              borderColor: 'rgb(54,+162,+235)',
-              backgroundColor: 'rgba(54,+162,+235,+.5)',
-              data: baseLineRes,
-            },
-            {
-              label: 'Project Scenario Emissions(tCO₂)',
-              borderColor: 'rgb(255,+99,+132)',
-              backgroundColor: 'rgba(255,+99,+132,+.5)',
-              data: projectionRes,
-            },
-          ],
-        },
-        options: {
-          title: {
-            display: true,
-            text: 'Project Emmisions Of BAU and Project Scenarios(tCO₂)',
-          },
-          scales: {
-            xAxes: [
+
+  const browser = await puppeteer.launch({
+    executablePath:'/usr/bin/chromium-browser',
+      args: ['--no-sandbox']
+  });
+    const page = await browser.newPage();
+
+    // Inject Chart.js and data into the page
+    await page.setContent(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      </head>
+      <body>
+        <canvas style="width:500px;height:300px" id="myChart"></canvas>
+        <script>
+          var ctx = document.getElementById('myChart').getContext('2d');
+          var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ${JSON.stringify(year)},
+              datasets: [   {
+                label: 'BAU Scenario Emissions(tCO₂)',
+                borderColor: 'rgb(54,+162,+235)',
+                backgroundColor: 'rgba(54,+162,+235,+.5)',
+                data: ${JSON.stringify(baseLineRes)},
+              },
               {
-                scaleLabel: {
-                  display: true,
-                  labelString: 'Years',
-                },
+                label: 'Project Scenario Emissions(tCO₂)',
+                borderColor: 'rgb(255,+99,+132)',
+                backgroundColor: 'rgba(255,+99,+132,+.5)',
+                data:${JSON.stringify(projectionRes)} ,
               },
             ],
-            yAxes: [
-              {
-                stacked: true,
-                scaleLabel: {
-                  display: true,
-                  labelString: 'tCO₂',
-                },
+            },
+            options: {
+              title: {
+                display: true,
+                text: 'Project Emmisions Of BAU and Project Scenarios(tCO₂)',
               },
-            ],
-          },
-        },
-      })
-      .backgroundColor('white')
-      .width(500)
-      .height(300);
+              animation: false,
+              scales: {
+                xAxes: [
+                  {
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Years',
+                    },
+                  },
+                ],
+                yAxes: [
+                  {
+                    stacked: true,
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'tCO₂',
+                    },
+                  },
+                ],
+              },
+            },
+          });
+        </script>
+      </body>
+      </html>
+    `);
 
-    line_chart.toFile('./public/graph' + id.toString() + '.png');
+    // Take a screenshot and save it as PNG
+    await page.screenshot({ path: './public/graph' + id.toString() + '.png', type: 'png' });
+
+    await browser.close(); 
+
   }
 
   async genarateMacGraph(
@@ -1058,8 +1080,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
               </div>`;
 
-          for (let index = 0; index < element.assessments.length; index++) {
-            const assessment = element.assessments[index];
+          // for (let index = 0; index < element.assessments.length; index++) {
+          //   const assessment = element.assessments[index];
+            for await(let assessment of element.assessments) {
 
             const asses = await this.assessment
               .createQueryBuilder('assessment')
