@@ -1,0 +1,31 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EmailNotificationService } from 'src/notifications/email.notification.service';
+import { AssessmentYearController } from './assessment-year.controller';
+import { AssessmentYearService } from './assessment-year.service';
+import { AssessmentYear } from './entity/assessment-year.entity';
+import { ParameterHistoryModule } from 'src/parameter-history/parameter-history.module';
+import { UsersModule } from 'src/users/users.module';
+import { User } from 'src/users/user.entity';
+import { Audit } from 'src/audit/entity/audit.entity';
+import { AuditService } from 'src/audit/audit.service';
+import { TokenDetails } from 'src/utills/token_details';
+import { Institution } from 'src/institution/institution.entity';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([AssessmentYear, User, Audit, Institution, User]),
+    ParameterHistoryModule,
+    UsersModule,
+  ],
+  controllers: [AssessmentYearController],
+  providers: [
+    AssessmentYearService,
+    EmailNotificationService,
+    AuditService,
+    TokenDetails,
+    Institution,
+  ],
+  exports: [AssessmentYearService, AuditService],
+})
+export class AssessmentYearModule {}
