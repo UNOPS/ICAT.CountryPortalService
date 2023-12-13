@@ -1144,12 +1144,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
               .getOne();
 
-            if (assessment.assessmentType == 'Ex-ante') {
-              await this.generateProjectionEmmisionGrpah(
-                assessment.id,
-                element.id,
-              );
-            }
+           
 
             if (
               assessment.assessmentType == 'Ex-ante' ||
@@ -1158,6 +1153,13 @@ export class ReportService extends TypeOrmCrudService<Report> {
               let emmisionReduction = '';
               let projectionEmission = '';
               if (asses) {
+
+                if (assessment.assessmentType == 'Ex-ante') {
+                  await this.generateProjectionEmmisionGrpah(
+                    assessment.id,
+                    element.id,
+                  );
+                }
                 this.assessmentMetholodgy = asses;
 
                 this.commenAssestment = asses;
