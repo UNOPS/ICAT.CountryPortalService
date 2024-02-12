@@ -121,17 +121,18 @@ import { StorageModule } from './storage/storage.module';
     }),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.office365.com',
-        port: 587,
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT),
         secure: false,
 
-        auth: {
-          user: 'no-reply-icat-ca-tool@climatesi.com',
-          pass: 'ICAT2022tool',
-        },
+        /* If necessary, uncomment the code for authentication in the SMTP server */
+        // auth: {
+        //   user: process.env.SMTP_USER,
+        //   pass: process.env.SMTP_PASS,
+        // },
       },
       defaults: {
-        from: '"Admin" <no-reply-icat-ca-tool@climatesi.com>',
+        from: '"TraCAD "' + process.env.SMTP_USER,
       },
     }),
     ServeStaticModule.forRoot({
