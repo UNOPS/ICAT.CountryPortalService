@@ -79,22 +79,30 @@ $ gcloud builds submit --tag [CONTAINER PATH]
 
 The environment variables should be declared as follow:
 
-| Variable name         | Description                                    |
-| --------------------- | ---------------------------------------------- |
-| `PORT`                | Application Port                               |
-| `DATABASE_HOST`       | Database Host(*)                                 |
-| `SOCKET_PATH`         | Database Socket Path(*)                          |
-| `DATABASE_PORT`       | Database Port                                  |
-| `DATABASE_USER`       | Database Socket User                           |
-| `DATABASE_PASSWORD`   | Database Password                              |
-| `DATABASE_NAME`       | Database Name                                  |
-| `BASE_URL`            | Current Application URL                        |
-| `CLIENT_URL`          | Country Service Web URL                        |
-| `PWD_RESET_URL`       | Country Service Web URL + `/reset-password`    |
-| `CAL_ENGINE_BASE_URL` | Calculation Engine URL                         |
-| `MAC_PNG_URL`         | Python Application URL                         |
-| `API_KEY_1`           | API key. Should be the same as used by clients |
-| `API_KEY_2`           | API key. Should be the same as used by clients |
+| Variable name          | Description                                    |
+| ---------------------- | ---------------------------------------------- |
+| `PORT`                 | Application Port                               |
+| `DATABASE_HOST`        | Database Host(*)                               |
+| `SOCKET_PATH`          | Database Socket Path(*)                        |
+| `DATABASE_PORT`        | Database Port                                  |
+| `DATABASE_USER`        | Database Socket User                           |
+| `DATABASE_PASSWORD`    | Database Password                              |
+| `DATABASE_NAME`        | Database Name                                  |
+| `BASE_URL`             | Current Application URL                        |
+| `CLIENT_URL`           | Country Service Web URL                        |
+| `PWD_RESET_URL`        | Country Service Web URL + `/reset-password`    |
+| `CAL_ENGINE_BASE_URL`  | Calculation Engine URL                         |
+| `MAC_PNG_URL`          | Python Application URL                         |
+| `API_KEY_1`            | API key. Should be the same as used by clients |
+| `API_KEY_2`            | API key. Should be the same as used by clients |
+| `PROJECT_ID`           | Google project ID for content storage          |
+| `PRIVATE_KEY`          | Google Service Account private key             |
+| `CLIENT_EMAIL`         | Google Service Account Email                   |
+| `STORAGE_MEDIA_BUCKET` | Google Bucket Name                             |
+| `SMTP_HOST`            | SMTP E-mail server host                        |
+| `SMTP_PORT`            | SMTP E-mail server port                        |  
+| `SMTP_USER`            | SMTP E-mail server user                        |
+| `SMTP_PASS`            | SMTP E-mail server password if requested       |
 
 > (*) Can be used the Database Host or the Database Socket Path depending of the database configuration
 
