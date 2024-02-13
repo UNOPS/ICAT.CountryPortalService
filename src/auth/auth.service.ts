@@ -28,7 +28,7 @@ export class AuthService {
 
       if (selectedUser.status === 0) {
         if (selectedUser.institution.status === 0) {
-          if (selectedUser.institution.country.countryStatus != 'Deactivated') {
+          if (selectedUser.country.countryStatus != 'Deactivated') {
             const payload = {
               usr: (await selectedUser).username,
               fname: selectedUser.firstName,
