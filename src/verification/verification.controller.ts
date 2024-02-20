@@ -24,6 +24,7 @@ import { ResposeDto } from './dto/response.dto';
     type: VerificationDetail,
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('verification')
 export class VerificationController
   implements CrudController<ParameterRequest>

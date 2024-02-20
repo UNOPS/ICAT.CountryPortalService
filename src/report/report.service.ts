@@ -1961,8 +1961,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       await page.emulateMediaType('print');
       const PDF = await page.pdf(options);
       await browser.close();
-
-
+  
       const filePath = `./public/${fileName}`;
   
       try {
