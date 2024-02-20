@@ -24,6 +24,7 @@ import { Audit } from './entity/audit.entity';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('audit')
 export class AuditController implements CrudController<Audit> {
   constructor(
