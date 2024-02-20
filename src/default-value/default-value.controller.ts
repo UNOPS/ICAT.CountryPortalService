@@ -26,6 +26,7 @@ import { DefaultValue } from './entity/defaultValue.entity';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('default-value')
 export class DefaultValueController implements CrudController<DefaultValue> {
   constructor(

@@ -9,7 +9,7 @@ export abstract class MasterData extends BaseTrackingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: null })
+  @Column({type:'text', default: null })
   name: string;
 
   @Column({ length: 2500, default: null })

@@ -49,6 +49,7 @@ import axios from 'axios';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('assessment-year')
 export class AssessmentYearController
   implements CrudController<AssessmentYear>

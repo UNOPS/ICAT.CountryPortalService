@@ -47,6 +47,7 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('assessment-result')
 export class AssessmentResultController
   implements CrudController<AssessmentResult>
