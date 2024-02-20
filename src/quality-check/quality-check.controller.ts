@@ -13,6 +13,7 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
 import { QuAlityCheckStatus } from './entity/quality-check-status.entity';
 import { QualityCheckService } from './quality-check.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('quality-check')
 export class QualityCheckController
   implements CrudController<ParameterRequest>
