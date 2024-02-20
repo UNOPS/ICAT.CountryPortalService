@@ -66,6 +66,7 @@ import { Assessment } from './entity/assessment.entity';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('assessment')
 export class AssessmentController implements CrudController<Assessment> {
   constructor(

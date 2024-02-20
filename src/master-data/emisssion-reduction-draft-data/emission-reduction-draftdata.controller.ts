@@ -34,6 +34,7 @@ import { EmissionReductioDraftDataEntity } from './entity/emission-reductio-draf
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('emission-reduction-draftdata')
 export class EmissionReductionDraftdataController
   implements CrudController<EmissionReductioDraftDataEntity>

@@ -22,6 +22,7 @@ import { ProjectionResultService } from './projection-result.service';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('projection-result')
 export class ProjectionResultController
   implements CrudController<ProjectionResult>
