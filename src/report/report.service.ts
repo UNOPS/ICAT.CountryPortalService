@@ -248,7 +248,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       return pdfFiles;
     } catch (err) {}
   }
-  sfdsfds;
+ 
   async generateChart(summryReport: any[], graphData: any): Promise<string> {
     const BAUList: number[] = [];
     const ConditionalList: number[] = [];
@@ -811,7 +811,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
   ): Promise<string> {
-    const html_to_pdf = require('html-pdf-node');
+   
 
     let activitiData = '';
     activitiData =
@@ -1080,8 +1080,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
               </div>`;
 
-          // for (let index = 0; index < element.assessments.length; index++) {
-          //   const assessment = element.assessments[index];
+
+          let grpsfigurnumber=2
             for await(let assessment of element.assessments) {
 
             const asses = await this.assessment
@@ -1155,10 +1155,13 @@ export class ReportService extends TypeOrmCrudService<Report> {
               if (asses) {
 
                 if (assessment.assessmentType == 'Ex-ante') {
-                  await this.generateProjectionEmmisionGrpah(
-                    assessment.id,
-                    element.id,
-                  );
+                  setTimeout(async () => {
+                    await this.generateProjectionEmmisionGrpah(
+                      assessment.id,
+                      element.id,
+                    );
+                  }, 100);
+               
                 }
                 this.assessmentMetholodgy = asses;
 
@@ -1205,7 +1208,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">Scenario</th>
                                 <th style="border:1px solid black;text-align: center;width:225px;font-size: 17px;" scope="col">${
                                   assessmentYer?.assessmentYear
-                                } Emissions (MtCO2)</th>     
+                                } Emissions (tCO2)</th>     
                                 </tr>
                             </thead>
                             <tbody>
@@ -1254,10 +1257,10 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                 <thead >
                                 <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                                   <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
-                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Baseline Result (MtCO2e)</th>
-                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Project Result (MtCO2e)</th>
-                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Leakage Result (MtCO2e)</th>
-                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emission Reduction (MtCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Baseline Result (tCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Project Result (tCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Leakage Result (tCO2e)</th>
+                                  <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emission Reduction (tCO2e)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -1276,10 +1279,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
                                 </tbody>
                               </table>
                               <div><img src="${process.env.BASE_URL}/graph` + assessment.id.toString() + `.png"` + ` alt="Italian Trulli"></div>
-                              <p>Figure 3: BAU and project emissions of ${element.climateActionName}</p>
+                              <p>Figure ${grpsfigurnumber}: BAU and project emissions of ${element.climateActionName}</p>
                               </div>
                               </div>
                               `;
+                              grpsfigurnumber++
                     }
                   }
                 }
@@ -1452,7 +1456,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                             <thead >
                             <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                               <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
-                              <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
+                              <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (tCO2e)</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -1546,7 +1550,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                             <thead >
                             <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                               <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Year</th>
-                              <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
+                              <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Emissions (tCO2e)</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -1635,7 +1639,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                           <thead >
                           <tr style="height:30px; width:450px; margin:0;background-color: #3ba4ed !important;">
                             <th style="border:1px solid black;text-align: center;width:350px;font-size: 17px;" scope="col">Year</th>
-                            <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Emissions (MtCO2e)</th>
+                            <th style="border:1px solid black;text-align: center;width:100px;font-size: 17px;" scope="col">Emissions (tCO2e)</th>
                           </tr>
                           </thead>
                           <tbody>
@@ -1791,7 +1795,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       ${unconditionalValue} MtCO₂e unconditionally.
       Mitigation actions implemented by year ${graphData.targetYear} were able to reduce
       ${reportData.sectors} sector emissions from
-      ${totalExPost} tCO2e.</p>`
+      ${totalExPost} MtCO2e.</p>`
           : `
       <p style="font-size:15px">
       Figure 1 illustrates the status of achieving emissions reduction targets
