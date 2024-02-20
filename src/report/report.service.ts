@@ -812,7 +812,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     sectorIdFromTocken: number,
   ): Promise<string> {
    
-
+    let grpsfigurnumber=2;
     let activitiData = '';
     activitiData =
       activitiData +
@@ -1081,7 +1081,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
               </div>`;
 
 
-          let grpsfigurnumber=2
+          
             for await(let assessment of element.assessments) {
 
             const asses = await this.assessment
@@ -1155,12 +1155,12 @@ export class ReportService extends TypeOrmCrudService<Report> {
               if (asses) {
 
                 if (assessment.assessmentType == 'Ex-ante') {
-                  setTimeout(async () => {
+               
                     await this.generateProjectionEmmisionGrpah(
                       assessment.id,
                       element.id,
                     );
-                  }, 100);
+               
                
                 }
                 this.assessmentMetholodgy = asses;
@@ -1953,12 +1953,14 @@ export class ReportService extends TypeOrmCrudService<Report> {
      
     });
 
- 
-    const page = await browser.newPage();
-    await page.setContent(file.content, { waitUntil: 'domcontentloaded' });
-    await page.emulateMediaType('print');
-    const PDF = await page.pdf(options);
-    await browser.close();
+    setTimeout(async () => {
+      const page = await browser.newPage();
+      await page.setContent(file.content, { waitUntil: 'domcontentloaded' });
+      await page.emulateMediaType('print');
+      const PDF = await page.pdf(options);
+      await browser.close();
+    },100)
+  
 
     return fileName; 
   }
