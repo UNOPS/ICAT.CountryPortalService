@@ -44,6 +44,7 @@ import { TokenDetails, TokenReqestType } from 'src/utills/token_details';
     },
   },
 })
+@UseGuards(JwtAuthGuard)
 @Controller('parameter')
 export class ParameterController implements CrudController<Parameter> {
   constructor(
