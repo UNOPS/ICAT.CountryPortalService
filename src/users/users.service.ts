@@ -156,7 +156,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   findByUserName(userName: string): Promise<User> {
-    return this.usersRepository.findOne({ username: userName });
+    return this.usersRepository.findOne({ where:{username: userName} ,relations:['institution']});
   }
 
   async validateUser(userName: string, password: string): Promise<boolean> {
@@ -214,7 +214,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     email: string,
     token: string,
   ): Promise<boolean> {
-    const user = await this.usersRepository.findOne({ email: email });
+    const user = await this.findUserByEmail(email);
 
     if (user && user.resetToken === token) {
       return true;
