@@ -1,5 +1,5 @@
 import { EmissionReductioDraftDataEntity } from './../master-data/emisssion-reduction-draft-data/entity/emission-reductio-draft-data.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 
@@ -40,7 +40,8 @@ import { DefaultValueService } from 'src/default-value/default-value.service';
 import { EmissionReductionDraftdataService } from 'src/master-data/emisssion-reduction-draft-data/emission-reduction-draftdata.service';
 import { VerifierAcceptance } from 'src/parameter/enum/verifier-acceptance.enum';
 import * as puppeteer from 'puppeteer';
-
+import { promises as fsPromises } from 'fs';
+import { StorageService } from 'src/storage/storage.service';
 @Injectable()
 export class ReportService extends TypeOrmCrudService<Report> {
   projectionDataResults: any;
@@ -69,6 +70,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
     private readonly projectOwner: Repository<ProjectOwner>,
     @InjectRepository(AssessmentResult)
     private readonly assResRepo: Repository<AssessmentResult>,
+    private storageService: StorageService
   ) {
     super(repo);
   }
@@ -1959,10 +1961,30 @@ export class ReportService extends TypeOrmCrudService<Report> {
       await page.emulateMediaType('print');
       const PDF = await page.pdf(options);
       await browser.close();
-    },100)
-  
 
-    return fileName; 
+
+      const filePath = `./public/${fileName}`;
+  
+      try {
+      const fileContent =await fsPromises.readFile(filePath);
+     
+        await this.storageService.save(
+          'public/' + fileName,
+          'application/pdf',
+          fileContent,
+          [{ mediaId: fileName }]
+        );
+      } catch (e) {
+        if (e.message.toString().includes("No such object")) {
+          throw new NotFoundException("file not found");
+        } else {
+          throw new ServiceUnavailableException("internal error");
+        }
+      }
+    },100)
+    return fileName;
+
+   
   }
   async createnormalpdf(){
 

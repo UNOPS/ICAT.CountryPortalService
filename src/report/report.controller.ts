@@ -141,25 +141,7 @@ export class ReportController implements CrudController<Report> {
   @Post('reportPdfFileData')
   async getReportPdfFileData(@Body() dto: ReportPdfInsert): Promise<any> {
    
-      const filePath = `./public/${dto.generateReportName}`;
-      
-       
-        try {
-        const fileContent =await fsPromises.readFile(filePath);
-       
-          await this.storageService.save(
-            'public/' + dto.generateReportName,
-            'application/pdf',
-            fileContent,
-            [{ mediaId: dto.generateReportName }]
-          );
-        } catch (e) {
-          if (e.message.toString().includes("No such object")) {
-            throw new NotFoundException("file not found");
-          } else {
-            throw new ServiceUnavailableException("internal error");
-          }
-        }
+     
      
     
     const res = await this.service.savePdfFileData(dto);
