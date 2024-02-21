@@ -358,18 +358,16 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
               req.dataRequestStatus.toString(),
               oldDatarqst?.dataRequestStatus.toString(),
             );
-          let assessmentYear = await this.assessmentYearRepo.find(
-            {
-              where: { assessment: { id: parameter.assessment.id } },
-              relations: ['assessment']
-            }
-          )
+          let assessmentYear = await this.assessmentYearRepo.createQueryBuilder('ay')
+            .innerJoinAndSelect('ay.assessment', 'a', 'ay.assessmentId = a.id')
+            .where('a.id = :id', { id: parameter.assessment.id })
+            .getMany()
           assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
           assessmentYear[0].qaStatus = undefined
           assessmentYear[0].qaDeadline = undefined
-  
+
           let asy = await this.assessmentYearRepo.update(assessmentYear[0].id, assessmentYear[0])
-  
+
           let assessmentResult = await this.assessmentResultRepo.find({ assessmentYear: { id: assessmentYear[0].id }, assessment: { id: assessmentYear[0].assessment.id } })
           assessmentResult[0].isResultupdated = false
           assessmentResult[0].qcStatuProjectResult = undefined
@@ -407,12 +405,10 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         request.parameter = newPara
         request.dataRequestStatus = DataRequestStatus.initiate
 
-        let assessmentYear = await this.assessmentYearRepo.find(
-          {
-            where: {assessment: {id: parameter.assessment.id}},
-            relations: ['assessment']
-          }
-        )
+        let assessmentYear = await this.assessmentYearRepo.createQueryBuilder('ay')
+        .innerJoinAndSelect('ay.assessment', 'a', 'ay.assessmentId = a.id')
+        .where('a.id = :id', { id: parameter.assessment.id })
+        .getMany()
         assessmentYear[0].qaStatus = undefined
         assessmentYear[0].isVerificationSuccess = false
         assessmentYear[0].verificationStatus = VerificationStatus.AssessmentReturned
@@ -451,7 +447,7 @@ export class VerificationService extends TypeOrmCrudService<ParameterRequest> {
         }
       }
     } catch (error){
-      return new InternalServerErrorException()
+      return new InternalServerErrorException(error)
     }
   }
 
