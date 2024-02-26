@@ -25,7 +25,7 @@ export class StorageService {
     contentType: string,
     media: Buffer,
     metadata: { [key: string]: string }[]
-  ) {
+  ): Promise<boolean> {
     const object = metadata.reduce((obj, item) => Object.assign(obj, item), {});
     const file = this.storage.bucket(this.bucket).file(path);
     const stream = file.createWriteStream();
@@ -35,6 +35,7 @@ export class StorageService {
       });
     });
     stream.end(media);
+    return true;
   }
 
   async delete(path: string) {
