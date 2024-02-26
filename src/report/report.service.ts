@@ -656,7 +656,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     // Take a screenshot and save it as PNG
     await page.screenshot({ path: './public/graph' + id.toString() + '.png', type: 'png' });
-
+  
     await browser.close(); 
 
   }
@@ -736,7 +736,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       }
     });
 
-    for (const gr of graphsData) {
+    for await(const gr of graphsData) {
       await axios
         .post(`${process.env.BASE_URL}/image`, gr[1])
         .then((res) => {
@@ -824,14 +824,14 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
               `;
 
-    for (let i = 0; i < reportData.ndcIdList.length; i++) {
-      this.ndcItemListActivity = reportData.ndcIdList[i];
+    for await (let ndc of reportData.ndcIdList) {
+      this.ndcItemListActivity = ndc;
       const ndcItem = await this.ndc.findOne({
         where: {
-          id: reportData.ndcIdList[i],
+          id: ndc,
         },
       });
-      for (let i = 0; i < reportData.projIds.length; i++) {
+      for await(let projId of reportData.projIds) {
         const climateDataActivity = await this.proRepo
           .createQueryBuilder('climate')
           .innerJoinAndSelect('climate.ndc', 'ndc')
@@ -839,7 +839,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           .innerJoinAndSelect('assessments.assessmentYear', 'assessmentYear')
           .innerJoinAndSelect('climate.projectOwner', 'projectOwner')
           .innerJoinAndSelect('climate.projectStatus', 'projectStatus')
-          .where('climate.id = :id', { id: reportData.projIds[i] })
+          .where('climate.id = :id', { id: projId })
           .andWhere('climate.ndcId = :ndcId', {
             ndcId: this.ndcItemListActivity,
           })
@@ -857,12 +857,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
                 `;
 
-          for (
-            let index = 0;
-            index < elementActive.assessments.length;
-            index++
+          for await(
+            let ass of elementActive.assessments
+            
           ) {
-            const assessment = elementActive.assessments[index];
+            const assessment = ass;
 
             const assesActivity = await this.assessment
               .createQueryBuilder('assessment')
@@ -1045,11 +1044,11 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
     let tableReportContent = '';
 
-    for (let i = 0; i < reportData.ndcIdList.length; i++) {
-      this.ndcItemList = reportData.ndcIdList[i];
+    for await(let ndcId of reportData.ndcIdList) {
+      this.ndcItemList = ndcId;
       const ndcItem = await this.ndc.findOne({
         where: {
-          id: reportData.ndcIdList[i],
+          id: ndcId,
         },
       });
       tableReportContent =
@@ -1058,14 +1057,14 @@ export class ReportService extends TypeOrmCrudService<Report> {
           <h3 style="font-weight: 700;color: #15246e;font-family: Calibri, san-serif;font-size: 32px;">${ndcItem.name}</h3>
           `;
 
-      for (let i = 0; i < reportData.projIds.length; i++) {
+      for await(let projId of reportData.projIds) {
         const climateData = await this.proRepo
           .createQueryBuilder('climate')
           .innerJoinAndSelect('climate.ndc', 'ndc')
           .innerJoinAndSelect('climate.assessments', 'assessments')
           .innerJoinAndSelect('climate.projectOwner', 'projectOwner')
           .innerJoinAndSelect('climate.projectStatus', 'projectStatus')
-          .where('climate.id = :id', { id: reportData.projIds[i] })
+          .where('climate.id = :id', { id: projId })
           .andWhere('climate.ndcId = :ndcId', { ndcId: this.ndcItemList })
           .getOne();
 
@@ -1737,8 +1736,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
       );
 
     let tableContent = '';
-    for (let index = 0; index < summryReport.length; index++) {
-      const element = summryReport[index];
+    for (let summaryreport of summryReport) {
+      const element = summaryreport;
 
       tableContent =
         tableContent +
@@ -1780,7 +1779,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
       graphData.targetYearEmission - graphData.conditionaltco2;
 
     let totalExPost = 0;
-    for (const sum of summryReport) {
+   for (const sum of summryReport) {
       if (sum.Type == 'Ex-post') {
         totalExPost = totalExPost + Number(sum.Result);
       }
@@ -1954,8 +1953,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
       args: ['--no-sandbox']
      
     });
-
-    setTimeout(async () => {
+  
+   
       const page = await browser.newPage();
       await page.setContent(file.content, { waitUntil: 'domcontentloaded' });
       await page.emulateMediaType('print');
@@ -1973,14 +1972,19 @@ export class ReportService extends TypeOrmCrudService<Report> {
           fileContent,
           [{ mediaId: fileName }]
         );
+
+       
+
+        
       } catch (e) {
         if (e.message.toString().includes("No such object")) {
           throw new NotFoundException("file not found");
         } else {
-          throw new ServiceUnavailableException("internal error");
+          throw new ServiceUnavailableException("Error saving Report");
         }
       }
-    },100)
+
+    
     return fileName;
 
    
