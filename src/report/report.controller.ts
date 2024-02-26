@@ -141,8 +141,7 @@ export class ReportController implements CrudController<Report> {
   @Post('reportPdfFileData')
   async getReportPdfFileData(@Body() dto: ReportPdfInsert): Promise<any> {
    
-     
-     
+  
     
     const res = await this.service.savePdfFileData(dto);
 
