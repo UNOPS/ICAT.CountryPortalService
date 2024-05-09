@@ -812,8 +812,9 @@ export class ReportService extends TypeOrmCrudService<Report> {
     reportData: ReportDataPDF,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
+    moduleLevelsFromTocken: number[]
   ): Promise<string> {
-   
+  
     let grpsfigurnumber=2;
     let activitiData = '';
     activitiData =
@@ -824,6 +825,24 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 </div>
               `;
 
+  let projectqueryfilter=''
+  let asseyearqueryfilter=''
+  let assequeryfilter=''
+  if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
+    projectqueryfilter= 'assessmentYear.verificationStatus = 7';
+    asseyearqueryfilter='and assYr.verificationStatus = 7';
+    
+  } else if (
+                moduleLevelsFromTocken[1] == 1 ||
+                moduleLevelsFromTocken[2] == 1
+  ) {
+    projectqueryfilter= 'assessments.isProposal= true'  
+    assequeryfilter=' and assessment.isProposal= true'      
+   } else {
+    projectqueryfilter= 'assessmentYear.verificationStatus = 7'   ;
+    asseyearqueryfilter='and assYr.verificationStatus = 7'  ;
+    
+     }         
     for await (let ndc of reportData.ndcIdList) {
       this.ndcItemListActivity = ndc;
       const ndcItem = await this.ndc.findOne({
@@ -831,6 +850,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           id: ndc,
         },
       });
+    
       for await(let projId of reportData.projIds) {
         const climateDataActivity = await this.proRepo
           .createQueryBuilder('climate')
@@ -843,7 +863,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           .andWhere('climate.ndcId = :ndcId', {
             ndcId: this.ndcItemListActivity,
           })
-          .andWhere('assessmentYear.verificationStatus = 7')
+          .andWhere(projectqueryfilter)
           .getOne();
 
         if (climateDataActivity && climateDataActivity.assessments.length > 0) {
@@ -873,7 +893,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
                 'assYr',
 
-                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id ' + asseyearqueryfilter,
               )
 
               .leftJoinAndMapOne(
@@ -916,7 +936,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 'proRslt.assessmentId = assessment.id',
               )
 
-              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+              .where('assessment.id = :id and assYr.id IN(:...ids) '+assequeryfilter, {
                 id: assessment.id,
                 ids: reportData.yearIds,
               })
@@ -1095,7 +1115,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
 
                 'assYr',
 
-                'assYr.assessmentId = assessment.id and assYr.verificationStatus = 7',
+                'assYr.assessmentId = assessment.id ' + asseyearqueryfilter,
               )
 
               .leftJoinAndMapOne(
@@ -1138,7 +1158,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 'proRslt.assessmentId = assessment.id',
               )
 
-              .where('assessment.id = :id and assYr.id IN(:...ids)', {
+              .where('assessment.id = :id and assYr.id IN(:...ids) '+ assequeryfilter, {
                 id: assessment.id,
                 ids: reportData.yearIds,
               })
