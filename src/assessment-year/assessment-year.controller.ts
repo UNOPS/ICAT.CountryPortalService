@@ -313,11 +313,12 @@ export class AssessmentYearController
   ): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
+    let moduleLevelsFromTocken: number[];
 
-    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+    [countryIdFromTocken, sectorIdFromTocken ,moduleLevelsFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
       TokenReqestType.sectorId,
-      TokenReqestType.InstitutionId,
+      TokenReqestType.moduleLevels,
     ]);
 
     const result =
@@ -330,6 +331,7 @@ export class AssessmentYearController
         sectorId,
         countryIdFromTocken,
         sectorIdFromTocken,
+        moduleLevelsFromTocken
       );
 
     const assessmentYearWiseList = new Map();
