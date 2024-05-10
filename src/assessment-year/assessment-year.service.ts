@@ -164,6 +164,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     assessTypes: string,
     yearIds: string,
     macAssessmentType: string,
+    moduleLevelsFromTocken:number[]
   ): Promise<any> {
     if (macAssessmentType.length == 0) {
       macAssessmentType = `''`;
@@ -173,7 +174,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       assessTypes = `''`;
     }
 
-    const data = this.repo
+    let data = this.repo
       .createQueryBuilder('ay')
       .leftJoinAndMapOne(
         'ay.assessment',
@@ -226,21 +227,56 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
       .select(
         `distinct a.id as assessmentId,a.isProposal as isProposal, ndc.name as NDC , p.climateActionName as ClimateAction , ay.assessmentYear as Year, a.assessmentType as Type, a.baseYear as BaseYear, meth.name as MethName, p.subNationalLevl1 as SubnOne, p.subNationalLevl2 as SubnTwo, p.subNationalLevl3 as SubnThree, p.proposeDateofCommence as ProposeDateCommence,projResult.projectionYear as PrjectionYear, meth.transportSubSector as TsubSector, meth.upstream_downstream as UpDownStream, meth.ghgIncluded as GhgInc, a.baselineScenario as BaseS, ar.baselineResult as BaseR, a.projectScenario as ProjectS, ar.projectResult as ProjectR, a.lekageScenario as LeakageS, ar.lekageResult as LeakageR  , ar.totalEmission as Result , ar.macResult as MACResult, a.ghgAssessTypeForMac as TypeOfMac, a.emmisionReductionValue as EmmisionValue, sndc.name as SNDC, p.institution as Institution, powner.name as ProjectOwner, p.objective as Objective, p.projectScope as ProjectScope, p.outcome as OutCome, p.directSDBenefit as DirectB, p.indirectSDBenefit as IndreactB, pstatus.name as ProjectStatus `,
       )
-
-      .where(
-        `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
-          yearIds +
-          ' ) AND a.assessmentType IN(' +
-          assessTypes +
-          ') ' +
-          ' OR ' +
-          (`ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` +
+      if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
+        data =data.where(
+          `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
             yearIds +
-            ') AND a.ghgAssessTypeForMac IN (' +
-            macAssessmentType +
-            ') '),
-      )
-      .orderBy('a.assessmentType', 'ASC')
+            ' ) AND a.assessmentType IN(' +
+            assessTypes +
+            ') ' +
+            ' OR ' +
+            (`ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` +
+              yearIds +
+              ') AND a.ghgAssessTypeForMac IN (' +
+              macAssessmentType +
+              ') '),
+        )
+        
+      } else if (
+                    moduleLevelsFromTocken[1] == 1 ||
+                    moduleLevelsFromTocken[2] == 1
+      ) {
+        data =data.where(
+          ` a.isProposal = true and a.assessmentType <> 'MAC' AND ay.id IN(` +
+            yearIds +
+            ' ) AND a.assessmentType IN(' +
+            assessTypes +
+            ') ' +
+            ' OR ' +
+            (`a.isProposal = true and a.assessmentType = 'MAC' AND ay.id IN (` +
+              yearIds +
+              ') AND a.ghgAssessTypeForMac IN (' +
+              macAssessmentType +
+              ') '),
+        )      
+       } else {
+        data =data.where(
+          `ay.verificationStatus = 7 and a.assessmentType <> 'MAC' AND ay.id IN(` +
+            yearIds +
+            ' ) AND a.assessmentType IN(' +
+            assessTypes +
+            ') ' +
+            ' OR ' +
+            (`ay.verificationStatus = 7 and a.assessmentType = 'MAC' AND ay.id IN (` +
+              yearIds +
+              ') AND a.ghgAssessTypeForMac IN (' +
+              macAssessmentType +
+              ') '),
+        )
+        
+         } 
+   
+      data =data.orderBy('a.assessmentType', 'ASC')
       .orderBy('ay.assessmentYear', 'ASC')
       .orderBy('p.climateActionName', 'ASC')
       .orderBy('ndc.name', 'ASC');

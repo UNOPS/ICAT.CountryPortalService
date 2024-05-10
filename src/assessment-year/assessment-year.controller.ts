@@ -117,12 +117,18 @@ export class AssessmentYearController
     audit.comment = 'Report Generated';
     audit.actionStatus = 'Generated';
     this.auditService.create(audit);
+    let moduleLevels: number[];
+   
 
+    [moduleLevels] = this.tokenDetails.getDetails([
+      TokenReqestType.moduleLevels,
+      
+    ]);
     return await this.service.getDataForReportNew(
       projIds,
       assessTypes,
       yearIds,
-      macAssessmentType,
+      macAssessmentType,moduleLevels
     );
   }
 

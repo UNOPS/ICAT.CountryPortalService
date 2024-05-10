@@ -389,14 +389,14 @@ export class ReportService extends TypeOrmCrudService<Report> {
     sectorIds: number[],
     yearIds: number[],
     countryIdFromTocken: number,
-    sectorIdFromTocken: number,
+    sectorIdFromTocken: number,moduleLevelsFromTocken: number[]
   ) {
     const summryReport: any[] =
       await this.assessmentYearService.getDataForReportNew(
         Array.isArray(projIds) ? projIds.join(',') : projIds,
         Array.isArray(assessType) ? assessType.join(',') : assessType,
         Array.isArray(yearIds) ? yearIds.join(',') : "" + yearIds,
-        '',
+        '',moduleLevelsFromTocken
       );
 
     let setSectorId: number = sectorIds[0];
@@ -1753,6 +1753,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
         reportData.assessType.join(','),
         reportData.yearIds.join(','),
         reportData.macAssecmentType.join(','),
+        moduleLevelsFromTocken
       );
 
     let tableContent = '';
