@@ -845,11 +845,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
      }         
     for await (let ndc of reportData.ndcIdList) {
       this.ndcItemListActivity = ndc;
-      const ndcItem = await this.ndc.findOne({
-        where: {
-          id: ndc,
-        },
-      });
+   
     
       for await(let projId of reportData.projIds) {
         const climateDataActivity = await this.proRepo
@@ -865,7 +861,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           })
           .andWhere(projectqueryfilter)
           .getOne();
-
+       console.log('ca',climateDataActivity?.id);
         if (climateDataActivity && climateDataActivity.assessments.length > 0) {
           const elementActive = climateDataActivity;
 
@@ -943,7 +939,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
               .orderBy('assYr.assessmentYear', 'ASC')
 
               .getOne();
-
+              console.log('assess',assesActivity?.id);
             const yearsActivity: number[] = [];
             let parameters = assesActivity?.parameters.filter(para => para.verifierAcceptance !== VerifierAcceptance.REJECTED)
             let groupedActivity = await parameters?.reduce(async (r, v, i, a) => {
