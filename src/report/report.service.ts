@@ -836,8 +836,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
                 moduleLevelsFromTocken[1] == 1 ||
                 moduleLevelsFromTocken[2] == 1
   ) {
-    projectqueryfilter= 'assessments.isProposal= true'  
-    assequeryfilter=' and assessment.isProposal= true'      
+    projectqueryfilter= 'assessments.isProposal= 1'  
+    assequeryfilter=' and assessment.isProposal= 1'      
    } else {
     projectqueryfilter= 'assessmentYear.verificationStatus = 7'   ;
     asseyearqueryfilter='and assYr.verificationStatus = 7'  ;
