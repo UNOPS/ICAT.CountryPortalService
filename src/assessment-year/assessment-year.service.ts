@@ -537,6 +537,7 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
     sectorId: number,
     countryIdFromTocken: number,
     sectorIdFromTocken: number,
+    moduleLevelsFromTocken: number[],
   ): Promise<any> {
     let filter = '';
 
@@ -553,7 +554,28 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
         filter = `asse.ghgAssessTypeForMac = 'ex-ante'`;
       }
     }
-
+    if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
+      if (filter) {
+        filter = `${filter}   and asse.isProposal= false and asseYr.verificationStatus= 7 `;
+      } else {
+        filter = `asse.isProposal= false and asseYr.verificationStatus= 7`;
+      }
+    } else if (
+      moduleLevelsFromTocken[1] == 1 ||
+      moduleLevelsFromTocken[2] == 1
+    ) {
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= true `;
+      } else {
+        filter = `asse.isProposal= true `;
+      }
+    } else {
+      if (filter) {
+        filter = `${filter}  and  asse.isProposal= false and asseYr.verificationStatus= 7 `;
+      } else {
+        filter = `asse.isProposal= false and asseYr.verificationStatus= 7`;
+      }
+    }
     if (countryIdFromTocken != 0) {
       if (filter) {
         filter = `${filter}  and pro.countryId = :countryIdFromTocken`;

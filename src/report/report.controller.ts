@@ -113,15 +113,18 @@ export class ReportController implements CrudController<Report> {
   async getReportPDF(@Body() reportData: ReportDataPDF): Promise<any> {
     let countryIdFromTocken: number;
     let sectorIdFromTocken: number;
+    let moduleLevelsFromTocken: number[];
 
-    [countryIdFromTocken, sectorIdFromTocken] = this.tokenDetails.getDetails([
+    [countryIdFromTocken, sectorIdFromTocken,moduleLevelsFromTocken] = this.tokenDetails.getDetails([
       TokenReqestType.countryId,
       TokenReqestType.sectorId,
+      TokenReqestType.moduleLevels,
     ]);
+   
     const res = await this.service.testPDF(
       reportData,
       countryIdFromTocken,
-      sectorIdFromTocken,
+      sectorIdFromTocken,moduleLevelsFromTocken
     );
 
  
