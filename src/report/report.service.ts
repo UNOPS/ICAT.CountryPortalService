@@ -831,17 +831,18 @@ export class ReportService extends TypeOrmCrudService<Report> {
   if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
     projectqueryfilter= 'assessmentYear.verificationStatus = 7';
     asseyearqueryfilter='and assYr.verificationStatus = 7';
-    
+    assequeryfilter=' and assessment.isProposal= false'
   } else if (
                 moduleLevelsFromTocken[1] == 1 ||
                 moduleLevelsFromTocken[2] == 1
   ) {
-    // projectqueryfilter= 'assessments.isProposal= 1'  
-    // assequeryfilter=' and assessment.isProposal= 1'      
+    projectqueryfilter= 'assessmentYear.verificationStatus IS NULL'  
+    asseyearqueryfilter= 'and assYr.verificationStatus IS NULL'  
+    assequeryfilter=' and assessment.isProposal= true'      
    } else {
     projectqueryfilter= 'assessmentYear.verificationStatus = 7'   ;
     asseyearqueryfilter='and assYr.verificationStatus = 7'  ;
-    
+    assequeryfilter=' and assessment.isProposal= false';
      }         
     for await (let ndc of reportData.ndcIdList) {
       this.ndcItemListActivity = ndc;
@@ -858,11 +859,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
           .where('climate.id = :id', { id: projId })
           .andWhere('climate.ndcId = :ndcId', {
             ndcId: this.ndcItemListActivity,
-          })
-          if (moduleLevelsFromTocken[3] == 1 || moduleLevelsFromTocken[4] == 1) {
-            climateDataActivityquery= climateDataActivityquery.andWhere(projectqueryfilter)
+          }).andWhere(projectqueryfilter)
             
-          }
         
           const climateDataActivity=await  climateDataActivityquery.getOne();
         if (climateDataActivity && climateDataActivity.assessments.length > 0) {
@@ -1926,7 +1924,7 @@ export class ReportService extends TypeOrmCrudService<Report> {
           <div class="mb-4">
         <h6>
         Table 1: Summary of the assessments of climate actions in
-        ${reportData.sectors.toString()} sector
+        ${reportData.sectors.toString()} sector 1
         </h6>
       </div>
         <table class="table table-striped"><thead>
