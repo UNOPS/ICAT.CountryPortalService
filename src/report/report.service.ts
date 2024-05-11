@@ -1923,8 +1923,8 @@ export class ReportService extends TypeOrmCrudService<Report> {
         ` <div class="container-fluid mb-5 mt-5"> 
           <div class="mb-4">
         <h6>
-        Table 1: Summary of the assessments of climate actions in
-        ${reportData.sectors.toString()} sector 1
+        Table 1: Summary of the assessments of climate action in
+        ${reportData.sectors.toString()} sector
         </h6>
       </div>
         <table class="table table-striped"><thead>
