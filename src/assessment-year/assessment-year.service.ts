@@ -247,13 +247,13 @@ export class AssessmentYearService extends TypeOrmCrudService<AssessmentYear> {
                     moduleLevelsFromTocken[2] == 1
       ) {
         data =data.where(
-          ` a.assessmentType <> 'MAC' AND ay.id IN(` +
+          `ay.verificationStatus IS NULL and a.assessmentType <> 'MAC' AND ay.id IN(` +
             yearIds +
             ' ) AND a.assessmentType IN(' +
             assessTypes +
             ') ' +
             ' OR ' +
-            (` a.assessmentType = 'MAC' AND ay.id IN (` +
+            (`ay.verificationStatus IS NULL and a.assessmentType = 'MAC' AND ay.id IN (` +
               yearIds +
               ') AND a.ghgAssessTypeForMac IN (' +
               macAssessmentType +
