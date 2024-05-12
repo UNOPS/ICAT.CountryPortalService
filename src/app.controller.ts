@@ -9,4 +9,8 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+  @Get('testdeployment')
+  testDeployment(): string {
+    return 'Deployed 2024/05/12';
+  }
 }
