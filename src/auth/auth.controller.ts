@@ -89,28 +89,6 @@ export class AuthController {
       pwdRestToken,
     );
 
-    let emailTemplate = '';
-
-    emailTemplate = fs.readFileSync(
-      './src/template/email/reset-password.html',
-      'utf8',
-    );
-
-    const resetPwdUrl = this.configService.get<string>(
-      process.env.PWD_RESET_URL,
-    );
-
-    emailTemplate = emailTemplate.replace(
-      '[RESER_PWD_URL]',
-      resetPwdUrl + '?token=' + pwdRestToken + '&email=' + forgotparam.email,
-    );
-
-    this.emailService.sendMail(
-      user.email,
-      'Reset your ncc-dsn login password',
-      '',
-      emailTemplate,
-    );
 
     return response.status(200).send(true);
   }
