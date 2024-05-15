@@ -123,7 +123,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     user.resetToken = newToken;
     const newUUID = uuidv4();
     const newPassword = ('' + newUUID).substr(0, 6);
-    user.password = await this.hashPassword(user.password, user.salt);
+    user.password = await this.hashPassword(newPassword, user.salt);
     await this.usersRepository.save(user);
     const template =
       'Dear ' +
