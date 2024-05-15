@@ -33,7 +33,7 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
 
     for (const x of recievedYeras) {
       const defaultvalObject = await this.repo.findOne(defaultDto.parentId);
-      const instituition = await this.insRepo.findOne(defaultDto.source['id']);
+      let instituition = await this.insRepo.findOne(defaultDto.source['id']);
 
       const defltVal = new DefaultValue();
       defltVal.parameterName = defaultDto.parameterName;
@@ -43,6 +43,10 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
       defltVal.source = defaultDto.source['name'];
       defltVal.year = x;
       defltVal.country = defaultDto.country;
+      if(defaultDto.value){
+        defltVal.value = defaultDto.value.toString();
+        defltVal.source = defaultDto.source.toString();
+      }
       const savedDefaultValue = await this.repo.save(defltVal);
 
       const parameterObject = new Parameter();
@@ -58,12 +62,14 @@ export class DefaultValueService extends TypeOrmCrudService<DefaultValue> {
       parameterObject.defaultValue = savedDefaultValue;
       parameterObject.AssessmentYear = x;
       const savedParaValue = await this.paramterRepo.save(parameterObject);
-
-      const datareq = new ParameterRequest();
-      datareq.deadlineDataEntry = defaultDto.deadLine;
-      datareq.dataRequestStatus = 2;
-      datareq.parameter = savedParaValue;
-      const savedDataRequest = await this.parameterRequestRepo.save(datareq);
+      if(!defaultDto.value){
+        const datareq = new ParameterRequest();
+        datareq.deadlineDataEntry = defaultDto.deadLine;
+        datareq.dataRequestStatus = 2;
+        datareq.parameter = savedParaValue;
+        const savedDataRequest = await this.parameterRequestRepo.save(datareq);
+      }
+      
     }
 
     return { message: 'success' };
