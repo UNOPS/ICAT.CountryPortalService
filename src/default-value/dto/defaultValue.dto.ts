@@ -8,4 +8,5 @@ export class defaultValueDtos {
   deadLine: Date;
   year: Array<number>;
   country: Country;
+  value: number;
 }
