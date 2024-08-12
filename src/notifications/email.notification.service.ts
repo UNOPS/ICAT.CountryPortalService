@@ -7,7 +7,7 @@ const fs = require('fs');
 export class EmailNotificationService {
   constructor(private readonly mailerService: MailerService) {}
 
-  from = 'no-reply-icat-ca-tool@climatesi.com';
+  from = 'icat@unops.org';
 
   async sendMail(
     to: string,
