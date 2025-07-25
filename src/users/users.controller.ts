@@ -85,7 +85,7 @@ export class UsersController implements CrudController<User> {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User> {
-    return await this.service.findOne(id);
+    return await this.service.findOne({ where: { id: Number(id) } });
   }
 
   @UseGuards(JwtAuthGuard)
