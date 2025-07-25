@@ -163,14 +163,14 @@ export class InstitutionController implements CrudController<Institution> {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('deactivateInstituion')
-  async deactivateInstitution(@Query('instiId') instiId: number): Promise<any> {
+  @Get('deactivateInstitution')
+  async deactivateInstitution(@Query('institutionId') institutionId: number): Promise<any> {
     const audit: AuditDto = new AuditDto();
     audit.action = 'Institution Deactivated';
     audit.comment = 'Institution Deactivated';
     audit.actionStatus = 'Deactivated';
     this.auditService.create(audit);
-    return await this.service.softDelete(instiId);
+    return await this.service.softDelete(institutionId);
   }
 
   @UseGuards(JwtAuthGuard)
