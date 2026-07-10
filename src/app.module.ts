@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -74,6 +75,7 @@ import { CaActionHistoryController } from './ca-action-history/ca-action-history
 import { CaActionHistoryModule } from './ca-action-history/ca-action-history.module';
 import { MethodologyData } from './master-data/methodology-data/methodology-data.entity';
 import { StorageModule } from './storage/storage.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -177,6 +179,6 @@ import { StorageModule } from './storage/storage.module';
     CaActionHistoryController,
   ],
 
-  providers: [AppService, SubsectionService, TokenDetails],
+  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, AppService, SubsectionService, TokenDetails],
 })
 export class AppModule {}

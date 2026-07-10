@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Public } from './decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { AuthCredentialDto } from './Dto/auth.credential.dto';
@@ -21,6 +22,7 @@ export class AuthController {
     private readonly auditService: AuditService,
   ) {}
 
+  @Public()
   @Post('auth/login')
   async login(@Body() authCredentialDto: AuthCredentialDto): Promise<any> {
     const audit: AuditDto = new AuditDto();
@@ -33,6 +35,7 @@ export class AuthController {
     return await this.authService.login(authCredentialDto);
   }
 
+  @Public()
   @Get('auth/validate-reset-password/:email/:token')
   async validateResetPassword(
     @Param('email') email: string,
@@ -41,6 +44,7 @@ export class AuthController {
     return await this.usersService.validateResetPasswordRequest(email, token);
   }
 
+  @Public()
   @Put('auth/reset-password')
   async resetPassword(@Body() resetPwd: ResetPassword): Promise<boolean> {
     if (
@@ -60,6 +64,7 @@ export class AuthController {
     return false;
   }
 
+  @Public()
   @Post('auth/forgot-password')
   async forgotPassword(
     @Body() forgotparam: ForgotPasswordDto,
